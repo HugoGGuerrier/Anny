@@ -1,7 +1,10 @@
 {
 "appConfig": {
 	"version": "0.1.0",
-	"env": 0
+	"env": 0,
+	
+	"maxSessions": 4096,
+	"sessionTimeToLive": 3600
 },
 "mysqlConfig": {
 },

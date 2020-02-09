@@ -9,9 +9,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import tools.Config;
 
+/**
+ * This is the index servlet, the default web page.
+ * 
+ * @author Emilie Siau
+ * @author Hugo Guerrier
+ */
+
 @WebServlet("/index")
 public class Index extends HttpServlet {
 	
+
 	// ----- Attributes -----
 	
 	

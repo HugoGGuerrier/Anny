@@ -43,6 +43,9 @@ public class Configuration extends HttpServlet {
 		
 		// Initialize the application configuration
 		Config.init(configReader);
+		
+		// DEBUG SECTION
+		System.out.println(Config.display());
 	}
 
 	/**
@@ -51,6 +54,8 @@ public class Configuration extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO : Send the current configuration in JSON format
+		
+		this.init();
 	}
 
 	/**

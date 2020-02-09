@@ -8,7 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- * This class contains all application's configuration attributes like version, base path, etc...
+ * This class contains all application's configuration attributes as version, environment, database, etc...
  * 
  * @author Emilie Siau
  * @author Hugo Guerrier
@@ -21,11 +21,19 @@ public class Config {
 	/** Variable that say if the application was initialize */
 	private static boolean initialize = false;
 	
+	// --- Application's configuration
+	
 	/** The application's version (release.development.database) */
 	private static String version;
 	
 	/** The application's environment (0 = development, 1 = production) */
 	private static int env;
+	
+	/** Max number of sessions in the same time */
+	private static long maxSessions;
+	
+	/** Sessions time to live */
+	private static long sessionTimeToLive;
 	
 	
 	// ----- Getters -----
@@ -43,7 +51,15 @@ public class Config {
 		return Config.env;
 	}
 	
-	// ----- Initialization method -----
+	public static long getMaxSession() {
+		return Config.maxSessions;
+	}
+	
+	public static long getSessionsTimeToLive() {
+		return Config.sessionTimeToLive;
+	};
+	
+	// ----- Class method -----
 	
 	
 	/**
@@ -51,7 +67,6 @@ public class Config {
 	 * 
 	 * @param configReader The configuration file
 	 */
-	@SuppressWarnings("unchecked")
 	public static void init(Reader configReader) {
 		
 		// Parse the configuration file
@@ -62,7 +77,7 @@ public class Config {
 			// --- Get the general configuration JSON object
 			JSONObject jsonObject = (JSONObject) parser.parse(configReader);
 			
-			// --- Get the application configuration
+			// --- Get the application's configuration
 			JSONObject appConfig = (JSONObject) jsonObject.get("appConfig");
 			
 			String version = (String) appConfig.get("version");
@@ -70,6 +85,12 @@ public class Config {
 			
 			Long env = (Long) appConfig.get("env");
 			Config.env = env == null ? 1 : env.intValue();
+			
+			Long maxSessions = (Long) appConfig.get("maxSessions");
+			Config.maxSessions = maxSessions == null ? 1 : maxSessions;
+			
+			Long sessionTTL = (Long) appConfig.get("sessionTimeToLive");
+			Config.sessionTimeToLive = sessionTTL == null ? 1800 : sessionTTL;
 			
 			// --- Get the mysql configuration
 			
@@ -87,6 +108,26 @@ public class Config {
 		
 		// Set the initialize indicator to true
 		Config.initialize = true;
+	}
+	
+	/**
+	 * Return the String representation of the config
+	 * 
+	 * @return The configuration
+	 */
+	public static String display() {
+		StringBuilder res = new StringBuilder();
+		
+		res.append("Birdy config : {\n");
+		
+		res.append("  version: " + Config.version + "\n");
+		res.append("  environment: " + Config.env + "\n");
+		res.append("  maxSessions: " + Config.maxSessions + "\n");
+		res.append("  sessionTTL: " + Config.sessionTimeToLive + "\n");
+		
+		res.append("}");
+		
+		return res.toString();
 	}
 	
 }

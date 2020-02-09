@@ -1,7 +1,5 @@
 package services.user;
 
-import org.json.simple.JSONObject;
-
 import tools.models.User;
 
 public class LoginUser {
@@ -30,10 +28,16 @@ public class LoginUser {
 	// ----- Class methods -----
 	
 	
-	public int loginUser(User user) {
-		// TODO : Connecter l'utilisateur et stocker le token de session
+	/**
+	 * Try to log the wanted user with its email and password
+	 * 
+	 * @param user The user you want to log in
+	 * @return The session ID if the log in works, null else
+	 */
+	public String loginUser(User user) {
+		// TODO : Connecter l'utilisateur et stocker et retourner le token de session
 		
-		return 0;
+		return null;
 	}
 
 }

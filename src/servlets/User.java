@@ -8,8 +8,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class User
+ * This is the servlet to manipulate users.
+ * 
+ * @author Emilie Siau
+ * @author Hugo Guerrier
  */
+
 @WebServlet("/user")
 public class User extends HttpServlet {
 	
