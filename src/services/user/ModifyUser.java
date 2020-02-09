@@ -30,10 +30,10 @@ public class ModifyUser {
 	// ----- Class methods -----
 	
 	
-	public JSONObject modifyUser(User user) {
+	public int modifyUser(User user) {
 		// TODO : faire les insertions en bd (comme il a toujours le même id c'est bon ^^)
 		
-		return null;
+		return 0;
 	}
 	
 }

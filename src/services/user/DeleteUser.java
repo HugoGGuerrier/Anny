@@ -8,11 +8,13 @@ public class DeleteUser {
 
 	// ----- Attributes -----
 
+	
 	private static DeleteUser instance = null;
 
 
 	// ----- Constructors -----
 
+	
 	private DeleteUser() {
 
 	}
@@ -28,10 +30,10 @@ public class DeleteUser {
 	// ----- Class methods -----
 	
 	
-	public JSONObject deleteUser(User user) {
+	public int deleteUser(User user) {
 		// TODO : Les insertions en bd en fonction du param		
 		
-		return null;
+		return 0;
 	}
 
 }

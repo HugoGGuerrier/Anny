@@ -30,10 +30,10 @@ public class CreateUser {
 	// ----- Class methods -----
 	
 	
-	public static JSONObject createUser(User user) {
+	public int createUser(User user) {
 		// TODO : insertion en base de données de l'utilisateur
 		
-		return null;
+		return 0;
 	}
 	
 }

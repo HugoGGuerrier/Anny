@@ -1,5 +1,11 @@
 package tools.models;
 
+/**
+ * This is the wrapper class for a user. It contains all informations about an user
+ * 
+ * @author Emilie Siau
+ * @author Hugo Guerrier
+ */
 public class User {
 	
 	/**	Database id of the user */
@@ -17,6 +23,9 @@ public class User {
 	/** User's email address */
 	private String email;
 	
+	/** User's password */
+	private String password;
+	
 	
 	// ----- Constructors -----
 	
@@ -30,27 +39,31 @@ public class User {
 
 	
 	public String getIdUser() {
-		return idUser;
+		return this.idUser;
 	}
 
 
 	public String getPseudo() {
-		return pseudo;
+		return this.pseudo;
 	}
 
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 
 	public String getSurname() {
-		return surname;
+		return this.surname;
 	}
 
 
 	public String getEmail() {
-		return email;
+		return this.email;
+	}
+	
+	public String getPassword() {
+		return this.password;
 	}
 
 
@@ -76,7 +89,8 @@ public class User {
 		this.email = email;
 	}
 	
-	
-	
+	public void setPassword(String password) {
+		this.password = password;
+	}
 	
 }

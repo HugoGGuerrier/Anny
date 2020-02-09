@@ -1,0 +1,10 @@
+{
+"appConfig": {
+	"version": "0.1.0",
+	"env": 0
+},
+"mysqlConfig": {
+},
+"mongodbConfig": {
+}
+}

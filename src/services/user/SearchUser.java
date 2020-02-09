@@ -1,5 +1,7 @@
 package services.user;
 
+import java.util.List;
+
 import org.json.simple.JSONObject;
 
 import tools.models.User;
@@ -30,7 +32,7 @@ public class SearchUser {
 	// ----- Class methods -----
 
 
-	public static JSONObject searchUser(User user) {
+	public List<User> searchUser(User user) {
 		// TODO : insertion en base de données de l'utilisateur
 
 		return null;

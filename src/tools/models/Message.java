@@ -3,6 +3,12 @@ package tools.models;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This is the wrapper class for a message. It contains all informations that database store on a message
+ * 
+ * @author Emilie Siau
+ * @author Hugo Guerrier
+ */
 public class Message {
 
 	// ----- Attributes -----

@@ -1,20 +1,32 @@
 package servlets;
 
-import java.io.File;
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/test")
-public class Test extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+import tools.Config;
+
+@WebServlet("/index")
+public class Index extends HttpServlet {
 	
+	// ----- Attributes -----
+	
+	
+	private static final long serialVersionUID = 1L;
+
+	
+	// ----- Class methods -----
+
+
+	/**
+	 * The get method of the index route
+	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().append("This is the test page...");
+		response.getWriter().append("Welcome on birdy, current version is ").append(Config.getVersion());
 	}
 
 }
