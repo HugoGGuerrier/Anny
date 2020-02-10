@@ -5,6 +5,12 @@ import java.util.HashMap;
 
 import tools.models.User;
 
+/**
+ * This class represent an HTTP session with params and the user related to it.
+ * 
+ * @author Emilie Siau
+ * @author Hugo Guerrier
+ */
 public class Session {
 	
 	// ----- Attributes -----

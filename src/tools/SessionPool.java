@@ -7,7 +7,7 @@ import tools.exceptions.SessionException;
 import tools.models.User;
 
 /**
- * A class to store all sessions.
+ * A class to store all sessions and manage them.
  * 
  * @author Emilie Siau
  * @author Hugo Guerrier
