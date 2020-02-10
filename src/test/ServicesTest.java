@@ -18,7 +18,7 @@ public class ServicesTest {
 	// ----- Attributes -----
 	
 	
-	// --- Follower services
+	// --- Follow services
 	
 	// --- Message services
 	private CreateMessage createMessage = CreateMessage.getInstance();

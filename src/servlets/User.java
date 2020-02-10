@@ -86,7 +86,7 @@ public class User extends HttpServlet {
 		String password = req.getParameter("userPassword");
 		boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
 		
-		resp.getWriter().append(userId);
+		
 	}
 
 	/**

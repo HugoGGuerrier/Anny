@@ -120,4 +120,19 @@ public class User {
 		this.admin = admin;
 	}
 	
+	
+	// ----- Standards methods -----
+	
+
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof User)) {
+			return false;
+		} else {
+			User user = (User) obj;
+			
+			return this.idUser.equals(user.idUser);
+		}
+	}
+	
 }

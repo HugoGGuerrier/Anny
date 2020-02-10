@@ -35,24 +35,25 @@ public class Security {
 	
 	
 	/**
-	 * Clean the string from the xss injections
+	 * Encode a string with the html entities
 	 * 
-	 * @param stringToClean The string to clean
-	 * @return The cleaned string to insert it in database
+	 * @param stringToClean The string to encode
+	 * @return The encoded string
 	 */
-	public String xssClean(String stringToClean) {
-		String res = StringEscapeUtils.escapeHtml4(stringToClean);
+	public String htmlEncode(String stringToEncode) {
+		String res = StringEscapeUtils.escapeHtml4(stringToEncode);
 		return res;
 	}
 	
 	/**
-	 * Clean the string from the sql injections
+	 * Decode the html entities in a string
 	 * 
-	 * @param stringToClean The string to clean
-	 * @return The cleaned string
+	 * @param stringToDecode The string to decode
+	 * @return The decoded string
 	 */
-	public String sqlClean(String stringToClean) {
-		return null;
+	public String htmlDecode(String stringToDecode) {
+		String res = StringEscapeUtils.unescapeHtml4(stringToDecode);
+		return res;
 	}
 
 }
