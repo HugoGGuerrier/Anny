@@ -2,6 +2,7 @@ package test;
 
 import static org.junit.Assert.*;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import tools.Handler;
@@ -14,6 +15,15 @@ public class ToolsTest {
 	
 	private Handler handler = Handler.getInstance();
 	private SessionPool sessionPool = SessionPool.getInstance();
+	
+	
+	// ----- Config methods -----
+	
+	
+	@BeforeClass
+	public static void setup() {
+		System.out.println("test !");
+	}
 	
 	
 	// ----- Test methods -----

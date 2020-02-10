@@ -165,7 +165,7 @@ public class SessionPool {
 				res.append(possibleChars.charAt(selectedChar));
 			}
 			testSession = this.getSession(res.toString());
-		} while (testSession == null);
+		} while (testSession != null);
 		
 		
 		// Return the generated token
