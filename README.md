@@ -15,6 +15,7 @@ Client side : JavaScript, HTML, CSS
 ## Java
 
 - [JSONSimple](https://github.com/fangyidong/json-simple)
-- [JavaServletAPI](https://maven.java.net/content/repositories/releases/javax/servlet/javax.servlet-api/)
+- [Java Servlet API](https://maven.java.net/content/repositories/releases/javax/servlet/javax.servlet-api/)
+- [Apache commons text](https://mvnrepository.com/artifact/org.apache.commons/commons-text/1.8)
 
 ## JavaScript

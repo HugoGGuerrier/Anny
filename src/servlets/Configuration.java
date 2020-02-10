@@ -45,7 +45,6 @@ public class Configuration extends HttpServlet {
 		Config.init(configReader);
 		
 		// DEBUG SECTION
-		System.out.println(Config.display());
 	}
 
 	/**
