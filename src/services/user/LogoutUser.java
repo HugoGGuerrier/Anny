@@ -1,7 +1,6 @@
 package services.user;
 
-import org.json.simple.JSONObject;
-
+import tools.exceptions.UserException;
 import tools.models.User;
 
 public class LogoutUser {
@@ -30,10 +29,14 @@ public class LogoutUser {
 	// ----- Class methods -----
 
 
-	public int logoutUser(User user) {
+	/**
+	 * Logout the user if the session exists
+	 * 
+	 * @param user The user to log out
+	 * @throws UserException If the session or the user doesn't exists
+	 */
+	public void logoutUser(User user) throws UserException {
 		// TODO : Supprimer la connexion de l'utilisateur
-
-		return 0;
 	}
 
 }

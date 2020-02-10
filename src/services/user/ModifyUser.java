@@ -1,7 +1,6 @@
 package services.user;
 
-import org.json.simple.JSONObject;
-
+import tools.exceptions.UserException;
 import tools.models.User;
 
 public class ModifyUser {
@@ -30,10 +29,14 @@ public class ModifyUser {
 	// ----- Class methods -----
 	
 	
-	public int modifyUser(User user) {
+	/**
+	 * Modify the wanted user identifying it by its ID
+	 * 
+	 * @param user The new value of the user
+	 * @throws UserException If the user can't be modified
+	 */
+	public void modifyUser(User user) throws UserException {
 		// TODO : faire les insertions en bd (comme il a toujours le même id c'est bon ^^)
-		
-		return 0;
 	}
 	
 }

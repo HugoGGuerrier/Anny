@@ -1,5 +1,6 @@
 package services.message;
 
+import tools.exceptions.MessageException;
 import tools.models.Message;
 
 public class ModifyMessage {
@@ -28,10 +29,14 @@ public class ModifyMessage {
 	// ----- Class methods -----
 
 
-	public int modifyMessage(Message message) {
-		// TODO : insertion en base de données
-
-		return 0;
+	/**
+	 * Modify the message in database identified with the ID
+	 * 
+	 * @param message The new message
+	 * @throws MessageException If the message can't be modified
+	 */
+	public void modifyMessage(Message message) throws MessageException {
+		// TODO : Modifier le message en se basant sur son ID
 	}
 
 }

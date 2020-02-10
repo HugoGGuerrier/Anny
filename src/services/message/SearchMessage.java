@@ -30,8 +30,14 @@ public class SearchMessage {
 	// ----- Class methods -----
 
 
+	/**
+	 * Get a list of messages corresponding with the message model
+	 * 
+	 * @param message The message model
+	 * @return The list of messages
+	 */
 	public List<Message> searchMessage(Message message) {
-		// TODO : recherche des messages
+		// TODO : Recherche des message correspondants
 
 		return null;
 	}

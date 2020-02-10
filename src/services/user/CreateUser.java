@@ -1,7 +1,6 @@
 package services.user;
 
-import org.json.simple.JSONObject;
-
+import tools.exceptions.UserException;
 import tools.models.User;
 
 public class CreateUser {
@@ -30,10 +29,14 @@ public class CreateUser {
 	// ----- Class methods -----
 	
 	
-	public int createUser(User user) {
+	/**
+	 * Create an user in the database and return the code
+	 * 
+	 * @param user The user to insert in database
+	 * @throws UserException If the user insertion fails
+	 */
+	public void createUser(User user) throws UserException {
 		// TODO : insertion en base de données de l'utilisateur
-		
-		return 0;
 	}
 	
 }

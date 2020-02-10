@@ -2,8 +2,6 @@ package services.user;
 
 import java.util.List;
 
-import org.json.simple.JSONObject;
-
 import tools.models.User;
 
 public class SearchUser {
@@ -32,6 +30,12 @@ public class SearchUser {
 	// ----- Class methods -----
 
 
+	/**
+	 * Get an user list corresponding with the research user model
+	 * 
+	 * @param user The user model to look for
+	 * @return The list of user corresponding to the model
+	 */
 	public List<User> searchUser(User user) {
 		// TODO : insertion en base de données de l'utilisateur
 

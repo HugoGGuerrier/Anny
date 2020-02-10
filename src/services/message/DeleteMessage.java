@@ -1,5 +1,6 @@
 package services.message;
 
+import tools.exceptions.MessageException;
 import tools.models.Message;
 
 public class DeleteMessage {
@@ -28,10 +29,14 @@ public class DeleteMessage {
 	// ----- Class methods -----
 
 
-	public int deleteMessage(Message message) {
-		// TODO : insertion en base de données
-
-		return 0;
+	/**
+	 * Delete the message in the database (or more if the message correspond with many)
+	 * 
+	 * @param message The message model to delete
+	 * @throws MessageException If the message can't be deleted
+	 */
+	public void deleteMessage(Message message) throws MessageException {
+		// TODO : Supprimer le message dans la base de données
 	}
 
 }

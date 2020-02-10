@@ -15,7 +15,7 @@ public class Message {
 	
 	
 	/** Message database id */
-	private final long messageId;
+	private long messageId;
 	
 	/** Message text content */
 	private String text;
@@ -33,8 +33,20 @@ public class Message {
 	// ----- Constructors -----
 	
 	
+	/**
+	 * Construct a new message from its id
+	 * 
+	 * @param messageId
+	 */
 	public Message(long messageId) {
 		this.messageId = messageId;
+	}
+	
+	/**
+	 * Construct a new message with the default id -1
+	 */
+	public Message() {
+		this.messageId = -1;
 	}
 	
 	
@@ -65,6 +77,10 @@ public class Message {
 	// ----- Setters -----
 	
 
+	public void setMessageId(long messageId) {
+		this.messageId = messageId;
+	}
+	
 	public void setText(String text) {
 		this.text = text;
 	}

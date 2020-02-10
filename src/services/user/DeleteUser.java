@@ -1,7 +1,6 @@
 package services.user;
 
-import org.json.simple.JSONObject;
-
+import tools.exceptions.UserException;
 import tools.models.User;
 
 public class DeleteUser {
@@ -30,10 +29,14 @@ public class DeleteUser {
 	// ----- Class methods -----
 	
 	
-	public int deleteUser(User user) {
-		// TODO : Les insertions en bd en fonction du param		
-		
-		return 0;
+	/**
+	 * Delete an user from the database (or more if the user match with multiple users)
+	 * 
+	 * @param user The user model to look for
+	 * @throws UserException If there were no user deleted
+	 */
+	public void deleteUser(User user) throws UserException {
+		// TODO : Supprimer le ou les utilisateurs de la base de données
 	}
 
 }

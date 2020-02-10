@@ -9,7 +9,7 @@ package tools.models;
 public class User {
 	
 	/**	Database id of the user */
-	private final String idUser;
+	private String idUser;
 	
 	/** Public pseudo of the user */
 	private String pseudo;
@@ -26,12 +26,27 @@ public class User {
 	/** User's password */
 	private String password;
 	
+	/** True if the user in an administrator */
+	private boolean admin;
+	
 	
 	// ----- Constructors -----
 	
 	
+	/**
+	 * Create a new User with the wanted database ID
+	 * 
+	 * @param idUser
+	 */
 	public User(String idUser) {
 		this.idUser = idUser;
+	}
+	
+	/**
+	 * Create a new User with the default database ID null
+	 */
+	public User() {
+		this(null);
 	}
 	
 	
@@ -65,10 +80,18 @@ public class User {
 	public String getPassword() {
 		return this.password;
 	}
+	
+	public boolean isAdmin() {
+		return this.admin;
+	}
 
 
 	// ----- Setters -----
 	
+	
+	public void setIdUser(String idUser) {
+		this.idUser = idUser;
+	}
 	
 	public void setPseudo(String pseudo) {
 		this.pseudo = pseudo;
@@ -91,6 +114,10 @@ public class User {
 	
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 	
 }
