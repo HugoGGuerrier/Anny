@@ -1,6 +1,5 @@
 package tools;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -82,6 +81,9 @@ public class SessionPool {
 				// Remove the session if it's expired
 				this.removeSession(sessionId);
 				res = null;
+			} else {
+				// Else do the action to reset its lifetime
+				res.action();
 			}
 		}
 		
@@ -101,9 +103,17 @@ public class SessionPool {
 		}
 		
 		if(this.currentSessions < this.maxSessions){
-			Session session = new Session(sessionId, user);
-			this.sessions.put(sessionId, session);
-			this.currentSessions++;
+			// Test if the session ID is already stored
+			Session testSession = this.getSession(sessionId);
+			if(testSession == null) {
+				Session session = new Session(sessionId, user);
+				this.sessions.put(sessionId, session);
+				this.currentSessions++;
+			} else {
+				throw new SessionException("Session " + sessionId + " already exists !");
+			}
+		} else {
+			throw new SessionException("Too many sessions in the same time !");
 		}
 	}
 	
@@ -113,8 +123,12 @@ public class SessionPool {
 	 * @param sessionId The session ID
 	 */
 	public void removeSession(String sessionId) {
-		this.sessions.remove(sessionId);
-		this.currentSessions--;
+		Session testSession = this.sessions.remove(sessionId);
+		
+		// Test if the session were stored
+		if(testSession != null) {
+			this.currentSessions--;
+		}
 	}
 	
 	/**
@@ -143,10 +157,16 @@ public class SessionPool {
 		StringBuilder res = new StringBuilder();
 		
 		// Generate the session ID
-		for (int i = 0; i < 32; i++) {
-			int selectedChar = random.nextInt(possibleChars.length());
-			res.append(possibleChars.charAt(selectedChar));
-		}
+		Session testSession = null;
+		
+		do {
+			for (int i = 0; i < 32; i++) {
+				int selectedChar = random.nextInt(possibleChars.length());
+				res.append(possibleChars.charAt(selectedChar));
+			}
+			testSession = this.getSession(res.toString());
+		} while (testSession == null);
+		
 		
 		// Return the generated token
 		return res.toString();

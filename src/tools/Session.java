@@ -20,7 +20,7 @@ public class Session {
 	private long timeToLive;
 	
 	/** The date when the session were created (seconds) */
-	private long creationDate;
+	private long lastActionDate;
 	
 	/** The session's storing array */
 	private HashMap<String, String> sessionArray;
@@ -39,7 +39,7 @@ public class Session {
 		this.sessionId = sessionId;
 		this.user = user;
 		this.timeToLive = Config.getSessionsTimeToLive();
-		this.creationDate = new Date().getTime() / 1000;
+		this.lastActionDate = new Date().getTime() / 1000;
 		
 		this.sessionArray = new HashMap<String, String>();
 	}
@@ -61,7 +61,7 @@ public class Session {
 	}
 	
 	public long getCreationDate() {
-		return this.creationDate;
+		return this.lastActionDate;
 	}
 	
 	
@@ -98,11 +98,18 @@ public class Session {
 	}
 	
 	/**
+	 * Update the last action date to reset the lifetime
+	 */
+	public void action() {
+		this.lastActionDate = new Date().getTime() / 1000;
+	}
+	
+	/**
 	 * Get if the session is expired at the current date
 	 */
 	public boolean isExpired() {
 		long currentDate = new Date().getTime() / 1000;
-		return currentDate - this.creationDate > this.timeToLive;
+		return currentDate - this.lastActionDate > this.timeToLive;
 	}
 
 }
