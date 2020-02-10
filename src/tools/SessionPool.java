@@ -37,17 +37,31 @@ public class SessionPool {
 	 * 
 	 * @param maxSessions
 	 */
-	private SessionPool(long maxSessions) {
-		this.maxSessions = maxSessions;
+	private SessionPool() {
 		this.currentSessions = 0;
 		this.sessions = new HashMap<String, Session>();
+		
+		// Init the configurable attributes
+		this.init();
 	}
 	
+	/**
+	 * Get the unique instance of SessionPool
+	 * 
+	 * @return The SessionPool
+	 */
 	public static SessionPool getInstance() {
 		if(SessionPool.instance == null) {
-			SessionPool.instance = new SessionPool(Config.getMaxSession());
+			SessionPool.instance = new SessionPool();
 		}
 		return SessionPool.instance;
+	}
+	
+	/**
+	 * Init the session pool by getting the needed configuration
+	 */
+	public void init() {
+		this.maxSessions = Config.getMaxSessions();
 	}
 	
 	

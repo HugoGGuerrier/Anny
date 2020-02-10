@@ -44,7 +44,7 @@ public class Session {
 	public Session(String sessionId, User user) {
 		this.sessionId = sessionId;
 		this.user = user;
-		this.timeToLive = Config.getSessionsTimeToLive();
+		this.timeToLive = Config.getSessionTimeToLive();
 		this.lastActionDate = new Date().getTime() / 1000;
 		
 		this.sessionArray = new HashMap<String, String>();

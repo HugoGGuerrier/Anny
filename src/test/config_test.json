@@ -1,0 +1,13 @@
+{
+"appConfig": {
+	"version": "test_version",
+	"env": 0,
+	
+	"maxSessions": 42,
+	"sessionTimeToLive": 2400
+},
+"mysqlConfig": {
+},
+"mongodbConfig": {
+}
+}

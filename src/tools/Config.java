@@ -51,11 +51,11 @@ public class Config {
 		return Config.env;
 	}
 	
-	public static long getMaxSession() {
+	public static long getMaxSessions() {
 		return Config.maxSessions;
 	}
 	
-	public static long getSessionsTimeToLive() {
+	public static long getSessionTimeToLive() {
 		return Config.sessionTimeToLive;
 	};
 	
