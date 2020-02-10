@@ -16,7 +16,7 @@ public class Session {
 	// ----- Attributes -----
 	
 	
-	/** The sessions's unique id */
+	/** The session's unique id */
 	private String sessionId;
 	
 	/** The user the the session is related to */

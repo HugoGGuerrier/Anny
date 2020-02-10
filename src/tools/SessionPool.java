@@ -81,12 +81,13 @@ public class SessionPool {
 	
 	
 	/**
-	 * Get a stored session and verify if it's not expired
+	 * Get a stored session and verify if it's not expired and execute the action if you want
 	 * 
 	 * @param sessionId The session ID you want to get
+	 * @param autoAction If you want to execute the action automatically
 	 * @return The session if it exists, null else
 	 */
-	public Session getSession(String sessionId) {
+	public Session getSession(String sessionId, boolean autoAction) {
 		Session res = this.sessions.getOrDefault(sessionId, null);
 		
 		// Test if the session is expired
@@ -95,13 +96,22 @@ public class SessionPool {
 				// Remove the session if it's expired
 				this.removeSession(sessionId);
 				res = null;
-			} else {
-				// Else do the action to reset its lifetime
+			} else if(autoAction) {
 				res.action();
 			}
 		}
 		
 		return res;
+	}
+	
+	/**
+	 * Get the session by its ID and do the action to update it
+	 * 
+	 * @param sessionId
+	 * @return
+	 */
+	public Session getSession(String sessionId) {
+		return this.getSession(sessionId, true);
 	}
 	
 	/**
@@ -118,7 +128,7 @@ public class SessionPool {
 		
 		if(this.currentSessions < this.maxSessions){
 			// Test if the session ID is already stored
-			Session testSession = this.getSession(sessionId);
+			Session testSession = this.getSession(sessionId, false);
 			if(testSession == null) {
 				Session session = new Session(sessionId, user);
 				this.sessions.put(sessionId, session);
@@ -178,7 +188,7 @@ public class SessionPool {
 				int selectedChar = random.nextInt(possibleChars.length());
 				res.append(possibleChars.charAt(selectedChar));
 			}
-			testSession = this.getSession(res.toString());
+			testSession = this.getSession(res.toString(), false);
 		} while (testSession != null);
 		
 		
