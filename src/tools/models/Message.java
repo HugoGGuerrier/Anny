@@ -1,5 +1,6 @@
 package tools.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -40,13 +41,15 @@ public class Message {
 	 */
 	public Message(long messageId) {
 		this.messageId = messageId;
+		
+		this.answers = new ArrayList<Message>();
 	}
 	
 	/**
 	 * Construct a new message with the default id -1
 	 */
 	public Message() {
-		this.messageId = -1;
+		this(-1);
 	}
 	
 	
@@ -92,9 +95,34 @@ public class Message {
 	public void setMessageDate(Date messageDate) {
 		this.messageDate = messageDate;
 	}
+	
+	public void addAnswer(Message answer) {
+		if(!this.answers.contains(answer)) {
+			this.answers.add(answer);
+		}
+	}
+	
+	public void removeAnswer(Message answer) {
+		this.answers.remove(answer);
+	}
 
 	public void setAnswers(List<Message> answers) {
 		this.answers = answers;
+	}
+	
+	
+	// ----- Standards methods -----
+	
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof Message)) {
+			return false;
+		} else {
+			Message msg = (Message) obj;
+			
+			return this.messageId == msg.messageId;
+		}
 	}
 	
 }

@@ -121,6 +121,47 @@ public class User {
 	}
 	
 	
+	// ----- Class methods -----
+	
+	
+	/**
+	 * Verify the user ID with a regexp
+	 * 
+	 * @param userId The ID to validate
+	 * @return True if the ID is valid
+	 */
+	public static boolean isValidId(String userId) {
+		// TODO : Faire la vérification de l'id par une expression régulière
+		
+		return true;
+	}
+	
+	/**
+	 * Verify the email address with a regexp
+	 * 
+	 * @param userMail The mail to verify
+	 * @return True if the mail is valid
+	 */
+	public static boolean isValidMail(String userMail) {
+		// TODO : Faire la vérification du mail
+		
+		return true;
+	}
+	
+	/**
+	 * Get the correctly hashed password with the defined algorithm
+	 * 
+	 * @param nonHashedPassword The password to hash
+	 * @return The hashed password
+	 */
+	public static String hashPassword(String nonHashedPassword) {
+		// TODO : Hasher le mot de passe avec l'algorithme sha-512
+		String res = "";
+		
+		return res;
+	}
+	
+	
 	// ----- Standards methods -----
 	
 

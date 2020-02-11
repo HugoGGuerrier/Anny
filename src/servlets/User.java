@@ -1,6 +1,7 @@
 package servlets;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,12 +15,11 @@ import services.user.SearchUser;
 import tools.Handler;
 
 /**
- * This is the servlet to manipulate users.
+ * This is the servlet to manage users
  * 
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-
 @WebServlet("/user")
 public class User extends HttpServlet {	
 
