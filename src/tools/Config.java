@@ -35,6 +35,23 @@ public class Config {
 	/** Sessions time to live */
 	private static long sessionTimeToLive;
 	
+	// --- Mysql configuration
+	
+	/** If the mysql's driver should use pooling */
+	private static boolean mysqlPooling;
+
+	/** Mysql's host name */
+	private static String mysqlHost;
+
+	/** Mysql's database name */
+	private static String mysqlDatabase;
+
+	/** Mysql's login */
+	private static String mysqlLogin;
+
+	/** Mysql's password */
+	private static String mysqlPassword;
+	
 	
 	// ----- Getters -----
 	
@@ -57,7 +74,27 @@ public class Config {
 	
 	public static long getSessionTimeToLive() {
 		return Config.sessionTimeToLive;
-	};
+	}
+	
+	public static boolean isMysqlPooling() {
+		return Config.mysqlPooling;
+	}
+	
+	public static String getMysqlHost() {
+		return Config.mysqlHost;
+	}
+	
+	public static String getMysqlDatabase() {
+		return Config.mysqlDatabase;
+	}
+	
+	public static String getMysqlLogin() {
+		return Config.mysqlLogin;
+	}
+	
+	public static String getMysqlPassword() {
+		return Config.mysqlPassword;
+	}
 	
 	// ----- Class method -----
 	
@@ -93,6 +130,22 @@ public class Config {
 			Config.sessionTimeToLive = sessionTTL == null ? 1800 : sessionTTL;
 			
 			// --- Get the mysql configuration
+			JSONObject mysqlConfig = (JSONObject) jsonObject.get("mysqlConfig");
+			
+			Boolean mysqlPooling = (Boolean) mysqlConfig.get("mysqlPooling");
+			Config.mysqlPooling = mysqlPooling == null ? false : mysqlPooling;
+			
+			String mysqlHost = (String) mysqlConfig.get("mysqlHost");
+			Config.mysqlHost = mysqlHost == null ? "unknown" : mysqlHost;
+			
+			String mysqlDatabase = (String) mysqlConfig.get("mysqlDatabase");
+			Config.mysqlDatabase = mysqlDatabase == null ? "unknown" : mysqlDatabase;
+			
+			String mysqlLogin = (String) mysqlConfig.get("mysqlLogin");
+			Config.mysqlLogin = mysqlLogin == null ? "unknown" : mysqlLogin;
+			
+			String mysqlPassword = (String) mysqlConfig.get("mysqlPassword");
+			Config.mysqlPassword = mysqlPassword == null ? "unknown" : mysqlPassword;
 			
 			// --- Get the mongodb configuration
 			
@@ -123,7 +176,14 @@ public class Config {
 		res.append("  version: " + Config.version + "\n");
 		res.append("  environment: " + Config.env + "\n");
 		res.append("  maxSessions: " + Config.maxSessions + "\n");
-		res.append("  sessionTTL: " + Config.sessionTimeToLive + "\n");
+		res.append("  sessionTTL: " + Config.sessionTimeToLive + "\n\n");
+		
+		res.append("  mysqlPooling: " + Config.mysqlPooling + "\n");
+		res.append("  mysqlHost: " + Config.mysqlHost + "\n");
+		res.append("  mysqlDatabase: " + Config.mysqlDatabase + "\n");
+		res.append("  mysqlLogin: " + Config.mysqlLogin + "\n");
+		res.append("  mysqlPassword: " + Config.mysqlPassword + "\n\n");
+		
 		
 		res.append("}");
 		
