@@ -8,16 +8,16 @@ import java.util.Date;
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-public class Follow {
+public class FollowModel {
 	
 	// ----- Attributes -----
 	
 	
 	/** Followed user */
-	private User followedUser;
+	private UserModel followedUser;
 	
 	/** Following user */
-	private User followingUser;
+	private UserModel followingUser;
 	
 	/** Creation date of the follow */
 	private Date followDate = null;
@@ -32,7 +32,7 @@ public class Follow {
 	 * @param followed The user that follows
 	 * @param following The user that is followed
 	 */
-	public Follow(User followed, User following) {
+	public FollowModel(UserModel followed, UserModel following) {
 		this.followedUser = followed;
 		this.followingUser = following;
 	}
@@ -40,7 +40,7 @@ public class Follow {
 	/**
 	 * Create a new follow with default value null
 	 */
-	public Follow() {
+	public FollowModel() {
 		this(null, null);
 	}
 	
@@ -48,11 +48,11 @@ public class Follow {
 	// ----- Getters -----
 	
 	
-	public User getFollowedUser() {
+	public UserModel getFollowedUser() {
 		return this.followedUser;
 	}
 
-	public User getFollowingUser() {
+	public UserModel getFollowingUser() {
 		return this.followingUser;
 	}
 	
@@ -64,11 +64,11 @@ public class Follow {
 	// ----- Setters -----
 	
 	
-	public void setFollowedUser(User followedUser) {
+	public void setFollowedUser(UserModel followedUser) {
 		this.followedUser = followedUser;
 	}
 	
-	public void setFollowingUser(User followingUser) {
+	public void setFollowingUser(UserModel followingUser) {
 		this.followingUser = followingUser;
 	}
 	
@@ -82,10 +82,10 @@ public class Follow {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(!(obj instanceof Follow)) {
+		if(!(obj instanceof FollowModel)) {
 			return false;
 		} else {
-			Follow follow = (Follow) obj;
+			FollowModel follow = (FollowModel) obj;
 			
 			return this.followedUser.equals(follow.followedUser) && this.followingUser.equals(follow.followingUser);
 		}

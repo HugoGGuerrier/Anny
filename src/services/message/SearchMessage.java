@@ -2,7 +2,7 @@ package services.message;
 
 import java.util.List;
 
-import tools.models.Message;
+import tools.models.MessageModel;
 
 public class SearchMessage {
 
@@ -36,7 +36,7 @@ public class SearchMessage {
 	 * @param message The message model
 	 * @return The list of messages
 	 */
-	public List<Message> searchMessage(Message message) {
+	public List<MessageModel> searchMessage(MessageModel message) {
 		// TODO : Recherche des message correspondants
 
 		return null;

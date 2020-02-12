@@ -1,7 +1,8 @@
-package services.user;
+package services.log;
 
+import tools.exceptions.SessionException;
 import tools.exceptions.UserException;
-import tools.models.User;
+import tools.models.UserModel;
 
 public class LogoutUser {
 
@@ -30,13 +31,13 @@ public class LogoutUser {
 
 
 	/**
-	 * Logout the user if the session exists
+	 * Logout and destroy the wanted session
 	 * 
-	 * @param user The user to log out
-	 * @throws UserException If the session or the user doesn't exists
+	 * @param sessionId The session ID
+	 * @throws SessionException If the session doesn't exists
 	 */
-	public void logoutUser(User user) throws UserException {
-		// TODO : Supprimer la connexion de l'utilisateur
+	public void logoutUser(String sessionId) throws SessionException {
+		// TODO : Supprimer la session
 	}
 
 }

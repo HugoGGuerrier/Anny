@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import tools.Config;
+import tools.StdVar;
 
 /**
  * This servlet is used to initialize the web application. It is mainly use by the administrator.
@@ -38,7 +39,7 @@ public class Configuration extends HttpServlet {
 	public void init() {
 		// Get the configuration file
 		ServletContext context = this.getServletContext();
-		InputStream in = context.getResourceAsStream("/WEB-INF/config.json");
+		InputStream in = context.getResourceAsStream(StdVar.configFile);
 		Reader configReader = new InputStreamReader(in);
 		
 		// Initialize the application configuration

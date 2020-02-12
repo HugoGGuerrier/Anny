@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Random;
 
 import tools.exceptions.SessionException;
-import tools.models.User;
+import tools.models.SessionModel;
+import tools.models.UserModel;
 
 /**
  * A class to store all sessions and manage them.
@@ -23,7 +24,7 @@ public class SessionPool {
 	private long currentSessions;
 	
 	/** The stored sessions */
-	private HashMap<String, Session> sessions;
+	private HashMap<String, SessionModel> sessions;
 	
 	/** Instance of the session pool (singleton) */
 	private static SessionPool instance = null;
@@ -39,7 +40,7 @@ public class SessionPool {
 	 */
 	private SessionPool() {
 		this.currentSessions = 0;
-		this.sessions = new HashMap<String, Session>();
+		this.sessions = new HashMap<String, SessionModel>();
 		
 		// Init the configurable attributes
 		this.init();
@@ -87,11 +88,11 @@ public class SessionPool {
 	 * @param autoAction If you want to execute the action automatically
 	 * @return The session if it exists, null else
 	 */
-	public Session getSession(String sessionId, boolean autoAction) {
-		Session res = this.sessions.getOrDefault(sessionId, null);
+	public SessionModel getSession(String sessionId, boolean autoAction) {
+		SessionModel res = this.sessions.getOrDefault(sessionId, null);
 		
 		// Test if the session is expired
-		if(res instanceof Session) {
+		if(res instanceof SessionModel) {
 			if(res.isExpired()) {
 				// Remove the session if it's expired
 				this.removeSession(sessionId);
@@ -110,7 +111,7 @@ public class SessionPool {
 	 * @param sessionId
 	 * @return
 	 */
-	public Session getSession(String sessionId) {
+	public SessionModel getSession(String sessionId) {
 		return this.getSession(sessionId, true);
 	}
 	
@@ -120,7 +121,7 @@ public class SessionPool {
 	 * @param sessionId The session ID
 	 * @param user The user liked to the session
 	 */
-	public void addSession(String sessionId, User user) throws SessionException {
+	public void addSession(String sessionId, UserModel user) throws SessionException {
 		if(this.currentSessions >= this.maxSessions) {
 			// Try to clean expired sessions
 			this.cleanSessions();
@@ -128,9 +129,9 @@ public class SessionPool {
 		
 		if(this.currentSessions < this.maxSessions){
 			// Test if the session ID is already stored
-			Session testSession = this.getSession(sessionId, false);
+			SessionModel testSession = this.getSession(sessionId, false);
 			if(testSession == null) {
-				Session session = new Session(sessionId, user);
+				SessionModel session = new SessionModel(sessionId, user);
 				this.sessions.put(sessionId, session);
 				this.currentSessions++;
 			} else {
@@ -147,7 +148,7 @@ public class SessionPool {
 	 * @param sessionId The session ID
 	 */
 	public void removeSession(String sessionId) {
-		Session testSession = this.sessions.remove(sessionId);
+		SessionModel testSession = this.sessions.remove(sessionId);
 		
 		// Test if the session were stored
 		if(testSession != null) {
@@ -160,7 +161,7 @@ public class SessionPool {
 	 */
 	public void cleanSessions() {
 		for(String sessionId : this.sessions.keySet()) {
-			Session session = this.sessions.get(sessionId);
+			SessionModel session = this.sessions.get(sessionId);
 			
 			// Test if the session is expired
 			if(session.isExpired()) {
@@ -176,12 +177,12 @@ public class SessionPool {
 	 */
 	public String generateSessionId() {
 		// Define needed variables
-		String possibleChars = "abcdefghijklmnopqrstuvwxyz1234567890";
+		String possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		Random random = new Random();
 		StringBuilder res = new StringBuilder();
 		
 		// Generate the session ID
-		Session testSession = null;
+		SessionModel testSession = null;
 		
 		do {
 			for (int i = 0; i < 32; i++) {
@@ -192,7 +193,7 @@ public class SessionPool {
 		} while (testSession != null);
 		
 		
-		// Return the generated token
+		// Return the generated ID
 		return res.toString();
 	}
 

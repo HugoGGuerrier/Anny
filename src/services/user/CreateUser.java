@@ -1,7 +1,7 @@
 package services.user;
 
 import tools.exceptions.UserException;
-import tools.models.User;
+import tools.models.UserModel;
 
 public class CreateUser {
 	
@@ -35,7 +35,7 @@ public class CreateUser {
 	 * @param user The user to insert in database
 	 * @throws UserException If the user insertion fails
 	 */
-	public void createUser(User user) throws UserException {
+	public void createUser(UserModel user) throws UserException {
 		// TODO : insertion en base de données de l'utilisateur
 	}
 	

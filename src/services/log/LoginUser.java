@@ -1,6 +1,7 @@
-package services.user;
+package services.log;
 
-import tools.models.User;
+import tools.exceptions.SessionException;
+import tools.models.UserModel;
 
 public class LoginUser {
 	
@@ -32,9 +33,10 @@ public class LoginUser {
 	 * Try to log the wanted user with its email and password
 	 * 
 	 * @param user The user you want to log in
-	 * @return The session ID if the log in works, null else
+	 * @return The session ID
+	 * @throws SessionException If the service can't create the session
 	 */
-	public String loginUser(User user) {
+	public String loginUser(UserModel user) throws SessionException {
 		// TODO : Connecter l'utilisateur et stocker et retourner le token de session
 		
 		return null;

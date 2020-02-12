@@ -1,7 +1,7 @@
 package services.message;
 
 import tools.exceptions.MessageException;
-import tools.models.Message;
+import tools.models.MessageModel;
 
 public class ModifyMessage {
 
@@ -35,7 +35,7 @@ public class ModifyMessage {
 	 * @param message The new message
 	 * @throws MessageException If the message can't be modified
 	 */
-	public void modifyMessage(Message message) throws MessageException {
+	public void modifyMessage(MessageModel message) throws MessageException {
 		// TODO : Modifier le message en se basant sur son ID
 	}
 

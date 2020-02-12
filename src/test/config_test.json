@@ -4,7 +4,7 @@
 	"env": 0,
 	
 	"maxSessions": 42,
-	"sessionTimeToLive": 2400
+	"sessionTimeToLive": 3
 },
 "mysqlConfig": {
 },

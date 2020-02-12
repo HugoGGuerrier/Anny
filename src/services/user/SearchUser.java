@@ -2,7 +2,7 @@ package services.user;
 
 import java.util.List;
 
-import tools.models.User;
+import tools.models.UserModel;
 
 public class SearchUser {
 
@@ -36,7 +36,7 @@ public class SearchUser {
 	 * @param user The user model to look for
 	 * @return The list of user corresponding to the model
 	 */
-	public List<User> searchUser(User user) {
+	public List<UserModel> searchUser(UserModel user) {
 		// TODO : insertion en base de données de l'utilisateur
 
 		return null;

@@ -6,10 +6,10 @@ package tools.models;
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-public class User {
+public class UserModel {
 	
 	/**	Database id of the user */
-	private String idUser;
+	private String userId;
 	
 	/** Public pseudo of the user */
 	private String pseudo;
@@ -38,14 +38,14 @@ public class User {
 	 * 
 	 * @param idUser
 	 */
-	public User(String idUser) {
-		this.idUser = idUser;
+	public UserModel(String idUser) {
+		this.userId = idUser;
 	}
 	
 	/**
 	 * Create a new User with the default database ID null
 	 */
-	public User() {
+	public UserModel() {
 		this(null);
 	}
 	
@@ -54,7 +54,7 @@ public class User {
 
 	
 	public String getIdUser() {
-		return this.idUser;
+		return this.userId;
 	}
 
 
@@ -90,7 +90,7 @@ public class User {
 	
 	
 	public void setIdUser(String idUser) {
-		this.idUser = idUser;
+		this.userId = idUser;
 	}
 	
 	public void setPseudo(String pseudo) {
@@ -121,58 +121,17 @@ public class User {
 	}
 	
 	
-	// ----- Class methods -----
-	
-	
-	/**
-	 * Verify the user ID with a regexp
-	 * 
-	 * @param userId The ID to validate
-	 * @return True if the ID is valid
-	 */
-	public static boolean isValidId(String userId) {
-		// TODO : Faire la vérification de l'id par une expression régulière
-		
-		return true;
-	}
-	
-	/**
-	 * Verify the email address with a regexp
-	 * 
-	 * @param userMail The mail to verify
-	 * @return True if the mail is valid
-	 */
-	public static boolean isValidMail(String userMail) {
-		// TODO : Faire la vérification du mail
-		
-		return true;
-	}
-	
-	/**
-	 * Get the correctly hashed password with the defined algorithm
-	 * 
-	 * @param nonHashedPassword The password to hash
-	 * @return The hashed password
-	 */
-	public static String hashPassword(String nonHashedPassword) {
-		// TODO : Hasher le mot de passe avec l'algorithme sha-512
-		String res = "";
-		
-		return res;
-	}
-	
-	
 	// ----- Standards methods -----
 	
 
 	@Override
 	public boolean equals(Object obj) {
-		if(!(obj instanceof User)) {
+		if(!(obj instanceof UserModel)) {
 			return false;
 		} else {
-			User user = (User) obj;
+			UserModel user = (UserModel) obj;
 			
-			return this.idUser.equals(user.idUser);
+			return this.userId.equals(user.userId);
 		}
 	}
 	

@@ -1,7 +1,7 @@
 package services.message;
 
 import tools.exceptions.MessageException;
-import tools.models.Message;
+import tools.models.MessageModel;
 
 public class CreateMessage {
 
@@ -35,7 +35,7 @@ public class CreateMessage {
 	 * @param message The message to insert in database
 	 * @throws MessageException If the message already exists or if there is an database exception
 	 */
-	public void createMessage(Message message) throws MessageException {
+	public void createMessage(MessageModel message) throws MessageException {
 		// TODO : Insérer le message dans la base de données
 	}
 

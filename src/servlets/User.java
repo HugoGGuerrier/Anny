@@ -13,6 +13,7 @@ import services.user.DeleteUser;
 import services.user.ModifyUser;
 import services.user.SearchUser;
 import tools.Handler;
+import tools.models.UserModel;
 
 /**
  * This is the servlet to manage users
@@ -86,7 +87,17 @@ public class User extends HttpServlet {
 		String password = req.getParameter("userPassword");
 		boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
 		
+		// Verify and sanitize input data
 		
+		
+		// Create the new user to insert
+		UserModel newUser = new UserModel(userId);
+		newUser.setPseudo(pseudo);
+		newUser.setName(name);
+		newUser.setSurname(surname);
+		newUser.setEmail(email);
+		newUser.setPassword(password);
+		newUser.setAdmin(admin);
 	}
 
 	/**

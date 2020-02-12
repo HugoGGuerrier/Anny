@@ -6,7 +6,7 @@ package tools.models;
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-public class Board {
+public class BoardModel {
 	
 	// ----- Attributes -----
 	

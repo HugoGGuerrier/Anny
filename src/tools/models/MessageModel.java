@@ -10,7 +10,7 @@ import java.util.List;
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-public class Message {
+public class MessageModel {
 
 	// ----- Attributes -----
 	
@@ -22,13 +22,13 @@ public class Message {
 	private String text;
 	
 	/** User who posted that message */
-	private User messagePoster;
+	private UserModel messagePoster;
 	
 	/** Date of the message */
 	private Date messageDate;
 	
 	/** Answers to the message which are also message instances */
-	private List<Message> answers;
+	private List<MessageModel> answers;
 
 	
 	// ----- Constructors -----
@@ -39,16 +39,16 @@ public class Message {
 	 * 
 	 * @param messageId
 	 */
-	public Message(long messageId) {
+	public MessageModel(long messageId) {
 		this.messageId = messageId;
 		
-		this.answers = new ArrayList<Message>();
+		this.answers = new ArrayList<MessageModel>();
 	}
 	
 	/**
 	 * Construct a new message with the default id -1
 	 */
-	public Message() {
+	public MessageModel() {
 		this(-1);
 	}
 	
@@ -64,7 +64,7 @@ public class Message {
 		return text;
 	}
 
-	public User getMessagePoster() {
+	public UserModel getMessagePoster() {
 		return messagePoster;
 	}
 
@@ -72,7 +72,7 @@ public class Message {
 		return messageDate;
 	}
 
-	public List<Message> getAnswers() {
+	public List<MessageModel> getAnswers() {
 		return answers;
 	}
 	
@@ -88,7 +88,7 @@ public class Message {
 		this.text = text;
 	}
 
-	public void setMessagePoster(User messagePoster) {
+	public void setMessagePoster(UserModel messagePoster) {
 		this.messagePoster = messagePoster;
 	}
 
@@ -96,17 +96,17 @@ public class Message {
 		this.messageDate = messageDate;
 	}
 	
-	public void addAnswer(Message answer) {
+	public void addAnswer(MessageModel answer) {
 		if(!this.answers.contains(answer)) {
 			this.answers.add(answer);
 		}
 	}
 	
-	public void removeAnswer(Message answer) {
+	public void removeAnswer(MessageModel answer) {
 		this.answers.remove(answer);
 	}
 
-	public void setAnswers(List<Message> answers) {
+	public void setAnswers(List<MessageModel> answers) {
 		this.answers = answers;
 	}
 	
@@ -116,10 +116,10 @@ public class Message {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(!(obj instanceof Message)) {
+		if(!(obj instanceof MessageModel)) {
 			return false;
 		} else {
-			Message msg = (Message) obj;
+			MessageModel msg = (MessageModel) obj;
 			
 			return this.messageId == msg.messageId;
 		}

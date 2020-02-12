@@ -13,17 +13,25 @@ import org.junit.Test;
 
 import tools.Config;
 import tools.Handler;
-import tools.Session;
+import tools.Security;
 import tools.SessionPool;
+import tools.StdVar;
 import tools.exceptions.SessionException;
-import tools.models.User;
+import tools.models.SessionModel;
+import tools.models.UserModel;
 
 public class ToolsTest {
 	
 	// ----- Attributes -----
 	
+	
 	// --- Handler
 	private Handler handler = Handler.getInstance();
+	
+	// --- Security
+	private Security security = Security.getInstance();
+	
+	private static final String htmlTestString = "<script>alert('test')</script>";
 	
 	// --- Sessions
 	private SessionPool sessionPool = SessionPool.getInstance();
@@ -32,10 +40,9 @@ public class ToolsTest {
 	private static final String sessionId2 = "b";
 	private static final String sessionId3 = "c";
 	
-	private static final User user1 = new User("1");
-	private static final User user2 = new User("2");
-	private static final User user3 = new User("3");
-	
+	private static final UserModel user1 = new UserModel("1");
+	private static final UserModel user2 = new UserModel("2");
+	private static final UserModel user3 = new UserModel("3");
 	
 	
 	// ----- Config methods -----
@@ -44,7 +51,7 @@ public class ToolsTest {
 	@BeforeClass
 	public static void setup() {
 		// Load the test config files
-		Path configTestPath = Paths.get("./src/test/config_test.json");
+		Path configTestPath = Paths.get(StdVar.testConfigFile);
 		try {
 			Reader reader = new FileReader(configTestPath.toAbsolutePath().toFile());
 			Config.init(reader);
@@ -67,28 +74,26 @@ public class ToolsTest {
 	// ----- Test methods -----
 
 	
-	/**
-	 * Test the configuration loading
-	 */
 	@Test
 	public void testConfig() {
 		assertEquals("test_version", Config.getVersion());
 		assertEquals(0, Config.getEnv());
 		assertEquals(42, Config.getMaxSessions());
-		assertEquals(2400, Config.getSessionTimeToLive());
+		assertEquals(3, Config.getSessionTimeToLive());
 	}
-	
-	/**
-	 * Test the handler
-	 */
+
 	@Test
 	public void testHandler() {
 		fail("Not implemented yet !");
 	}
 	
-	/**
-	 * Test the session pool
-	 */
+	@Test
+	public void testSecurity() {
+		// Test the html endcode/decode
+		assertEquals("&lt;script&gt;alert('test')&lt;/script&gt;", this.security.htmlEncode(ToolsTest.htmlTestString));
+		assertEquals(ToolsTest.htmlTestString, this.security.htmlDecode("&lt;script&gt;alert('test')&lt;/script&gt;"));
+	}
+	
 	@Test
 	public void testSessionPool() {
 		// Init the session pool
@@ -120,18 +125,23 @@ public class ToolsTest {
 		}
 	}
 	
-	/**
-	 * Test the sessions
-	 */
 	@Test
 	public void testSession() {
 		// Get the session
-		Session testSession = this.sessionPool.getSession(ToolsTest.sessionId1);
+		SessionModel testSession = this.sessionPool.getSession(ToolsTest.sessionId1);
 		
 		// Test the session function
 		assertEquals(ToolsTest.sessionId1, testSession.getSessionId());
-		assertEquals(2400, testSession.getTimeToLive());
+		assertEquals(3, testSession.getTimeToLive());
 		assertEquals(false, testSession.isExpired());
+		
+		// Test the session expiration
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			fail("Please don't stop the test !");
+		}
+		assertEquals(true, testSession.isExpired());
 	}
 
 }

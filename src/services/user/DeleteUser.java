@@ -1,7 +1,7 @@
 package services.user;
 
 import tools.exceptions.UserException;
-import tools.models.User;
+import tools.models.UserModel;
 
 public class DeleteUser {
 
@@ -35,7 +35,7 @@ public class DeleteUser {
 	 * @param user The user model to look for
 	 * @throws UserException If there were no user deleted
 	 */
-	public void deleteUser(User user) throws UserException {
+	public void deleteUser(UserModel user) throws UserException {
 		// TODO : Supprimer le ou les utilisateurs de la base de données
 	}
 

@@ -17,20 +17,38 @@ import javax.servlet.http.HttpServletResponse;
 public class Follow extends HttpServlet {
 
 	// ----- Attributes -----
-	
-	
+
+
 	private static final long serialVersionUID = 4169235877331702798L;
-	
-	
+
+
 	// ----- Constructors -----
-	
-	
+
+
 	public Follow() {
 		super();
 	}
-	
-	
+
+
 	// ----- HTTP methods -----
-	
+
+
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		super.doDelete(req, resp);
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		super.doGet(req, resp);
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		super.doPost(req, resp);
+	}
 
 }
