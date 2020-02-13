@@ -1,9 +1,10 @@
-package tools.models;
+package tools.sessions;
 
 import java.util.Date;
 import java.util.HashMap;
 
 import tools.Config;
+import tools.models.UserModel;
 
 /**
  * This class represent an HTTP session with params and the user related to it
@@ -11,7 +12,7 @@ import tools.Config;
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-public class SessionModel {
+public class Session {
 	
 	// ----- Attributes -----
 	
@@ -41,7 +42,7 @@ public class SessionModel {
 	 * @param sessionId The session's ID
 	 * @param user The user related to the session
 	 */
-	public SessionModel(String sessionId, UserModel user) {
+	public Session(String sessionId, UserModel user) {
 		this.sessionId = sessionId;
 		this.user = user;
 		this.timeToLive = Config.getSessionTimeToLive();

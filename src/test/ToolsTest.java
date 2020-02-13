@@ -14,11 +14,11 @@ import org.junit.Test;
 import tools.Config;
 import tools.Handler;
 import tools.Security;
-import tools.SessionPool;
 import tools.StdVar;
 import tools.exceptions.SessionException;
-import tools.models.SessionModel;
 import tools.models.UserModel;
+import tools.sessions.Session;
+import tools.sessions.SessionPool;
 
 public class ToolsTest {
 	
@@ -95,14 +95,10 @@ public class ToolsTest {
 	}
 	
 	@Test
-	public void testSessionPool() {
-		// Init the session pool
-		this.sessionPool.init();
-		
+	public void testSessionPool() {		
 		// Test the session pool simple methods
-		assertEquals(42, sessionPool.getMaxSessions());
 		assertEquals(32, this.sessionPool.generateSessionId().length());
-		assertEquals(ToolsTest.user1, this.sessionPool.getSession(sessionId1).getUser());
+		assertEquals(ToolsTest.user1, this.sessionPool.getSession(sessionId1, true).getUser());
 		
 		// Test the session pool session remove
 		assertEquals(3, this.sessionPool.getCurrentSessions());
@@ -128,7 +124,7 @@ public class ToolsTest {
 	@Test
 	public void testSession() {
 		// Get the session
-		SessionModel testSession = this.sessionPool.getSession(ToolsTest.sessionId1);
+		Session testSession = this.sessionPool.getSession(ToolsTest.sessionId1, true);
 		
 		// Test the session function
 		assertEquals(ToolsTest.sessionId1, testSession.getSessionId());

@@ -8,7 +8,7 @@ package tools;
  */
 public class StdVar {
 	
-	// --- Environment 
+	// --- Environment
 	public static final int DEVELOPMENT_ENV = 0;
 	public static final int PRODUCTION_ENV = 1;
 	
@@ -18,7 +18,7 @@ public class StdVar {
 	public static final int SQL_ERROR = 1000;
 	public static final int JAVA_ERROR = 10000;
 	
-	// --- Config files
+	// --- Paths
 	public static final String configFile = "/WEB-INF/config.json";
 	public static final String testConfigFile = "src/test/config_test.json";
 

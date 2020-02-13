@@ -46,6 +46,7 @@ public class Configuration extends HttpServlet {
 		Config.init(configReader);
 		
 		// DEBUG SECTION
+		System.out.println(context.getRealPath("./"));
 	}
 
 	/**
@@ -53,7 +54,7 @@ public class Configuration extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO : Send the current configuration in JSON format
+		// TODO : Envoyer la configuration au format JSON
 		
 		this.init();
 	}
@@ -63,7 +64,7 @@ public class Configuration extends HttpServlet {
 	 */
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Set the new configuration
+		// TODO : Mettre à jour la configuration
 		
 		// Reload the configuration
 		this.init();
