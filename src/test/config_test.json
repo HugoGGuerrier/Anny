@@ -7,6 +7,11 @@
 	"sessionTimeToLive": 3
 },
 "mysqlConfig": {
+	"mysqlPooling": false,
+	"mysqlHost": "localhost",
+	"mysqlDatabase": "DB_GUERRIER_SIAU",
+	"mysqlLogin": "root",
+	"mysqlPassword": "root"
 },
 "mongodbConfig": {
 }

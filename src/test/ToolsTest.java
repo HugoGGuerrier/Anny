@@ -56,7 +56,7 @@ public class ToolsTest {
 			Reader reader = new FileReader(configTestPath.toAbsolutePath().toFile());
 			Config.init(reader);
 		} catch (IOException e) {
-			fail("Can't load the test config file !");
+			fail("Cannot load the test config file !");
 		}
 		
 		// Create fake session to test them
@@ -66,7 +66,7 @@ public class ToolsTest {
 			sessionPool.addSession(ToolsTest.sessionId2, ToolsTest.user2);
 			sessionPool.addSession(ToolsTest.sessionId3, ToolsTest.user3);
 		} catch (SessionException e) {
-			fail("Can't add sessions at the start of the tests !");
+			fail("Cannot add sessions at the start of the tests !");
 		}
 	}
 	
