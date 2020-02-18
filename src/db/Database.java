@@ -6,68 +6,106 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import tools.Config;
+import tools.Logger;
 
 /*
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoClient;
-*/
+ */
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 // class en charge de la connexion aux base de données
 public class Database {
+
+	// ----- Attributes -----
+
 	
+	/** The datasource for the connection pooling */
 	private DataSource dataSource;
-	private static Database database = null;
-	public Database(String ressource_name) throws SQLException{
+
+	/** The database instance */
+	private static Database instance = null;
+
+
+	// ----- Constructors -----
+
+
+	/**
+	 * Construct a new database and the datasource associated to it
+	 * 
+	 * @param ressource_name
+	 * @throws SQLException
+	 */
+	public Database(String ressource_name) throws SQLException {
 		try {
-			// construire l'objet dataSource à partir du fichier de context
-			dataSource = (DataSource) new InitialContext().lookup("java:comp/env/"+ressource_name);
-		}catch (NamingException e) {
-			throw new SQLException(ressource_name+" unreachable :"+e.getMessage());
+			
+			this.dataSource = (DataSource) new InitialContext().lookup("java:comp/env/" + ressource_name);
+			
+		} catch(NamingException e) {
+			
+			throw new SQLException(ressource_name + " unreachable : " + e.getMessage());
+			
 		}
 	}
 	
-	public Connection getConnection() throws SQLException{
-		return dataSource.getConnection();
-	}
 	
+	// ----- Class methods -----
+	
+
+	/**
+	 * Get a connection from the pool
+	 * 
+	 * @return A connection
+	 * @throws SQLException If there is an error during the pooling
+	 */
+	public Connection getConnection() throws SQLException {
+		return this.dataSource.getConnection();
+	}
+
+	/**
+	 * Get an Mysql connection with or without the pooling
+	 * 
+	 * @return The mysql connection if 
+	 * @throws SQLException
+	 */
 	public static Connection getMySQLConnection() throws SQLException {
-		// si on n'utilise pas le pooling 
+		// Check if the pooling is used
 		if(!Config.isMysqlPooling()) {
 			try {
+				
+				// Import the jsbc mysql driver and return the connection
 				Class.forName("com.mysql.cj.jdbc.Driver");
+				String dsn = "jdbc:mysql://" + Config.getMysqlHost() + "/" + Config.getMysqlDatabase();
+				return DriverManager.getConnection(dsn , Config.getMysqlLogin(), Config.getMysqlPassword());
+				
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				// Log the database error
+				Logger logger = Logger.getInstance();
+				logger.log("JDBC mysql driver is missing", Logger.ERROR);
+				logger.log(e, Logger.ERROR);
+				
+				// Throw an error to avoid null pointer
+				throw new SQLException("Cannot get a mysql connection");
+				
 			}
-			// on créer donc une nouvelle connexion
-			return DriverManager.getConnection("jdbc:mysql://"+Config.getMysqlHost()+"/"+Config.getMysqlDatabase(), Config.getMysqlLogin(), Config.getMysqlPassword());
-			/* on notera toutefois que le port est nécéssaire si la bd n'est pas interfacer au port par défaut.
-			 *  Ainsi jdbc:mysql://"+DBStatic.mysql_host+":"+DBStatic.mysql_port+"/"+DBStatic.mysql_bd
-			 */
-		}
-		// si on utilise le pooling
-		else {
-			// si c'est la toute première connexion
-			if(database == null) {
-				/* on creer l'objet Database en indiquant le nom de la 
-				 * ressource dans le fichier de context
-				 */
-				database = new Database("jdbc/db");
+		} else {
+			if(Database.instance == null) {
+				Database.instance = new Database("jdbc/db");
 			}
-			// on retourne la connexion du pooling
-			return database.getConnection();
+			
+			return Database.instance.getConnection();
 		}
 	}
-	
+
 	/*
 	public static MongoDatabase getMongoDBConnection()  {
 		MongoClient mongo = MongoClients.create();
 		return mongo.getDatabase(DBStatic.mongo_bd);
 	}
-	*/
+	 */
 
 }

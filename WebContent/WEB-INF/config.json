@@ -2,12 +2,11 @@
 "appConfig": {
 	"version": "0.1.0",
 	"env": 0,
-	
-	"maxSessions": 4096,
+	"cacheCleaningInterval": 4096,
 	"sessionTimeToLive": 1800
 },
 "mysqlConfig": {
-	"mysqlPooling": true,
+	"mysqlPooling": false,
 	"mysqlHost": "localhost",
 	"mysqlDatabase": "DB_GUERRIER_SIAU",
 	"mysqlLogin": "root",

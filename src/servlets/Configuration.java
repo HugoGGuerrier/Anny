@@ -1,9 +1,9 @@
 package servlets;
 
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.file.Paths;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -12,7 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONObject;
+
 import tools.Config;
+import tools.Logger;
 import tools.StdVar;
 
 /**
@@ -23,39 +26,72 @@ import tools.StdVar;
  */
 @WebServlet("/configuration")
 public class Configuration extends HttpServlet {
-	
+
 	// ----- Attributes -----
+
+
+	private static final long serialVersionUID = 5707836903604706333L;
 	
-	
-	private static final long serialVersionUID = 1L;
-	
-	
+	/**	Unique instance of the logger */
+	private Logger logger = null;
+
+
 	// ----- Class methods -----
-	
-	
+
+
 	/**
 	 * This methods initialize the application
 	 */
 	public void init() {
-		// Get the configuration file
+		// Get the application base path
 		ServletContext context = this.getServletContext();
-		InputStream in = context.getResourceAsStream(StdVar.configFile);
-		Reader configReader = new InputStreamReader(in);
+		String basePath = context.getRealPath("./");
 		
-		// Initialize the application configuration
-		Config.init(configReader);
+		// Set the application base path
+		Config.setBasePath(basePath);
+
+		// Get the logger
+		this.logger = Logger.getInstance();
+
+		try {
+
+			// Get the file reader of the config file
+			Reader configReader = new FileReader(Paths.get(basePath + StdVar.CONFIG_FILE).toFile());
+
+			// Initialize the application configuration
+			Config.init(configReader);
+
+			configReader.close();
+
+			// Log the app start
+			logger.log("Configuration loaded", Logger.INFO);
+
+		} catch (IOException e) {
+
+			logger.log("Cannot load the configuration", Logger.ERROR);
+			logger.log(e, Logger.ERROR);
+
+		}
 		
 		// DEBUG SECTION
-		System.out.println(context.getRealPath("./"));
 	}
 
 	/**
 	 * Method to get the current configuration
 	 */
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO : Envoyer la configuration au format JSON
-		
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO : Vérifier si la session est présente et que l'utilisateur est admin
+
+		JSONObject res = new JSONObject();
+		res = Config.getJSON();
+
+		// Send the result
+		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+		resp.setCharacterEncoding(StdVar.APP_ENCODING);
+		resp.getWriter().append(res.toJSONString());
+
+		// Reload the configuration
 		this.init();
 	}
 
@@ -65,7 +101,7 @@ public class Configuration extends HttpServlet {
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// TODO : Mettre à jour la configuration
-		
+
 		// Reload the configuration
 		this.init();
 	}

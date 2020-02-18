@@ -1,12 +1,6 @@
 package tools.sessions;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import tools.exceptions.SessionException;
 import tools.models.UserModel;
@@ -18,50 +12,35 @@ import tools.models.UserModel;
  * @author Hugo Guerrier
  */
 public class SessionPool {
-	
+
 	// ----- Attributes -----
-	
-	
+
+
 	/** Cache writter instance */
 	private CacheManager manager;
-	
+
 	/** Thread of the cache writter */
 	private Thread managerThread;
-	
-	/** Lock to exclude multiple user to write and read cache at the same time */
-	private Lock cacheLock;
-	
-	/** Condition to wait for the writter to stop running */
-	private Condition getRequestCondition;
-	
-	/** The number of current sessions */
-	private long currentSessions;
-	
-	/** If there is a get request formulated */
-	private boolean getRequest;
-	
+
 	/** Instance of the session pool (singleton) */
 	private static SessionPool instance = null;
-	
-	
+
+
 	// ----- Constructors -----
-	
-	
+
+
 	/**
 	 * Construct a new SessionPool with the wanted max sessions
 	 * 
 	 * @param maxSessions
 	 */
 	private SessionPool() {
-		this.currentSessions = 0;
-		
-		this.manager = new CacheManager(this);
+		this.manager = new CacheManager();
 		this.managerThread =  new Thread(this.manager);
-		
-		this.cacheLock = new ReentrantLock(true);
-		this.getRequestCondition = this.cacheLock.newCondition();
+		this.manager.start();
+		this.managerThread.start();
 	}
-	
+
 	/**
 	 * Get the unique instance of SessionPool
 	 * 
@@ -73,66 +52,79 @@ public class SessionPool {
 		}
 		return SessionPool.instance;
 	}
-	
-	
-	// ----- Getters -----
-	
-	
-	public long getCurrentSessions() {
-		return this.currentSessions;
-	}
-	
-	public Lock getCacheLock() {
-		return this.cacheLock;
-	}
-	
-	public Condition getCacheRunningCondition() {
-		return this.getRequestCondition;
-	}
-	
-	
+
+
 	// ----- Class methods -----
-	
+
+
+	/**
+	 * Reset the session file
+	 */
+	public void reset() {
+		this.manager.resetSessions();
+	}
 	
 	/**
 	 * Get a stored session and verify if it's not expired and execute the action if you want
 	 * 
 	 * @param sessionId The session ID you want to get
 	 * @param autoAction If you want to execute the action automatically
-	 * @return The session if it exists, null else
+	 * @return The session if it exists and is valid
+	 * @throws SessionException If the wanted session not exists
 	 */
-	public Session getSession(String sessionId, boolean doAction) {
-		// TODO : Lire le fichier de cache et la tampon pour récupérer une session
+	public Session getSession(String sessionId, boolean doAction) throws SessionException {
+		// Get the session from the cache manager
+		Session res = this.manager.getSession(sessionId);
+
+		// Verify the session validity
+		if(res != null) {
+			if(res.isExpired()) {
+				this.removeSession(res.getSessionId());
+				res = null;
+			} else {
+				if(doAction) {
+					res.action();
+				}
+			}
+		}
 		
-		return null;
+		if(res == null) {
+			throw new SessionException("Session " + sessionId + " does not exists");
+		}
+
+		// Return the result
+		return res;
 	}
-	
+
 	/**
 	 * Add a session to the session pool from its ID and an user if there is enough place
 	 * 
 	 * @param sessionId The session ID
 	 * @param user The user liked to the session
 	 */
-	public void addSession(String sessionId, UserModel user) throws SessionException {
-		// TODO : Ajouter la session dans le tampon de session et lancer le daemon d'écriture
+	public void addSession(String sessionId, UserModel user) {
+		Session sessionToAdd = new Session(sessionId, user);
+		this.manager.addSessionsAddBuffer(sessionToAdd);
 	}
-	
+
+	/**
+	 * Update the session in the cache
+	 * 
+	 * @param session The session to update
+	 */
+	public void updateSession(Session session) {
+		this.manager.addSessionsAddBuffer(session);
+	}
+
 	/**
 	 * Remove the session from the session pool
 	 * 
 	 * @param sessionId The session ID
 	 */
 	public void removeSession(String sessionId) {
-		// TODO : Ajouter la session dans le tempon de suppression et lancer le daemon si il n'est pas lancé
+		this.manager.addSessionsRemoveBuffer(sessionId);
 	}
-	
-	/**
-	 * Remove all the expired sessions
-	 */
-	public void cleanSessions() {
-		// TODO : Lancer le daemon en mode de suppression
-	}
-	
+
 	/**
 	 * Generate and return a random session ID which is a String of 32 character
 	 * 
@@ -143,103 +135,25 @@ public class SessionPool {
 		String possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		Random random = new Random();
 		StringBuilder res = new StringBuilder();
-		
+
 		// Generate the session ID
 		Session testSession = null;
-		
+
 		do {
 			for (int i = 0; i < 32; i++) {
 				int selectedChar = random.nextInt(possibleChars.length());
 				res.append(possibleChars.charAt(selectedChar));
 			}
-			testSession = this.getSession(res.toString(), false);
+			try {
+				testSession = this.getSession(res.toString(), false);
+			} catch (SessionException e) {
+				testSession = null;
+			}
 		} while (testSession != null);
-		
-		
+
+
 		// Return the generated ID
 		return res.toString();
-	}
-	
-	
-	// ----- Nested class CacheWritter -----
-	
-	
-	private class CacheManager implements Runnable {
-		
-		// ----- Attributes -----
-		
-		
-		/** The add mode */
-		private static final int ADD_MODE = 0;
-		
-		/** The remove mode */
-		private static final int REMOVE_MODE = 1;
-		
-		/** The cleaning mode */
-		private static final int CLEAN_MODE = 2;
-		
-		/** The session pool to look at */
-		private SessionPool sessionPool;
-		
-		/** The file to write the cache in */
-		private File cacheFile;
-		
-		/** The sessions to write in the cache file */
-		private List<Session> sessionAddBuffer;
-		
-		/** The sessions to remove from the cache file */
-		private List<Session> sessionRemoveBuffer;
-		
-		/** Cache writter mode */
-		private int mode;
-		
-		/** If the writter is running */
-		private boolean running;
-		
-		
-		// ----- Constructors -----
-		
-		
-		private CacheManager(SessionPool sessionPool) {
-			this.sessionPool = sessionPool;
-			this.sessionAddBuffer = new ArrayList<Session>();
-			this.sessionRemoveBuffer = new ArrayList<Session>();
-		}
-		
-		
-		// ----- Getters -----
-		
-		
-		private int getMode() {
-			return this.mode;
-		}
-		
-		private boolean isRunning() {
-			return this.running;
-		}
-		
-		
-		// ----- Setters -----
-		
-		
-		private void setMode(int mode) {
-			this.mode = mode;
-		}
-		
-		
-		// ----- Class methods -----
-		
-		
-		@Override
-		public void run() {
-			this.running = true;
-			
-			// TODO : Faire les action requises par le pool de sessions
-			
-			this.running = false;
-			this.sessionPool.getCacheRunningCondition().notifyAll();
-		}
-		
 	}
 
 }

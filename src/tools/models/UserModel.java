@@ -1,5 +1,7 @@
 package tools.models;
 
+import org.json.simple.JSONObject;
+
 /**
  * This is the wrapper class for a user. It contains all informations about an user
  * 
@@ -8,116 +10,125 @@ package tools.models;
  */
 public class UserModel {
 	
-	/**	Database id of the user */
+	// ----- Attributes -----
+	
+	
+	/**	Database id of the user (DB key) */
 	private String userId;
 	
 	/** Public pseudo of the user */
-	private String pseudo;
+	private String userPseudo;
 	
 	/** User's name */
-	private String name;
+	private String userName;
 	
 	/** User's surname */
-	private String surname;
+	private String userSurname;
 	
 	/** User's email address */
-	private String email;
+	private String userEmail;
 	
 	/** User's password */
-	private String password;
+	private String userPassword;
 	
 	/** True if the user in an administrator */
-	private boolean admin;
+	private Boolean userAdmin;
 	
 	
 	// ----- Constructors -----
 	
 	
 	/**
-	 * Create a new User with the wanted database ID
+	 * Create a new user from a JSON
 	 * 
-	 * @param idUser
+	 * @param userJSON The user JSON
 	 */
-	public UserModel(String idUser) {
-		this.userId = idUser;
+	public UserModel(JSONObject userJSON) {
+		// TODO : Faire la création de l'utilisateur avec le JSON
 	}
 	
 	/**
-	 * Create a new User with the default database ID null
+	 * Create a new empty user
 	 */
 	public UserModel() {
-		this(null);
+		this.userId = null;
+		this.userPseudo = null;
+		this.userName = null;
+		this.userSurname = null;
+		this.userEmail = null;
+		this.userPassword = null;
+		this.userAdmin = null;
 	}
 	
 	
 	// ----- Getters -----
 
 	
-	public String getIdUser() {
+	public String getUserId() {
 		return this.userId;
 	}
 
 
-	public String getPseudo() {
-		return this.pseudo;
+	public String getUserPseudo() {
+		return this.userPseudo;
 	}
 
 
-	public String getName() {
-		return this.name;
+	public String getUserName() {
+		return this.userName;
 	}
 
 
-	public String getSurname() {
-		return this.surname;
+	public String getUserSurname() {
+		return this.userSurname;
 	}
 
 
-	public String getEmail() {
-		return this.email;
-	}
-	
-	public String getPassword() {
-		return this.password;
+	public String getUserEmail() {
+		return this.userEmail;
 	}
 	
-	public boolean isAdmin() {
-		return this.admin;
+	public String getUserPassword() {
+		return this.userPassword;
+	}
+	
+	public Boolean isUserAdmin() {
+		return this.userAdmin;
 	}
 
 
 	// ----- Setters -----
 	
 	
-	public void setIdUser(String idUser) {
-		this.userId = idUser;
+	public void setUserId(String id) {
+		this.userId = id;
 	}
 	
-	public void setPseudo(String pseudo) {
-		this.pseudo = pseudo;
+	public void setUserPseudo(String pseudo) {
+		this.userPseudo = pseudo;
 	}
 
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUserName(String name) {
+		this.userName = name;
 	}
 
 
-	public void setSurname(String surname) {
-		this.surname = surname;
+	public void setUserSurname(String surname) {
+		this.userSurname = surname;
 	}
 
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	
-	public void setPassword(String password) {
-		this.password = password;
+	public void setUserEmail(String email) {
+		this.userEmail = email;
 	}
 	
-	public void setAdmin(boolean admin) {
-		this.admin = admin;
+	public void setUserPassword(String password) {
+		this.userPassword= password;
+	}
+	
+	public void setUserAdmin(Boolean admin) {
+		this.userAdmin = admin;
 	}
 	
 	
@@ -129,9 +140,8 @@ public class UserModel {
 		if(!(obj instanceof UserModel)) {
 			return false;
 		} else {
-			UserModel user = (UserModel) obj;
-			
-			return this.userId.equals(user.userId);
+			UserModel e = (UserModel) obj;
+			return this.userId.equals(e.userId);
 		}
 	}
 	

@@ -17,13 +17,12 @@ import tools.Config;
  */
 
 @WebServlet("/index")
-public class Index extends HttpServlet {
-	
+public class Index extends HttpServlet {	
 
 	// ----- Attributes -----
 	
 	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 966304929303826141L;
 
 	
 	// ----- Class methods -----

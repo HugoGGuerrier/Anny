@@ -3,7 +3,7 @@
 	"version": "test_version",
 	"env": 0,
 	
-	"maxSessions": 42,
+	"cacheCleaningInterval": 42,
 	"sessionTimeToLive": 3
 },
 "mysqlConfig": {

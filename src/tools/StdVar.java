@@ -8,18 +8,22 @@ package tools;
  */
 public class StdVar {
 	
+	// --- App constants
+	public static final String APP_ENCODING = "UTF-8";
+	public static final String APP_HASH_ALGORITHM = "sha512";
+	
 	// --- Environment
 	public static final int DEVELOPMENT_ENV = 0;
 	public static final int PRODUCTION_ENV = 1;
-	
-	// --- Error code
-	public static final int WEB_ERROR = -1;
-	public static final int JSON_ERROR = 100;
-	public static final int SQL_ERROR = 1000;
-	public static final int JAVA_ERROR = 10000;
-	
+
 	// --- Paths
-	public static final String configFile = "/WEB-INF/config.json";
-	public static final String testConfigFile = "src/test/config_test.json";
+	public static final String CONFIG_FILE = "WEB-INF/config.json";
+	public static final String SESSION_CACHE_FILE = "WEB-INF/sessions.json";
+	public static final String LOG_FILE = "WEB-INF/log.log";
+	
+	public static final String TEST_CONFIG_FILE = "src/test/config_test.json";
+	
+	// --- Content types
+	public static final String JSON_CONTENT_TYPE = "application/json";
 
 }

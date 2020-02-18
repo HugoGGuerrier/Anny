@@ -6,7 +6,20 @@ public class Handler {
 
 	// ----- Attributes -----
 
+	
+	/** Web error code, if there is an error in the web protocol */
+	public static final int WEB_ERROR = -1;
+	
+	/** JSON error code if there is an error in a JSON */
+	public static final int JSON_ERROR = 100;
+	
+	/** SQL error code if there is an error in the database */
+	public static final int SQL_ERROR = 1000;
+	
+	/** Java error code if there is an error in Java */
+	public static final int JAVA_ERROR = 10000;
 
+	/** Handler's unique instance */
 	private static Handler instance = null;
 
 

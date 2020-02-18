@@ -1,6 +1,8 @@
 package tools.models;
 
-import java.util.Date;
+import java.sql.Date;
+
+import org.json.simple.JSONObject;
 
 /**
  * Class that represents a follow on the application
@@ -13,47 +15,47 @@ public class FollowModel {
 	// ----- Attributes -----
 	
 	
-	/** Followed user */
-	private UserModel followedUser;
+	/** Followed user (DB key) */
+	private String followedUserId;
 	
-	/** Following user */
-	private UserModel followingUser;
+	/** Following user (DB key) */
+	private String followingUserId;
 	
 	/** Creation date of the follow */
-	private Date followDate = null;
+	private Date followDate;
 	
 	
 	// ----- Constructors -----
 	
 	
 	/**
-	 * Create a follow with the wanted users
+	 * Create a new follow from a JSON object
 	 * 
-	 * @param followed The user that follows
-	 * @param following The user that is followed
+	 * @param followJSON The follow JSON
 	 */
-	public FollowModel(UserModel followed, UserModel following) {
-		this.followedUser = followed;
-		this.followingUser = following;
+	public FollowModel(JSONObject followJSON) {
+		// TODO : Créer un follow en suivant le JSON
 	}
 	
 	/**
-	 * Create a new follow with default value null
+	 * Create a new empty follow model
 	 */
 	public FollowModel() {
-		this(null, null);
+		this.followedUserId = null;
+		this.followingUserId = null;
+		this.followDate = null;
 	}
 	
 	
 	// ----- Getters -----
 	
 	
-	public UserModel getFollowedUser() {
-		return this.followedUser;
+	public String getFollowedUserId() {
+		return this.followedUserId;
 	}
 
-	public UserModel getFollowingUser() {
-		return this.followingUser;
+	public String getFollowingUserId() {
+		return this.followingUserId;
 	}
 	
 	public Date getFollowDate() {
@@ -64,12 +66,12 @@ public class FollowModel {
 	// ----- Setters -----
 	
 	
-	public void setFollowedUser(UserModel followedUser) {
-		this.followedUser = followedUser;
+	public void setFollowedUserId(String userId) {
+		this.followedUserId = userId;
 	}
 	
-	public void setFollowingUser(UserModel followingUser) {
-		this.followingUser = followingUser;
+	public void setFollowingUserId(String userId) {
+		this.followingUserId = userId;
 	}
 	
 	public void setFollowDate(Date date) {
@@ -85,9 +87,8 @@ public class FollowModel {
 		if(!(obj instanceof FollowModel)) {
 			return false;
 		} else {
-			FollowModel follow = (FollowModel) obj;
-			
-			return this.followedUser.equals(follow.followedUser) && this.followingUser.equals(follow.followingUser);
+			FollowModel f = (FollowModel) obj;
+			return this.followedUserId.equals(f.followedUserId) && this.followingUserId.equals(f.followingUserId);
 		}
 	}
 	

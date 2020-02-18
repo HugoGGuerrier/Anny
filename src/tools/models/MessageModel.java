@@ -1,8 +1,10 @@
 package tools.models;
 
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import org.json.simple.JSONObject;
 
 /**
  * This is the wrapper class for a message. It contains all informations that database store on a message
@@ -15,99 +17,113 @@ public class MessageModel {
 	// ----- Attributes -----
 	
 	
-	/** Message database id */
-	private long messageId;
+	/** Message database id (DB key) */
+	private Long messageId;
 	
 	/** Message text content */
-	private String text;
+	private String messageText;
+	
+	/** Board that the message belongs to */
+	private String messageBoardName;
 	
 	/** User who posted that message */
-	private UserModel messagePoster;
+	private String messagePosterId;
 	
 	/** Date of the message */
 	private Date messageDate;
 	
 	/** Answers to the message which are also message instances */
-	private List<MessageModel> answers;
+	private List<Long> messageAnswersId;
 
 	
 	// ----- Constructors -----
 	
 	
 	/**
-	 * Construct a new message from its id
+	 * Create an new message from a JSON object
 	 * 
-	 * @param messageId
+	 * @param messageJSON The message JSON
 	 */
-	public MessageModel(long messageId) {
-		this.messageId = messageId;
-		
-		this.answers = new ArrayList<MessageModel>();
+	public MessageModel(JSONObject messageJSON) {
+		// TODO : Créer le message depuis un JSON
 	}
 	
 	/**
-	 * Construct a new message with the default id -1
+	 * Construct a new empty message
 	 */
 	public MessageModel() {
-		this(-1);
+		this.messageId = null;
+		this.messageText = null;
+		this.messageBoardName = null;
+		this.messagePosterId = null;
+		this.messageDate = null;
+		this.messageAnswersId = new ArrayList<Long>();
 	}
 	
 	
 	// ----- Getters -----
 
 	
-	public long getMessageId() {
-		return messageId;
+	public Long getMessageId() {
+		return this.messageId;
 	}
 
-	public String getText() {
-		return text;
+	public String getMessageText() {
+		return this.messageText;
+	}
+	
+	public String getMessageBoardName() {
+		return this.messageBoardName;
 	}
 
-	public UserModel getMessagePoster() {
-		return messagePoster;
+	public String getMessagePosterId() {
+		return this.messagePosterId;
 	}
 
 	public Date getMessageDate() {
-		return messageDate;
+		return this.messageDate;
 	}
 
-	public List<MessageModel> getAnswers() {
-		return answers;
+	public List<Long> getMessageAnswersId() {
+		return this.messageAnswersId;
 	}
 	
 	
 	// ----- Setters -----
 	
 
-	public void setMessageId(long messageId) {
-		this.messageId = messageId;
+	public void setMessageId(Long id) {
+		this.messageId = id;
 	}
 	
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	public void setMessagePoster(UserModel messagePoster) {
-		this.messagePoster = messagePoster;
-	}
-
-	public void setMessageDate(Date messageDate) {
-		this.messageDate = messageDate;
+	public void setMessageText(String text) {
+		this.messageText = text;
 	}
 	
-	public void addAnswer(MessageModel answer) {
-		if(!this.answers.contains(answer)) {
-			this.answers.add(answer);
+	public void setMessageBoardName(String boardName) {
+		this.messageBoardName = boardName;
+	}
+
+	public void setMessagePosterId(String posterId) {
+		this.messagePosterId = posterId;
+	}
+
+	public void setMessageDate(Date date) {
+		this.messageDate = date;
+	}
+	
+	public void addAnswerId(Long answerId) {
+		if(!this.messageAnswersId.contains(answerId)) {
+			this.messageAnswersId.add(answerId);
 		}
 	}
 	
-	public void removeAnswer(MessageModel answer) {
-		this.answers.remove(answer);
+	public void removeAnswerId(Long answerId) {
+		this.messageAnswersId.remove(answerId);
 	}
 
-	public void setAnswers(List<MessageModel> answers) {
-		this.answers = answers;
+	public void setMessageAnswersId(List<Long> answersId) {
+		this.messageAnswersId = answersId;
 	}
 	
 	
@@ -119,9 +135,8 @@ public class MessageModel {
 		if(!(obj instanceof MessageModel)) {
 			return false;
 		} else {
-			MessageModel msg = (MessageModel) obj;
-			
-			return this.messageId == msg.messageId;
+			MessageModel m = (MessageModel) obj;
+			return this.messageId.equals(m.messageId);
 		}
 	}
 	
