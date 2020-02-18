@@ -17,7 +17,12 @@ import com.mongodb.client.MongoClient;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-// class en charge de la connexion aux base de données
+
+/**
+ * Class which handle sql connections and use connection pooling
+ * 
+ * @author Laure Soulier
+ */
 public class Database {
 
 	// ----- Attributes -----
