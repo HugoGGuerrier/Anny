@@ -32,7 +32,7 @@ public class MessageModel {
 	/** Date of the message */
 	private Date messageDate;
 	
-	/** Answers to the message which are also message instances */
+	/** Answers to the message which are also message instances created by mongodb */
 	private List<MessageModel> messageAnswers;
 
 	
