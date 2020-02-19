@@ -1,6 +1,6 @@
 {
 "appConfig": {
-	"version": "test_version",
+	"version": "0.1.1",
 	"env": 0,
 	
 	"cacheCleaningInterval": 42,
@@ -9,9 +9,9 @@
 "mysqlConfig": {
 	"mysqlPooling": false,
 	"mysqlHost": "localhost",
-	"mysqlDatabase": "DB_GUERRIER_SIAU",
-	"mysqlLogin": "root",
-	"mysqlPassword": "root"
+	"mysqlDatabase": "DB_BIRDY",
+	"mysqlLogin": "birdy_user",
+	"mysqlPassword": "birdy_password"
 },
 "mongodbConfig": {
 }

@@ -24,8 +24,8 @@ import tools.StdVar;
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-@WebServlet("/configuration")
-public class Configuration extends HttpServlet {
+@WebServlet("/initializer")
+public class Initializer extends HttpServlet {
 
 	// ----- Attributes -----
 

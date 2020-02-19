@@ -33,7 +33,7 @@ public class MessageModel {
 	private Date messageDate;
 	
 	/** Answers to the message which are also message instances */
-	private List<Long> messageAnswersId;
+	private List<MessageModel> messageAnswers;
 
 	
 	// ----- Constructors -----
@@ -57,7 +57,7 @@ public class MessageModel {
 		this.messageBoardName = null;
 		this.messagePosterId = null;
 		this.messageDate = null;
-		this.messageAnswersId = new ArrayList<Long>();
+		this.messageAnswers = new ArrayList<MessageModel>();
 	}
 	
 	
@@ -84,8 +84,8 @@ public class MessageModel {
 		return this.messageDate;
 	}
 
-	public List<Long> getMessageAnswersId() {
-		return this.messageAnswersId;
+	public List<MessageModel> getMessageAnswers() {
+		return this.messageAnswers;
 	}
 	
 	
@@ -112,18 +112,18 @@ public class MessageModel {
 		this.messageDate = date;
 	}
 	
-	public void addAnswerId(Long answerId) {
-		if(!this.messageAnswersId.contains(answerId)) {
-			this.messageAnswersId.add(answerId);
+	public void addAnswer(MessageModel answer) {
+		if(!this.messageAnswers.contains(answer)) {
+			this.messageAnswers.add(answer);
 		}
 	}
 	
-	public void removeAnswerId(Long answerId) {
-		this.messageAnswersId.remove(answerId);
+	public void removeAnswer(MessageModel answer) {
+		this.messageAnswers.remove(answer);
 	}
 
-	public void setMessageAnswersId(List<Long> answersId) {
-		this.messageAnswersId = answersId;
+	public void setMessageAnswers(List<MessageModel> answers) {
+		this.messageAnswers = answers;
 	}
 	
 	

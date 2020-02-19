@@ -5,8 +5,8 @@
     <welcome-file>index</welcome-file>
   </welcome-file-list>
   <servlet>
-  	<servlet-name>Configuration</servlet-name>
-    <servlet-class>servlets.Configuration</servlet-class>
+  	<servlet-name>Initializer</servlet-name>
+    <servlet-class>servlets.Initializer</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 </web-app>

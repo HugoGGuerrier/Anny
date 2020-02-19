@@ -36,8 +36,7 @@ public class SessionPool {
 	 */
 	private SessionPool() {
 		this.manager = new CacheManager();
-		this.managerThread =  new Thread(this.manager);
-		this.manager.start();
+		this.managerThread = new Thread(this.manager);
 		this.managerThread.start();
 	}
 

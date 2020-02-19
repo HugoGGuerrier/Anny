@@ -145,6 +145,9 @@ public class User extends HttpServlet {
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// TODO : Gérer la méthode put pour modifier un utilisateur
+		/**
+		 * SELECT * FROM USER WHERE userId = userId.....
+		 */
 		resp.getWriter().append("PUT : Not implemented...");
 	}
 	

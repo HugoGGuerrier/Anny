@@ -17,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import db.Database;
+import db.Migrator;
 import tools.Config;
 import tools.Logger;
 import tools.StdVar;
@@ -41,6 +42,8 @@ public class DatabaseTests {
 			Reader reader = new FileReader(configTestPath.toAbsolutePath().toFile());
 			Config.setBasePath(Paths.get("").toAbsolutePath().toString() + "/WebContent/");
 			Config.init(reader);
+			
+			Migrator migrator = Migrator.getInstance();
 			
 			// Get the database connections
 			DatabaseTests.mysqlConnection = Database.getMySQLConnection();

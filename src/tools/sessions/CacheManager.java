@@ -52,9 +52,6 @@ public class CacheManager implements Runnable {
 	/** Number of added sessions since the last cleaning */
 	private long addedSessions;
 
-	/** If the thread has to run */
-	private boolean running;
-
 
 	// ----- Constructors -----
 
@@ -66,7 +63,6 @@ public class CacheManager implements Runnable {
 	 */
 	public CacheManager() {
 		this.addedSessions = 0;
-		this.running = false;
 
 		this.logger = Logger.getInstance();
 		this.sessionsAddBuffer = new ConcurrentLinkedQueue<Session>();
@@ -97,28 +93,20 @@ public class CacheManager implements Runnable {
 
 
 	public void addSessionsAddBuffer(Session session) {
-		this.sessionsAddBuffer.add(session);
 		this.cacheFileLock.lock();
+		this.sessionsAddBuffer.add(session);
 		this.bufferEmptyCondition.signalAll();
 		this.cacheFileLock.unlock();
 	}
 
 	public void addSessionsRemoveBuffer(String sessionId) {
-		this.sessionsRemoveBuffer.add(sessionId);
 		this.cacheFileLock.lock();
+		this.sessionsRemoveBuffer.add(sessionId);
 		this.bufferEmptyCondition.signalAll();
 		this.cacheFileLock.unlock();
 	}
 
-	public void start() {
-		this.running = true;
-	}
-
-	public void stop() {
-		this.running = false;
-	}
-
-
+	
 	// ----- Class methods -----
 
 
@@ -215,7 +203,7 @@ public class CacheManager implements Runnable {
 	}
 
 	/**
-	 * Clean the cache from expired sessions
+	 * Clean the cache from expired sessions, this method only launched from a locked method
 	 */
 	private void clean() {
 		try {
@@ -264,7 +252,7 @@ public class CacheManager implements Runnable {
 	@SuppressWarnings("unchecked")
 	public void run() {
 
-		while(this.running) {
+		while(true) {
 			try {
 				// Get the read lock to avoid get request during the writing period
 				this.cacheFileLock.lock();
