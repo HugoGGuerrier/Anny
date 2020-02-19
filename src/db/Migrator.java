@@ -41,7 +41,7 @@ public class Migrator {
 			+ "userAdmin BOOLEAN DEFAULT 0"
 			+ "); ",
 
-			"CREATE OR REPLACE TABLE FOLLOWS ("
+			"CREATE OR REPLACE TABLE FOLLOW ("
 			+ "followedUserId VARCHAR(32) NOT NULL, "
 			+ "followingUserId VARCHAR(32) NOT NULL, "
 			+ "followDate DATE NOT NULL, "
@@ -58,8 +58,8 @@ public class Migrator {
 			+ "); ",
 
 			"CREATE OR REPLACE TABLE BELONGS_TO_BOARD ("
-			+ "boardName VARCHAR(32) NOT NULL, "
 			+ "messageId BIGINT NOT NULL, "
+			+ "boardName VARCHAR(32) NOT NULL, "
 			+ "FOREIGN KEY (boardName) REFERENCES BOARD(boardName) ON DELETE CASCADE ON UPDATE CASCADE"
 			+ "); "
 			
@@ -79,10 +79,10 @@ public class Migrator {
 	/**
 	 * Create the unique migrator instance and get the database version
 	 * 
-	 * @throws SQLException If the class cannot open mysql connection
+	 * @throws SQLException If the class cannot open MySQL connection
 	 */
 	private Migrator() throws SQLException {
-		// Get the app logger
+		// Get the application logger
 		this.logger = Logger.getInstance();
 
 		// Get the database connection
@@ -96,7 +96,6 @@ public class Migrator {
 			resultSet.next();
 
 			this.currentDatabaseVersion = resultSet.getInt("databaseVersion");
-			System.out.println("DB version OK");
 
 		} catch (SQLException e) {
 
@@ -106,6 +105,8 @@ public class Migrator {
 			stmt.executeUpdate("DROP TABLE IF EXISTS DB_VERSION");
 			stmt.executeUpdate("CREATE TABLE DB_VERSION(databaseVersion INT NOT NULL PRIMARY KEY)");
 			stmt.executeUpdate("INSERT INTO DB_VERSION (databaseVersion) VALUES(0)");
+			
+			this.logger.log("Database version intialized", Logger.INFO);
 
 		}
 	}
@@ -129,8 +130,12 @@ public class Migrator {
 	// ----- Setters -----
 	
 	
-	private void setDatabaseVersion(int version) {
-		// TODO : Mettre à jour la version de la base de données
+	private void setCurrentDatabaseVersion(int version) throws SQLException {
+		Connection connection = Database.getMySQLConnection();
+		Statement stmt = connection.createStatement();
+		stmt.executeUpdate("DELETE FROM DB_VERSION");
+		stmt.executeUpdate("INSERT INTO DB_VERSION (databaseVersion) VALUES(" + String.valueOf(version) + ")");
+		this.currentDatabaseVersion = version;
 	}
 
 
@@ -138,11 +143,11 @@ public class Migrator {
 
 
 	/**
-	 * Execute the upgrade script from a version to another
+	 * Upgrade the database to the targeted version
 	 * 
-	 * @param targetVersion
+	 * @param targetVersion The wanted version
 	 * @return If the database is in the correct version
-	 * @throws SQLException
+	 * @throws SQLException If there is an error during the database upgrading
 	 */
 	public boolean upgrade(int targetVersion) throws SQLException {
 		Connection connection = Database.getMySQLConnection();
@@ -156,7 +161,8 @@ public class Migrator {
 				}
 			}
 
-			// Return that the database is correctly upgraded
+			// Set the current database version
+			this.setCurrentDatabaseVersion(targetVersion);
 			return true;
 		}
 
@@ -169,7 +175,7 @@ public class Migrator {
 	 * 
 	 * @param targetVersion The targeted version
 	 * @return If the database is in the correct state
-	 * @throws SQLException If there is an error during sql execution
+	 * @throws SQLException If there is an error during SQL execution
 	 */
 	public boolean downgrade(int targetVersion) throws SQLException {
 		Connection connection = Database.getMySQLConnection();
@@ -183,11 +189,12 @@ public class Migrator {
 				}
 			}
 
-			// Return true if the database is in the correct version
+			// Set the current database version
+			this.setCurrentDatabaseVersion(targetVersion);
 			return true;
 		}
 
-		// Return false if the target version is greater thant the current version
+		// Return false if the target version is greater than the current version
 		return false;
 	}
 

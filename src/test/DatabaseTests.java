@@ -1,5 +1,6 @@
 package test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.FileReader;
@@ -8,9 +9,8 @@ import java.io.Reader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -18,9 +18,10 @@ import org.junit.Test;
 
 import db.Database;
 import db.Migrator;
+import db.managers.UserDatabaseManager;
 import tools.Config;
-import tools.Logger;
 import tools.StdVar;
+import tools.models.UserModel;
 
 public class DatabaseTests {
 
@@ -30,12 +31,12 @@ public class DatabaseTests {
 	private static Connection mysqlConnection;
 
 
-	// ----- Config methods -----
+	// ----- Configuration methods -----
 
 
 	@BeforeClass
 	public static void setup() {		
-		// Load the test config files
+		// Load the test configuration files
 		Path configTestPath = Paths.get(StdVar.TEST_CONFIG_FILE);
 		
 		try {
@@ -63,7 +64,10 @@ public class DatabaseTests {
 	public static void teardown() {
 		// Close the connections
 		try {
-			DatabaseTests.mysqlConnection.close(); 
+			DatabaseTests.mysqlConnection.close();
+			
+			Migrator migrator = Migrator.getInstance();
+			migrator.downgrade(0);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot close the mysql connection !");
@@ -75,29 +79,56 @@ public class DatabaseTests {
 
 
 	@Test
-	public void testMysql() {
-		// Test queries
+	public void testMysqlUser() {
+		UserDatabaseManager userDatabaseManager = UserDatabaseManager.getInstance();
+		
+		// Test insertion
+		UserModel exampleUser = new UserModel();
+		exampleUser.setUserId("@tester");
+		exampleUser.setUserPseudo("Test_pseudo");
+		exampleUser.setUserName("TestName");
+		exampleUser.setUserSurname("TestSurname");
+		exampleUser.setUserEmail("test@test.mail");
+		exampleUser.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
+		exampleUser.setUserAdmin(true);
 		try {
-			String q = "SELECT * FROM USER";
-			Statement st = DatabaseTests.mysqlConnection.createStatement();
-			ResultSet rs = st.executeQuery(q);
-
-			while(rs.next()) {
-				System.out.println(rs.getString("userId"));
-			}
+			userDatabaseManager.insertUser(exampleUser);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			fail("Cannot execute query !");
+			fail("Cannot insert a new user");
 		}
-
-		// Test insertions
+		
+		// Test updater
+		exampleUser.setUserName("TestName2");
 		try {
-			String q = "INSERT INTO USER VALUES ('@marmotte_officiel', 'Marmotte', 'MARMOTTA', 'Marmotta', 'momottejolie@mail.motte', 'caclette4life', 1)";
-			Statement st = DatabaseTests.mysqlConnection.createStatement();
-			int r = st.executeUpdate(q);
+			userDatabaseManager.updateUser(exampleUser);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			fail("Cannot execute insertion !");
+			fail("Cannot update user");
+		}
+		
+		// Test getter
+		UserModel userFilter = new UserModel();
+		userFilter.setUserId("@tester");
+		try {
+			List<UserModel> users = userDatabaseManager.getUsers(userFilter, false);
+			assertEquals(1, users.size());
+			assertEquals("Test_pseudo", users.get(0).getUserPseudo());
+			assertEquals("TestName2", users.get(0).getUserName());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			fail("Cannot get users");
+		}
+		
+		// Test deleter
+		try {
+			userDatabaseManager.deleteUser(exampleUser);
+			List<UserModel> noUser = userDatabaseManager.getUsers(userFilter, false);
+			assertEquals(0, noUser.size());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			fail("Cannot delete user");
 		}
 	}
+	
 }
