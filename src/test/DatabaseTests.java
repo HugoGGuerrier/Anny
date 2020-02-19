@@ -43,7 +43,9 @@ public class DatabaseTests {
 			Config.setBasePath(Paths.get("").toAbsolutePath().toString() + "/WebContent/");
 			Config.init(reader);
 			
+			// Upgrade the database to the wanted version
 			Migrator migrator = Migrator.getInstance();
+			migrator.upgrade(Config.getDatabaseVersion());
 			
 			// Get the database connections
 			DatabaseTests.mysqlConnection = Database.getMySQLConnection();

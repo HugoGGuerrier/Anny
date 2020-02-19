@@ -2,6 +2,7 @@ package tools;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Arrays;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -28,6 +29,9 @@ public class Config {
 
 	/** The application's version (release.development.database) */
 	private static String version;
+	
+	/** The database version for the application */
+	private static int databaseVersion;
 
 	/** The base path of the application */
 	private static String basePath;
@@ -74,6 +78,10 @@ public class Config {
 
 	public static String getVersion() {
 		return Config.version;
+	}
+	
+	public static int getDatabaseVersion() {
+		return Config.databaseVersion;
 	}
 
 	public static String getBasePath() {
@@ -150,6 +158,11 @@ public class Config {
 
 			String version = (String) appConfig.get("version");
 			Config.version = version == null ? "unknown" : version;
+			
+			if(Config.version != "unknown") {
+				String[] versions = Config.version.split("\\.");
+				Config.databaseVersion = Integer.parseInt(versions[2]);
+			}
 
 			Long env = (Long) appConfig.get("env");
 			Config.env = env == null ? 1 : env.intValue();

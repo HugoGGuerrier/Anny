@@ -9,7 +9,7 @@
 "mysqlConfig": {
 	"mysqlPooling": false,
 	"mysqlHost": "localhost",
-	"mysqlDatabase": "DB_BIRDY",
+	"mysqlDatabase": "DB_BIRDY_TEST",
 	"mysqlLogin": "birdy_user",
 	"mysqlPassword": "birdy_password"
 },
