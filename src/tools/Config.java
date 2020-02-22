@@ -2,7 +2,6 @@ package tools;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Arrays;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

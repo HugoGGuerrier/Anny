@@ -79,7 +79,7 @@ public class ToolsTest {
 
 	@Test
 	public void testConfig() {
-		assertEquals("test_version", Config.getVersion());
+		assertEquals("0.1.1", Config.getVersion());
 		assertEquals(0, Config.getEnv());
 		assertEquals(42, Config.getCacheCleaningInterval());
 		assertEquals(3, Config.getSessionTimeToLive());
@@ -110,7 +110,7 @@ public class ToolsTest {
 		// Test the session pool session remove
 		sessionPool.removeSession(ToolsTest.sessionId2);
 		try {
-			Session session2 = this.sessionPool.getSession(ToolsTest.sessionId2, false);
+			this.sessionPool.getSession(ToolsTest.sessionId2, false);
 			fail("Session 2 has not been removed !");
 		} catch (SessionException e) {
 			// Success !

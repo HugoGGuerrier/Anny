@@ -18,9 +18,11 @@ import org.junit.Test;
 
 import db.Database;
 import db.Migrator;
+import db.managers.FollowDatabaseManager;
 import db.managers.UserDatabaseManager;
 import tools.Config;
 import tools.StdVar;
+import tools.models.FollowModel;
 import tools.models.UserModel;
 
 public class DatabaseTests {
@@ -84,7 +86,7 @@ public class DatabaseTests {
 		
 		// Test insertion
 		UserModel exampleUser = new UserModel();
-		exampleUser.setUserId("@tester");
+		exampleUser.setUserId("@tester_1");
 		exampleUser.setUserPseudo("Test_pseudo");
 		exampleUser.setUserName("TestName");
 		exampleUser.setUserSurname("TestSurname");
@@ -109,7 +111,7 @@ public class DatabaseTests {
 		
 		// Test getter
 		UserModel userFilter = new UserModel();
-		userFilter.setUserId("@tester");
+		userFilter.setUserId("@tester_1");
 		try {
 			List<UserModel> users = userDatabaseManager.getUsers(userFilter, false);
 			assertEquals(1, users.size());
@@ -129,6 +131,13 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot delete user");
 		}
+	}
+	
+	@Test
+	public void testMysqlFollow() {
+		FollowDatabaseManager followDatabaseManager = FollowDatabaseManager.getInstance();
+		
+		
 	}
 	
 }

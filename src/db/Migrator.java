@@ -66,7 +66,7 @@ public class Migrator {
 	};
 
 	/** Downgrade version 1 */
-	private final String[] version1Downgrade = {"DROP TABLE IF EXISTS FOLLOWS; ",
+	private final String[] version1Downgrade = {"DROP TABLE IF EXISTS FOLLOW; ",
 			"DROP TABLE IF EXISTS BELONGS_TO_BOARD; ",
 			"DROP TABLE IF EXISTS BOARD; ",
 			"DROP TABLE IF EXISTS USER; "
@@ -159,6 +159,7 @@ public class Migrator {
 				for (String update : this.version1Upgrade) {
 					stmt.executeUpdate(update);
 				}
+				this.logger.log("Database migrated to version 1", Logger.INFO);
 			}
 
 			// Set the current database version
@@ -187,6 +188,7 @@ public class Migrator {
 				for (String update : this.version1Downgrade) {
 					stmt.executeUpdate(update);
 				}
+				this.logger.log("Database migrated to version 0", Logger.INFO);
 			}
 
 			// Set the current database version
