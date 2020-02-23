@@ -168,8 +168,6 @@ public class FollowDatabaseManager {
 
 		}
 
-		System.out.println(preparedStatement.toString());
-
 		// Prepare the result 
 		List<FollowModel> res = new ArrayList<FollowModel>();
 

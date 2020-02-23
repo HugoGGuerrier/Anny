@@ -18,10 +18,12 @@ import org.junit.Test;
 
 import db.Database;
 import db.Migrator;
+import db.managers.BoardDatabaseManager;
 import db.managers.FollowDatabaseManager;
 import db.managers.UserDatabaseManager;
 import tools.Config;
 import tools.StdVar;
+import tools.models.BoardModel;
 import tools.models.FollowModel;
 import tools.models.UserModel;
 
@@ -40,16 +42,16 @@ public class DatabaseTests {
 	public static void setup() {		
 		// Load the test configuration files
 		Path configTestPath = Paths.get(StdVar.TEST_CONFIG_FILE);
-		
+
 		try {
 			Reader reader = new FileReader(configTestPath.toAbsolutePath().toFile());
 			Config.setBasePath(Paths.get("").toAbsolutePath().toString() + "/WebContent/");
 			Config.init(reader);
-			
+
 			// Upgrade the database to the wanted version
 			Migrator migrator = Migrator.getInstance();
 			migrator.upgrade(Config.getDatabaseVersion());
-			
+
 			// Get the database connections
 			DatabaseTests.mysqlConnection = Database.getMySQLConnection();
 		} catch (IOException e) {
@@ -67,9 +69,9 @@ public class DatabaseTests {
 		// Close the connections
 		try {
 			DatabaseTests.mysqlConnection.close();
-			
+
 			Migrator migrator = Migrator.getInstance();
-			migrator.downgrade(0);
+			// migrator.downgrade(0);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot close the mysql connection !");
@@ -83,7 +85,7 @@ public class DatabaseTests {
 	@Test
 	public void testMysqlUser() {
 		UserDatabaseManager userDatabaseManager = UserDatabaseManager.getInstance();
-		
+
 		// Test insertion
 		UserModel exampleUser = new UserModel();
 		exampleUser.setUserId("@tester_1");
@@ -99,7 +101,7 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot insert a new user");
 		}
-		
+
 		// Test updater
 		exampleUser.setUserName("TestName2");
 		try {
@@ -108,7 +110,7 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot update user");
 		}
-		
+
 		// Test getter
 		UserModel userFilter = new UserModel();
 		userFilter.setUserId("@tester_1");
@@ -121,10 +123,10 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot get users");
 		}
-		
+
 		// Test deleter
 		try {
-			userDatabaseManager.deleteUser(exampleUser);
+			//userDatabaseManager.deleteUser(exampleUser);
 			List<UserModel> noUser = userDatabaseManager.getUsers(userFilter, false);
 			assertEquals(0, noUser.size());
 		} catch (SQLException e) {
@@ -132,12 +134,40 @@ public class DatabaseTests {
 			fail("Cannot delete user");
 		}
 	}
-	
+
 	@Test
 	public void testMysqlFollow() {
 		FollowDatabaseManager followDatabaseManager = FollowDatabaseManager.getInstance();
-		
-		
 	}
-	
+
+	@Test
+	public void testMysqlBoard() {
+		BoardDatabaseManager boardDatabaseManager = BoardDatabaseManager.getInstance();
+
+		// Test insertion
+		BoardModel newBoard = new BoardModel();
+		newBoard.setBoardName("test_board");
+		newBoard.setBoardCreatorId("@tester_1");
+		newBoard.setBoardDescription("This is the test board of the test user");
+		newBoard.addMessageId(1l);
+		newBoard.addMessageId(3l);
+		try {
+			boardDatabaseManager.insertBoard(newBoard);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			fail("Cannot insert a new board !");
+		}
+
+		// Test the board get
+		BoardModel filter = new BoardModel();
+		filter.setBoardName("test_board");
+		try {
+			System.out.println(boardDatabaseManager.getBoards(filter, false).size());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			fail("Cannot get boards !");
+		}
+
+	}
+
 }
