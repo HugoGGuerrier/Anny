@@ -12,7 +12,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import tools.Config;
-import tools.Handler;
 import tools.Security;
 import tools.StdVar;
 import tools.exceptions.SessionException;
@@ -24,9 +23,6 @@ public class ToolsTest {
 
 	// ----- Attributes -----
 
-
-	// --- Handler
-	private Handler handler = Handler.getInstance();
 
 	// --- Security
 	private Security security = Security.getInstance();
@@ -83,11 +79,13 @@ public class ToolsTest {
 		assertEquals(0, Config.getEnv());
 		assertEquals(42, Config.getCacheCleaningInterval());
 		assertEquals(3, Config.getSessionTimeToLive());
-	}
-
-	@Test
-	public void testHandler() {
-		fail("Not implemented yet !");
+		
+		assertFalse(Config.isMysqlPooling());
+		assertEquals("localhost", Config.getMysqlHost());
+		assertEquals("DB_BIRDY_TEST", Config.getMysqlDatabase());
+		
+		assertEquals("DB_BIRDY_TEST", Config.getMongoDatabase());
+		assertEquals("messages", Config.getMongoMessageCollection());
 	}
 
 	@Test
@@ -95,6 +93,14 @@ public class ToolsTest {
 		// Test the html endcode/decode
 		assertEquals("&lt;script&gt;alert('test')&lt;/script&gt;", this.security.htmlEncode(ToolsTest.htmlTestString));
 		assertEquals(ToolsTest.htmlTestString, this.security.htmlDecode("&lt;script&gt;alert('test')&lt;/script&gt;"));
+		assertEquals("ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff", this.security.hashString("test"));
+		
+		assertTrue(this.security.isValidPassword(this.security.hashString("this is a test password")));
+		assertFalse(this.security.isValidPassword("12345abcef"));
+		
+		assertTrue(this.security.isValidUserId("@test"));
+		assertFalse(this.security.isValidUserId("@"));
+		assertFalse(this.security.isValidUserId("test"));
 	}
 
 	@Test

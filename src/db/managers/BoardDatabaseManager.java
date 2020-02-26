@@ -5,9 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import db.Database;
 import tools.models.BoardModel;
@@ -47,6 +45,12 @@ public class BoardDatabaseManager {
 	// ----- Class Methods -----
 
 
+	/**
+	 * Insert a new board with all its messages
+	 * 
+	 * @param boardModel The board to insert
+	 * @throws SQLException If there is an error during the board insertion
+	 */
 	public void insertBoard(BoardModel boardModel) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
@@ -66,22 +70,56 @@ public class BoardDatabaseManager {
 
 		// Insert the board
 		boardPreparedStatement.executeUpdate();
-		
+
 		// Insert all the message id
 		for(Long messageId : boardModel.getBoardMessagesId()) {
 			belongsPreparedStatement.setLong(1, messageId);
 			belongsPreparedStatement.setString(2, boardModel.getBoardName());
-			
+
 			belongsPreparedStatement.executeUpdate();
 		}
 	}
 
+	/**
+	 * Update a board based on its name
+	 * 
+	 * @param boardModel The board ro update
+	 * @throws SQLException Id there is an error during the board updating
+	 */
 	public void updateBoard(BoardModel boardModel) throws SQLException {
+		// Get the mysql connection
+		Connection connection = Database.getMySQLConnection();
 
+		// Create the SQL updates
+		String update = "UPDATE BOARD SET boardDescription = ?, boardCreatorId = ? WHERE boardName = ?";
+
+		// Prepare the update
+		PreparedStatement preparedStatement = connection.prepareStatement(update);
+
+		// Bind parameters
+		preparedStatement.setString(1, boardModel.getBoardDescription());
+		preparedStatement.setString(2, boardModel.getBoardCreatorId());
+		preparedStatement.setString(3, boardModel.getBoardName());
+
+		// Execute the update
+		preparedStatement.executeUpdate();
 	}
 
 	public void deleteBoard(BoardModel boardModel) throws SQLException {
+		// Get the mysql connection
+		Connection connection = Database.getMySQLConnection();
 
+		// Create the SQL deletion
+		String deletion = "DELETE FROM BOARD WHERE boardName = ?";
+
+		// Prepare the deletion
+		PreparedStatement preparedStatement = connection.prepareStatement(deletion);
+
+		// Bind parameters
+		preparedStatement.setString(1, boardModel.getBoardName());
+
+		// Execute the update
+		preparedStatement.executeUpdate();
 	}
 
 	public List<BoardModel> getBoards(BoardModel model, boolean isLike) throws SQLException {
@@ -90,14 +128,12 @@ public class BoardDatabaseManager {
 
 		// Prepare the selection query
 		StringBuilder boardQuery = new StringBuilder("SELECT * FROM BOARD WHERE 1=1");
-		StringBuilder belongsQuery = new StringBuilder("SELECT * FROM BELONGS_TO_BOARD WHERE 1=1");
 
 		// Create the wanted SQL
 		if(isLike) {
 
 			if(model.getBoardName() != null) {
 				boardQuery.append(" AND boardName LIKE ?");
-				belongsQuery.append(" AND boardName LIKE ?");
 			}
 			if(model.getBoardDescription() != null) {
 				boardQuery.append(" AND boardDescription LIKE ?");
@@ -106,22 +142,10 @@ public class BoardDatabaseManager {
 				boardQuery.append(" AND boardCreatorId LIKE ?");
 			}
 
-			if(model.getBoardMessagesId().size() > 0) {
-				belongsQuery.append(" AND (");
-				for(int i = 0; i < model.getBoardMessagesId().size(); i++) {
-					belongsQuery.append("messageId = ?");
-					if(i != model.getBoardMessagesId().size() - 1) {
-						belongsQuery.append(" OR ");
-					}
-				}
-				belongsQuery.append(")");
-			}
-
 		} else {
 
 			if(model.getBoardName() != null) {
 				boardQuery.append(" AND boardName = ?");
-				belongsQuery.append(" AND boardName = ?");
 			}
 			if(model.getBoardDescription() != null) {
 				boardQuery.append(" AND boardDescription = ?");
@@ -130,31 +154,17 @@ public class BoardDatabaseManager {
 				boardQuery.append(" AND boardCreatorId = ?");
 			}
 
-			if(model.getBoardMessagesId().size() > 0) {
-				belongsQuery.append(" AND (");
-				for(int i = 0; i < model.getBoardMessagesId().size(); i++) {
-					belongsQuery.append("messageId = ?");
-					if(i != model.getBoardMessagesId().size() - 1) {
-						belongsQuery.append(" OR ");
-					}
-				}
-				belongsQuery.append(")");
-			}
-
 		}
 
 		// Prepare the statement
 		PreparedStatement boardPreparedStatement = connection.prepareStatement(boardQuery.toString());
-		PreparedStatement belongsPreparedStatement = connection.prepareStatement(belongsQuery.toString());
 		int boardNextArgPointer = 1;
-		int belongsNextArgPointer = 1;
 
 		// Bind the parameters
 		if(isLike) {
 
 			if(model.getBoardName() != null) {
 				boardPreparedStatement.setString(boardNextArgPointer++, "%" + model.getBoardName() + "%");
-				belongsPreparedStatement.setString(belongsNextArgPointer++, "%" + model.getBoardName() + "%");
 			}
 			if(model.getBoardDescription() != null) {
 				boardPreparedStatement.setString(boardNextArgPointer++, "%" + model.getBoardDescription() + "%");
@@ -163,17 +173,10 @@ public class BoardDatabaseManager {
 				boardPreparedStatement.setString(boardNextArgPointer++, "%" + model.getBoardCreatorId() + "%");
 			}
 
-			if(model.getBoardMessagesId().size() > 0) {
-				for (Long messageId : model.getBoardMessagesId()) {
-					belongsPreparedStatement.setLong(belongsNextArgPointer++, messageId);
-				}
-			}
-
 		} else {
 
 			if(model.getBoardName() != null) {
 				boardPreparedStatement.setString(boardNextArgPointer++, model.getBoardName());
-				belongsPreparedStatement.setString(belongsNextArgPointer++, model.getBoardName());
 			}
 			if(model.getBoardDescription() != null) {
 				boardPreparedStatement.setString(boardNextArgPointer++, model.getBoardDescription());
@@ -182,26 +185,6 @@ public class BoardDatabaseManager {
 				boardPreparedStatement.setString(boardNextArgPointer++, model.getBoardCreatorId());
 			}
 
-			if(model.getBoardMessagesId().size() > 0) {
-				for (Long messageId : model.getBoardMessagesId()) {
-					belongsPreparedStatement.setLong(belongsNextArgPointer++, messageId);
-				}
-			}
-
-		}
-
-		// Get the message id list
-		Map<String, List<Long>> boardsMessagesId = new HashMap<String, List<Long>>();
-
-		ResultSet belongsResultSet = belongsPreparedStatement.executeQuery();
-
-		while (belongsResultSet.next()) {
-			String boardName = belongsResultSet.getString("boardName");
-			Long messageId = belongsResultSet.getLong("messageId");
-			
-			List<Long> boardMessagesId = boardsMessagesId.getOrDefault(boardName, new ArrayList<Long>());
-			boardMessagesId.add(messageId);
-			boardsMessagesId.put(boardName, boardMessagesId);
 		}
 
 		// Prepare the result of boards
@@ -215,15 +198,30 @@ public class BoardDatabaseManager {
 			String description = boardResultSet.getString("boardDescription");
 			String creatorId = boardResultSet.getString("boardCreatorId");
 
-			if(boardsMessagesId.keySet().contains(name)) {
-				BoardModel newBoard = new BoardModel();
-				newBoard.setBoardName(name);
-				newBoard.setBoardDescription(description);
-				newBoard.setBoardCreatorId(creatorId);
-				newBoard.setBoardMessagesId(boardsMessagesId.get(name));
+			BoardModel newBoard = new BoardModel();
+			newBoard.setBoardName(name);
+			newBoard.setBoardDescription(description);
+			newBoard.setBoardCreatorId(creatorId);
 
-				res.add(newBoard);
+			res.add(newBoard);
+		}
+
+		// For each board, get all messages id
+		String belongsQuery = "SELECT * FROM BELONGS_TO_BOARD WHERE boardName = ?";
+		PreparedStatement belongsPreparedStatement = connection.prepareStatement(belongsQuery);
+
+		for (BoardModel boardModel : res) {
+			belongsPreparedStatement.setString(1, boardModel.getBoardName());
+			ResultSet belongsResultSet = belongsPreparedStatement.executeQuery();
+
+			List<Long> messagesId = new ArrayList<Long>();
+
+			while(belongsResultSet.next()) {
+				Long messageId = belongsResultSet.getLong("messageId");
+				messagesId.add(messageId);
 			}
+
+			boardModel.setBoardMessagesId(messagesId);
 		}
 
 		// Return the result

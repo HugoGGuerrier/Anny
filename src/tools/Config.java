@@ -60,6 +60,14 @@ public class Config {
 
 	/** Mysql's password */
 	private static String mysqlPassword;
+	
+	// --- MongoDB configuration
+	
+	/** MongoDB database name */
+	private static String mongoDatabase;
+	
+	/** MongoDB message collection name */
+	private static String mongoMessageCollection;
 
 
 	// ----- Getters -----
@@ -119,6 +127,16 @@ public class Config {
 
 	public static String getMysqlPassword() {
 		return Config.mysqlPassword;
+	}
+	
+	// --- MongoDB getters
+	
+	public static String getMongoDatabase() {
+		return Config.mongoDatabase;
+	}
+	
+	public static String getMongoMessageCollection() {
+		return Config.mongoMessageCollection;
 	}
 
 
@@ -191,7 +209,13 @@ public class Config {
 			Config.mysqlPassword = mysqlPassword == null ? "unknown" : mysqlPassword;
 
 			// --- Get the mongodb configuration
-
+			JSONObject mongoConfig = (JSONObject) configJSON.get("mongoConfig");
+			
+			String mongoDatabase = (String) mongoConfig.get("mongoDatabase");
+			Config.mongoDatabase = mongoDatabase;
+			
+			String mongoMessageCollection = (String) mongoConfig.get("mongoMessageCollection");
+			Config.mongoMessageCollection = mongoMessageCollection;
 
 			// Set the initialize indicator to true
 			Config.initialize = true;

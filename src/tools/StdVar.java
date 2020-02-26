@@ -10,7 +10,6 @@ public class StdVar {
 	
 	// --- App constants
 	public static final String APP_ENCODING = "UTF-8";
-	public static final String APP_HASH_ALGORITHM = "sha512";
 	
 	// --- Environment
 	public static final int DEVELOPMENT_ENV = 0;

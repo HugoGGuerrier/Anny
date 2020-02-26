@@ -111,6 +111,12 @@ public class Migrator {
 		}
 	}
 
+	/**
+	 * Get the migrator unique instance
+	 * 
+	 * @return The migrator instance
+	 * @throws SQLException If there is an exception during the instance creation
+	 */
 	public static Migrator getInstance() throws SQLException {
 		if(Migrator.instance == null) {
 			Migrator.instance = new Migrator();
@@ -153,13 +159,12 @@ public class Migrator {
 		Connection connection = Database.getMySQLConnection();
 		Statement stmt = connection.createStatement();
 
-		if(targetVersion >= this.currentDatabaseVersion) {
+		if(targetVersion > this.currentDatabaseVersion) {
 
 			if(this.currentDatabaseVersion < 1 && targetVersion >= 1) {
 				for (String update : this.version1Upgrade) {
 					stmt.executeUpdate(update);
 				}
-				this.logger.log("Database migrated to version 1", Logger.INFO);
 			}
 
 			// Set the current database version
@@ -182,13 +187,12 @@ public class Migrator {
 		Connection connection = Database.getMySQLConnection();
 		Statement stmt = connection.createStatement();
 
-		if(targetVersion <= this.currentDatabaseVersion) {
+		if(targetVersion < this.currentDatabaseVersion) {
 
 			if(this.currentDatabaseVersion >= 1 && targetVersion < 1) {
 				for (String update : this.version1Downgrade) {
 					stmt.executeUpdate(update);
 				}
-				this.logger.log("Database migrated to version 0", Logger.INFO);
 			}
 
 			// Set the current database version

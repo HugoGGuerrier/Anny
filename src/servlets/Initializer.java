@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
+import db.Migrator;
 import tools.Config;
 import tools.Logger;
 import tools.StdVar;
@@ -65,12 +67,23 @@ public class Initializer extends HttpServlet {
 
 			// Log the app start
 			logger.log("Configuration loaded", Logger.INFO);
+			
+			// Migrate the database to the correct version
+			Migrator migrator = Migrator.getInstance();
+			if(migrator.upgrade(Config.getDatabaseVersion())) {
+				logger.log("Database migrated to version " + Config.getDatabaseVersion(), Logger.INFO);
+			}
 
 		} catch (IOException e) {
 
 			logger.log("Cannot load the configuration", Logger.ERROR);
 			logger.log(e, Logger.ERROR);
 
+		} catch (SQLException e) {
+
+			logger.log("Cannot migrate the database to the app version", Logger.ERROR);
+			logger.log(e, Logger.ERROR);
+			
 		}
 		
 		// DEBUG SECTION

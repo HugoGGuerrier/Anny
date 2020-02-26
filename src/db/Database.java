@@ -5,6 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+
 import tools.Config;
 import tools.Logger;
 
@@ -106,11 +110,14 @@ public class Database {
 		}
 	}
 
-	/*
+	/**
+	 * Get the mongoDB connections
+	 * 
+	 * @return The connection
+	 */
 	public static MongoDatabase getMongoDBConnection()  {
 		MongoClient mongo = MongoClients.create();
-		return mongo.getDatabase(DBStatic.mongo_bd);
+		return mongo.getDatabase(Config.getMongoDatabase());
 	}
-	 */
 
 }

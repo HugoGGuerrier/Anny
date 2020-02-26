@@ -1,8 +1,6 @@
 package services.log;
 
 import tools.exceptions.SessionException;
-import tools.exceptions.UserException;
-import tools.models.UserModel;
 
 public class LogoutUser {
 

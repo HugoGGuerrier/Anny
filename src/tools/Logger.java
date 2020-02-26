@@ -79,7 +79,7 @@ public class Logger {
 	public synchronized void log(String message, int level) {
 		// Create the needed variables
 		FileWriter writer = null;
-		SimpleDateFormat formater = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		SimpleDateFormat formater = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		StringBuilder toWrite = new StringBuilder();
 		Date currentDate = new Date();
 		

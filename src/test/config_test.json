@@ -13,6 +13,8 @@
 	"mysqlLogin": "birdy_user",
 	"mysqlPassword": "birdy_password"
 },
-"mongodbConfig": {
+"mongoConfig": {
+	"mongoDatabase": "DB_BIRDY_TEST",
+	"mongoMessageCollection": "messages"
 }
 }

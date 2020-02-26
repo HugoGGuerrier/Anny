@@ -1,5 +1,9 @@
 package tools;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 /**
@@ -13,28 +17,31 @@ public class Security {
 	// ----- Attributes -----
 	
 	
+	/** Unique security instance (singleton) */
 	private static Security instance;
 	
 	
 	// ----- Constructors -----
 	
 	
+	/**
+	 * Create a new security instance
+	 */
 	private Security() {
 		
 	}
 	
+	/**
+	 * Get the security unique instance
+	 * 
+	 * @return The instance
+	 */
 	public static Security getInstance() {
 		if(Security.instance == null) {
 			Security.instance = new Security();
 		}
 		return Security.instance;
 	}
-	
-	
-	// ----- Getters -----
-	
-	
-	// ----- Setters -----
 	
 	
 	// ----- Class methods -----
@@ -69,10 +76,7 @@ public class Security {
 	 * @return The hashed string
 	 */
 	public String hashString(String stringToHash) {
-		// TODO : Hasher le mot de passe avec l'algorithme sha-512
-		String res = "";
-		
-		return res;
+		return DigestUtils.sha512Hex(stringToHash);
 	}
 	
 	
@@ -86,9 +90,36 @@ public class Security {
 	 * @return True if the ID is valid
 	 */
 	public boolean isValidUserId(String userId) {
-		// TODO : Faire la vérification de l'id utilisateur
+		Pattern pattern = Pattern.compile("^@[a-z0-9]+$");
+		Matcher matcher = pattern.matcher(userId);
 		
-		return true;
+		return matcher.matches();
+	}
+	
+	/**
+	 * Verify if a password is correctly hashed and not empty
+	 * 
+	 * @param hashedPassword The hashed password to verify
+	 * @return Tru if the password is valid
+	 */
+	public boolean isValidPassword(String hashedPassword) {
+		Pattern pattern = Pattern.compile("^([abcdef]|[0-9]){128}$");
+		Matcher matcher = pattern.matcher(hashedPassword);
+		
+		return matcher.matches() && hashedPassword != "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e";
+	}
+	
+	/**
+	 * Verify the email address with a regexp
+	 * 
+	 * @param userMail The mail to verify
+	 * @return True if the mail is valid
+	 */
+	public boolean isValidEmail(String userMail) {
+		Pattern pattern = Pattern.compile("^[\\\\w!#$%&’*+/=?`{|}~^-]+(?:\\\\.[\\\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\\\.)+[a-zA-Z]{2,6}$");
+		Matcher matcher = pattern.matcher(userMail);
+		
+		return matcher.matches();
 	}
 	
 	/**
@@ -98,19 +129,7 @@ public class Security {
 	 * @return True if the message ID is valid
 	 */
 	public boolean idValidMessageId(long messageId) {
-		return messageId > 5;
-	}
-	
-	/**
-	 * Verify the email address with a regexp
-	 * 
-	 * @param userMail The mail to verify
-	 * @return True if the mail is valid
-	 */
-	public boolean isValidMail(String userMail) {
-		// TODO : Faire la vérification du mail
-		
-		return true;
+		return messageId > 1;
 	}
 
 }

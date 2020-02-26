@@ -43,6 +43,9 @@ public class User extends HttpServlet {
 	/** The handler */
 	private Handler handler;
 	
+	/** Security tool */
+	private Security security;
+	
 	/**	Service to create an user */
 	private CreateUser createUser;
 	
@@ -65,6 +68,7 @@ public class User extends HttpServlet {
         // Get the instances
         this.logger = Logger.getInstance();
         this.handler = Handler.getInstance();
+        this.security = Security.getInstance();
         this.createUser = CreateUser.getInstance();
         this.deleteUser = DeleteUser.getInstance();
         this.modifyUser = ModifyUser.getInstance();
@@ -72,7 +76,7 @@ public class User extends HttpServlet {
     }
 	
 	
-	// ----- Http methods -----
+	// ----- HTTP methods -----
 	
 
 	/**
@@ -99,8 +103,7 @@ public class User extends HttpServlet {
 		Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
 		
 		// Hash the password to avoid memory leak
-		Security security = Security.getInstance();
-		password = security.hashString(password);
+		password = this.security.hashString(password);
 		
 		// Create the new user to insert
 		UserModel newUser = new UserModel();
@@ -145,9 +148,6 @@ public class User extends HttpServlet {
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// TODO : Gérer la méthode put pour modifier un utilisateur
-		/**
-		 * SELECT * FROM USER WHERE userId = userId.....
-		 */
 		resp.getWriter().append("PUT : Not implemented...");
 	}
 	

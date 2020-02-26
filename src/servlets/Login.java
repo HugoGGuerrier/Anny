@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Hugo Guerrier
  */
 
-@WebServlet("/Login")
+@WebServlet("/login")
 public class Login extends HttpServlet {
 
 	// ----- Attributes -----
@@ -34,8 +34,9 @@ public class Login extends HttpServlet {
 	// ----- HTTP methods -----
 	
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// TODO : Récupérer les arguments de POST et les nettoyer pour les passer au service de log
+		resp.getWriter().append("POST : Not implemented...");
 	}
 
 }

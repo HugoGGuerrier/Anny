@@ -26,10 +26,18 @@ public class Handler {
 	// ----- Constructors -----
 
 
+	/**
+	 * Create a new empty handler
+	 */
 	private Handler() {
 
 	}
 
+	/**
+	 * Get the unique handler instance
+	 * 
+	 * @return The handler instance
+	 */
 	public static Handler getInstance() {
 		if(Handler.instance == null) {
 			Handler.instance = new Handler();
