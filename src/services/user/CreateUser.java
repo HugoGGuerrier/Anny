@@ -36,7 +36,7 @@ public class CreateUser {
 	/**
 	 * Get the service unique instance
 	 * 
-	 * @return The isntance
+	 * @return The instance
 	 */
 	public static CreateUser getInstance() {
 		if(CreateUser.instance ==  null) {
@@ -54,7 +54,7 @@ public class CreateUser {
 	 * 
 	 * @param user The user to insert in database
 	 * @throws UserException If the user doesn't contains correct informations
-	 * @throws SQLException if there is a problem with the database
+	 * @throws SQLException If there is a problem with the database
 	 */
 	public void createUser(UserModel user) throws UserException, SQLException {
 		// Verify the user parameters

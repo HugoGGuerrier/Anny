@@ -1,4 +1,4 @@
-package test;
+ package test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -66,7 +66,6 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot open the mysql connection");
 		}
-
 	}
 
 	@AfterClass

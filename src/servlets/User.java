@@ -156,7 +156,7 @@ public class User extends HttpServlet {
 	 */
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Gérer ka méthode delete pour supprimer un utilisateur
+		// TODO : Gérer la méthode delete pour supprimer un utilisateur
 		resp.getWriter().append("DELETE : Not implemented...");
 	}
 
