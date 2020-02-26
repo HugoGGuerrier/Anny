@@ -59,7 +59,7 @@ public class Migrator {
 			+ "); ",
 
 			"CREATE OR REPLACE TABLE BELONGS_TO_BOARD ("
-			+ "messageId BIGINT PRIMARY KEY NOT NULL, "
+			+ "messageId VARCHAR(64) PRIMARY KEY NOT NULL, "
 			+ "boardName VARCHAR(32) NOT NULL, "
 			+ "FOREIGN KEY (boardName) REFERENCES BOARD(boardName) ON DELETE CASCADE ON UPDATE CASCADE"
 			+ "); "

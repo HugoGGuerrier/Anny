@@ -1,4 +1,4 @@
- package test;
+package test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -143,7 +143,7 @@ public class DatabaseTests {
 	public void testFollow() {
 		FollowDatabaseManager followDatabaseManager = FollowDatabaseManager.getInstance();
 		UserDatabaseManager userDatabaseManager = UserDatabaseManager.getInstance();
-		
+
 		// Insert test users
 		UserModel exampleUser1 = new UserModel();
 		exampleUser1.setUserId("@tester_2");
@@ -154,7 +154,7 @@ public class DatabaseTests {
 		exampleUser1.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
 		exampleUser1.setUserDate(new Date(new java.util.Date().getTime()));
 		exampleUser1.setUserAdmin(true);
-		
+
 		UserModel exampleUser2 = new UserModel();
 		exampleUser2.setUserId("@tester_3");
 		exampleUser2.setUserPseudo("Test_pseudo");
@@ -164,7 +164,7 @@ public class DatabaseTests {
 		exampleUser2.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
 		exampleUser2.setUserDate(new Date(new java.util.Date().getTime()));
 		exampleUser2.setUserAdmin(true);
-		
+
 		UserModel exampleUser3 = new UserModel();
 		exampleUser3.setUserId("@tester_4");
 		exampleUser3.setUserPseudo("Test_pseudo");
@@ -174,7 +174,7 @@ public class DatabaseTests {
 		exampleUser3.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
 		exampleUser3.setUserDate(new Date(new java.util.Date().getTime()));
 		exampleUser3.setUserAdmin(true);
-		
+
 		try {
 			userDatabaseManager.insertUser(exampleUser1);
 			userDatabaseManager.insertUser(exampleUser2);
@@ -183,18 +183,18 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot insert users for follow tests !");
 		}
-		
+
 		// Test insertion
 		FollowModel followModel1 = new FollowModel();
 		followModel1.setFollowedUserId(exampleUser1.getUserId());
 		followModel1.setFollowingUserId(exampleUser2.getUserId());
 		followModel1.setFollowDate(new Date(new java.util.Date().getTime()));
-		
+
 		FollowModel followModel2 = new FollowModel();
 		followModel2.setFollowedUserId(exampleUser1.getUserId());
 		followModel2.setFollowingUserId(exampleUser3.getUserId());
 		followModel2.setFollowDate(new Date(new java.util.Date().getTime()));
-		
+
 		FollowModel followModel3 = new FollowModel();
 		followModel3.setFollowedUserId(exampleUser3.getUserId());
 		followModel3.setFollowingUserId(exampleUser1.getUserId());
@@ -207,7 +207,7 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot insert follows in the database !");
 		}
-		
+
 		// Test getting
 		FollowModel filter = new FollowModel();
 		filter.setFollowedUserId(exampleUser1.getUserId());
@@ -218,7 +218,7 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot get follows !");
 		}
-		
+
 		// Test deletion
 		try {
 			followDatabaseManager.deleteFollow(followModel1);
@@ -252,7 +252,7 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot insert a new user for board testing !");
 		}
-	
+
 		// Test insertion
 		BoardModel newBoard = new BoardModel();
 		newBoard.setBoardName("test_board");
@@ -266,7 +266,7 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot insert a new board !");
 		}
-		
+
 		// Test updating
 		newBoard.setBoardDescription("LOL");
 		try {
@@ -289,7 +289,7 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot get one board !");
 		}
-		
+
 		// Test the board deletion
 		try {
 			boardDatabaseManager.deleteBoard(newBoard);
@@ -299,31 +299,64 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot delete the board !");
 		}
-
 	}
-	
+
 	@Test
 	public void testMessage() {
+		BoardDatabaseManager boardDatabaseManager = BoardDatabaseManager.getInstance();
+		UserDatabaseManager userDatabaseManager = UserDatabaseManager.getInstance();
+
+		// Insert a new user to simulate board creation
+		UserModel exampleUser = new UserModel();
+		exampleUser.setUserId("@tester_6");
+		exampleUser.setUserPseudo("Test_pseudo");
+		exampleUser.setUserName("TestName");
+		exampleUser.setUserSurname("TestSurname");
+		exampleUser.setUserEmail("test6@test.mail");
+		exampleUser.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
+		exampleUser.setUserDate(new Date(new java.util.Date().getTime()));
+		exampleUser.setUserAdmin(true);
+		try {
+			userDatabaseManager.insertUser(exampleUser);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			fail("Cannot insert a new user for board testing !");
+		}
+
+		// Test a new board to make new message
+		BoardModel newBoard = new BoardModel();
+		newBoard.setBoardName("test_board2");
+		newBoard.setBoardCreatorId("@tester_6");
+		newBoard.setBoardDescription("This is the test board of the test user");
+		try {
+			boardDatabaseManager.insertBoard(newBoard);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			fail("Cannot insert a new board !");
+		}
+
 		MessageDatabaseManager messageDatabaseManager = MessageDatabaseManager.getInstance();
-		
+
 		// Test insertion
 		MessageModel message = new MessageModel();
-		message.setMessageBoardName("test");
+		message.setMessageBoardName("test_board2");
 		message.setMessageDate(new Date(new java.util.Date().getTime()));
 		message.setMessageId("1");
 		message.setMessagePosterId("@tester");
 		message.setMessageText("This is a test message");
 		try {
 			messageDatabaseManager.insertMessage(message);
-			System.out.println(messageDatabaseManager.getNextMessageId(message.getMessageId()));
 		} catch (MongoException e) {
 			e.printStackTrace();
 			fail("Cannot insert a new message !");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			fail("Cannot add the message to the board !");
 		}
-		
+
 		// Test answer insertion
 		MessageModel answer = new MessageModel();
-		answer.setMessageBoardName("test");
+		answer.setMessageBoardName("test_board2");
 		answer.setMessageDate(new Date(new java.util.Date().getTime()));
 		answer.setMessageId("1.1");
 		answer.setMessagePosterId("@tester");
@@ -333,6 +366,22 @@ public class DatabaseTests {
 		} catch (MongoException e) {
 			e.printStackTrace();
 			fail("Cannot insert an answer !");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			fail("Cannot add the message to the board !");
+		}
+		
+		// Test getting
+		MessageModel filter = new MessageModel();
+		filter.setMessageText("answer");
+		try {
+			List<MessageModel> messages = messageDatabaseManager.getMessage(filter, true);
+			for(MessageModel msg : messages) {
+				System.out.println(msg.getMessageId());
+			}
+		} catch (MongoException e) {
+			e.printStackTrace();
+			fail("Cannot get messages !");
 		}
 	}
 

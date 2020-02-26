@@ -50,7 +50,7 @@ public class MessageModel {
 		this.messageText = (String) messageJSON.get("messageText");
 		this.messageBoardName = (String) messageJSON.get("messageBoardName");
 		this.messagePosterId = (String) messageJSON.get("messagePosterId");
-		this.messageDate = new Date((Long) messageJSON.get("messageDate"));
+		this.messageDate = new Date(Long.parseLong((String) messageJSON.get("messageDate")));
 		this.messageAnswersId = new ArrayList<String>();
 		
 		// Get all the answers ID
@@ -133,7 +133,7 @@ public class MessageModel {
 		res.put("messageText", this.messageText);
 		res.put("messageBoardName", this.messageBoardName);
 		res.put("messagePosterId", this.messagePosterId);
-		res.put("messageDate", this.messageDate.getTime());
+		res.put("messageDate", String.valueOf(this.messageDate.getTime()));
 		
 		// Get the answers JSON recusively
 		JSONArray answers = new JSONArray();
