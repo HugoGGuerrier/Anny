@@ -1,4 +1,4 @@
-# Birdy (This name can change) - The simple well-organised social network !
+# Birdy (This name could change) - The simple well-organised social network !
 
 # Workspace
 

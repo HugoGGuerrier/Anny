@@ -102,7 +102,7 @@ public class UserDatabaseManager {
 		preparedStatement.setString(3, userModel.getUserSurname());
 		preparedStatement.setString(4, userModel.getUserEmail());
 		preparedStatement.setString(5, userModel.getUserPassword());
-		preparedStatement.setInt(6, userModel.isUserAdmin() ? 1 : 2);
+		preparedStatement.setInt(6, userModel.isUserAdmin() ? 1 : 0);
 		preparedStatement.setString(7, userModel.getUserId());
 
 		// Execute the statement

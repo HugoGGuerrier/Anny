@@ -23,11 +23,20 @@ public class ModifyUser {
 
 	// ----- Constructors -----
 
-
+	
+	/**
+	 * Construct a new service
+	 */
 	private ModifyUser() {
-
+		this.userDatabaseManager = UserDatabaseManager.getInstance();
+		this.security = Security.getInstance();
 	}
-
+	
+	/**
+	 * Get the service unique instance
+	 * 
+	 * @return The instance
+	 */
 	public static ModifyUser getInstance() {
 		if(ModifyUser.instance ==  null) {
 			ModifyUser.instance = new ModifyUser();
