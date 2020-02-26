@@ -315,6 +315,7 @@ public class DatabaseTests {
 		message.setMessageText("This is a test message");
 		try {
 			messageDatabaseManager.insertMessage(message);
+			System.out.println(messageDatabaseManager.getNextMessageId(message.getMessageId()));
 		} catch (MongoException e) {
 			e.printStackTrace();
 			fail("Cannot insert a new message !");

@@ -142,8 +142,35 @@ public class MessageDatabaseManager {
 	 * @param parent The parent message ID
 	 * @return The next available message ID
 	 */
-	public String getNextMessageId(String parent) {
-		return null;
+	public String getNextMessageId(MessageModel parent) throws MongoException {
+		// Get the parent answers list
+		MessageModel filter = new MessageModel();
+		filter.setMessageId(parent.getMessageId());
+		List<MessageModel> messages = this.getMessage(filter);
+		
+		if(messages.size() == 1) {
+			int maxValue = 0;
+			
+			// Search the next available id
+			for(String answerId : messages.get(0).getMessageAnswersId()) {
+				String[] path = answerId.split("\\.");
+				int childId = Integer.valueOf(path[path.length - 1]);
+				if(childId > maxValue) {
+					maxValue = (childId);
+				}
+			}
+			
+			// Return the result
+			return parent + "." + maxValue;
+		} else if(messages.size() > 1) {
+			
+			return null;
+			
+		} else {
+			
+			throw new MongoException("Multiple messages with the same ID");
+			
+		}
 	}
 	
 }

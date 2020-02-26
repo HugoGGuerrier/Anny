@@ -97,7 +97,7 @@ public class MessageModel {
 		return this.messageDate;
 	}
 
-	public List<String> getMessageAnswers() {
+	public List<String> getMessageAnswersId() {
 		return this.messageAnswersId;
 	}
 	
