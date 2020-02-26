@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.bson.Document;
@@ -25,11 +26,14 @@ import db.Database;
 import db.Migrator;
 import db.managers.BoardDatabaseManager;
 import db.managers.FollowDatabaseManager;
+import db.managers.MessageDatabaseManager;
 import db.managers.UserDatabaseManager;
 import tools.Config;
 import tools.StdVar;
+import tools.exceptions.MongoException;
 import tools.models.BoardModel;
 import tools.models.FollowModel;
+import tools.models.MessageModel;
 import tools.models.UserModel;
 
 public class DatabaseTests {
@@ -254,8 +258,8 @@ public class DatabaseTests {
 		newBoard.setBoardName("test_board");
 		newBoard.setBoardCreatorId("@tester_5");
 		newBoard.setBoardDescription("This is the test board of the test user");
-		newBoard.addMessageId(1l);
-		newBoard.addMessageId(3l);
+		newBoard.addMessageId("1");
+		newBoard.addMessageId("3");
 		try {
 			boardDatabaseManager.insertBoard(newBoard);
 		} catch (SQLException e) {
@@ -300,6 +304,21 @@ public class DatabaseTests {
 	
 	@Test
 	public void testMessage() {
+		MessageDatabaseManager messageDatabaseManager = MessageDatabaseManager.getInstance();
+		
+		// Test insertion
+		MessageModel message = new MessageModel();
+		message.setMessageBoardName("test");
+		message.setMessageDate(new Date(new java.util.Date().getTime()));
+		message.setMessageId("1");
+		message.setMessagePosterId("@tester");
+		message.setMessageText("This is a test message");
+		try {
+			messageDatabaseManager.insertMessage(message);
+		} catch (MongoException e) {
+			e.printStackTrace();
+			fail("Cannot insert a new message !");
+		}
 		
 	}
 

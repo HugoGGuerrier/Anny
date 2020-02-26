@@ -2,8 +2,6 @@ package tools.models;
 
 import java.sql.Date;
 
-import org.json.simple.JSONObject;
-
 /**
  * Class that represents a follow on the application
  * 
@@ -27,15 +25,6 @@ public class FollowModel {
 	
 	// ----- Constructors -----
 	
-	
-	/**
-	 * Create a new follow from a JSON object
-	 * 
-	 * @param followJSON The follow JSON
-	 */
-	public FollowModel(JSONObject followJSON) {
-		// TODO : Créer un follow en suivant le JSON
-	}
 	
 	/**
 	 * Create a new empty follow model
