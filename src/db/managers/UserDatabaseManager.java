@@ -1,6 +1,7 @@
 package db.managers;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -62,7 +63,7 @@ public class UserDatabaseManager {
 		Connection connection = Database.getMySQLConnection();
 
 		// Create the SQL insertion
-		String insertion = "INSERT INTO USER (userId, userPseudo, userName, userSurname, userEmail, userPassword, userAdmin) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		String insertion = "INSERT INTO USER (userId, userPseudo, userName, userSurname, userEmail, userPassword, userDate, userAdmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 		// Prepare the statement
 		PreparedStatement preparedStatement = connection.prepareStatement(insertion);
@@ -74,7 +75,8 @@ public class UserDatabaseManager {
 		preparedStatement.setString(4, userModel.getUserSurname());
 		preparedStatement.setString(5, userModel.getUserEmail());
 		preparedStatement.setString(6, userModel.getUserPassword());
-		preparedStatement.setBoolean(7, userModel.isUserAdmin());
+		preparedStatement.setDate(7, userModel.getUserDate());
+		preparedStatement.setBoolean(8, userModel.isUserAdmin());
 
 		// Execute the statement
 		preparedStatement.executeUpdate();
@@ -91,7 +93,7 @@ public class UserDatabaseManager {
 		Connection connection = Database.getMySQLConnection();
 
 		// Create the SQL insertion
-		String update = "UPDATE USER SET userPseudo = ?, userName = ?, userSurname = ?, userEmail = ?, userPassword = ?, userAdmin = ? WHERE userId = ?";
+		String update = "UPDATE USER SET userPseudo = ?, userName = ?, userSurname = ?, userEmail = ?, userPassword = ?, userDate = ?, userAdmin = ? WHERE userId = ?";
 
 		// Prepare the statement
 		PreparedStatement preparedStatement = connection.prepareStatement(update);
@@ -102,8 +104,9 @@ public class UserDatabaseManager {
 		preparedStatement.setString(3, userModel.getUserSurname());
 		preparedStatement.setString(4, userModel.getUserEmail());
 		preparedStatement.setString(5, userModel.getUserPassword());
-		preparedStatement.setInt(6, userModel.isUserAdmin() ? 1 : 0);
-		preparedStatement.setString(7, userModel.getUserId());
+		preparedStatement.setDate(6, userModel.getUserDate());
+		preparedStatement.setInt(7, userModel.isUserAdmin() ? 1 : 0);
+		preparedStatement.setString(8, userModel.getUserId());
 
 		// Execute the statement
 		preparedStatement.executeUpdate();
@@ -168,6 +171,9 @@ public class UserDatabaseManager {
 			if (model.getUserPassword() != null) {
 				query.append(" AND userPassword LIKE ?");
 			}
+			if (model.getUserDate() != null) {
+				query.append(" AND userDate = ?");
+			}
 			if (model.isUserAdmin() != null) {
 				query.append(" AND userAdmin = ?");
 			}
@@ -191,6 +197,9 @@ public class UserDatabaseManager {
 			}
 			if (model.getUserPassword() != null) {
 				query.append(" AND userPassword = ?");
+			}
+			if (model.getUserDate() != null) {
+				query.append(" AND userDate = ?");
 			}
 			if (model.isUserAdmin() != null) {
 				query.append(" AND userAdmin = ?");
@@ -223,6 +232,9 @@ public class UserDatabaseManager {
 			if (model.getUserPassword() != null) {
 				preparedStatement.setString(nextArgPointer++, "%" + model.getUserPassword() + "%");
 			}
+			if (model.getUserDate() != null) {
+				preparedStatement.setDate(nextArgPointer++, model.getUserDate());
+			}
 			if (model.isUserAdmin() != null) {
 				preparedStatement.setInt(nextArgPointer, (model.isUserAdmin() ? 1 : 0));
 			}
@@ -247,6 +259,9 @@ public class UserDatabaseManager {
 			if (model.getUserPassword() != null) {
 				preparedStatement.setString(nextArgPointer++, model.getUserPassword());
 			}
+			if (model.getUserDate() != null) {
+				preparedStatement.setDate(nextArgPointer++, model.getUserDate());
+			}
 			if (model.isUserAdmin() != null) {
 				preparedStatement.setInt(nextArgPointer, (model.isUserAdmin() ? 1 : 0));
 			}
@@ -266,6 +281,7 @@ public class UserDatabaseManager {
 			String surname = resultSet.getString("userSurname");
 			String email = resultSet.getString("userEmail");
 			String password = resultSet.getString("userPassword");
+			Date date = resultSet.getDate("userDate");
 			Boolean admin = resultSet.getBoolean("userAdmin");
 			UserModel newUser = new UserModel();
 			newUser.setUserId(id);
@@ -274,6 +290,7 @@ public class UserDatabaseManager {
 			newUser.setUserSurname(surname);
 			newUser.setUserEmail(email);
 			newUser.setUserPassword(password);
+			newUser.setUserDate(date);
 			newUser.setUserAdmin(admin);
 
 			res.add(newUser);

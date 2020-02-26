@@ -48,7 +48,7 @@ public class SearchUser {
 	 * Get an user list corresponding with the research user model
 	 * 
 	 * @param user The user model to look for
-	 * @param isLike If we want a precise research or a is like research
+	 * @param isLike If we want a ISLIKE research (true) or a equals research (false)
 	 * @return The list of user corresponding to the model
 	 * @throws SQLException 
 	 */

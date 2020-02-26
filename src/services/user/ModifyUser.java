@@ -84,6 +84,10 @@ public class ModifyUser {
 			valid = false;
 			message.append(" - Invalid user password : " + user.getUserPassword());
 		}
+		if(user.getUserDate() == null || !this.security.isValidDate(user.getUserDate().toString())) {
+			valid = false;
+			message.append(" - Invalid user date : " + user.getUserDate().toString());
+		}
 
 		// If there is an error, throw an exception
 		if(!valid) {

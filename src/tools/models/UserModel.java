@@ -1,5 +1,7 @@
 package tools.models;
 
+import java.sql.Date;
+
 import org.json.simple.JSONObject;
 
 /**
@@ -31,6 +33,9 @@ public class UserModel {
 	/** User's password */
 	private String userPassword;
 	
+	/** User's inscription date */
+	private Date userDate;
+	
 	/** True if the user in an administrator */
 	private Boolean userAdmin;
 	
@@ -57,6 +62,7 @@ public class UserModel {
 		this.userSurname = null;
 		this.userEmail = null;
 		this.userPassword = null;
+		this.userDate = null;
 		this.userAdmin = null;
 	}
 	
@@ -87,9 +93,13 @@ public class UserModel {
 	public String getUserEmail() {
 		return this.userEmail;
 	}
-	
+
 	public String getUserPassword() {
 		return this.userPassword;
+	}
+
+	public Date getUserDate() {
+		return this.userDate;
 	}
 	
 	public Boolean isUserAdmin() {
@@ -108,23 +118,24 @@ public class UserModel {
 		this.userPseudo = pseudo;
 	}
 
-
 	public void setUserName(String name) {
 		this.userName = name;
 	}
-
 
 	public void setUserSurname(String surname) {
 		this.userSurname = surname;
 	}
 
-
 	public void setUserEmail(String email) {
 		this.userEmail = email;
 	}
-	
+
 	public void setUserPassword(String password) {
 		this.userPassword= password;
+	}
+	
+	public void setUserDate(Date date) {
+		this.userDate = date;
 	}
 	
 	public void setUserAdmin(Boolean admin) {
