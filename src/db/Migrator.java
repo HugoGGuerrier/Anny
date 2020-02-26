@@ -38,6 +38,7 @@ public class Migrator {
 			+ "userSurname VARCHAR(32) NOT NULL, "
 			+ "userEmail VARCHAR(64) NOT NULL UNIQUE, "
 			+ "userPassword VARCHAR(128) NOT NULL, "
+			+ "userDate DATE NOT NULL, "
 			+ "userAdmin BOOLEAN DEFAULT 0"
 			+ "); ",
 

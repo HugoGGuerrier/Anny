@@ -11,16 +11,11 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.bson.Document;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 
 import db.Database;
 import db.Migrator;
@@ -102,6 +97,7 @@ public class DatabaseTests {
 		exampleUser.setUserSurname("TestSurname");
 		exampleUser.setUserEmail("test1@test.mail");
 		exampleUser.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
+		exampleUser.setUserDate(new Date(new java.util.Date().getTime()));
 		exampleUser.setUserAdmin(true);
 		try {
 			userDatabaseManager.insertUser(exampleUser);
@@ -156,6 +152,7 @@ public class DatabaseTests {
 		exampleUser1.setUserSurname("TestSurname");
 		exampleUser1.setUserEmail("test2@test.mail");
 		exampleUser1.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
+		exampleUser1.setUserDate(new Date(new java.util.Date().getTime()));
 		exampleUser1.setUserAdmin(true);
 		
 		UserModel exampleUser2 = new UserModel();
@@ -165,6 +162,7 @@ public class DatabaseTests {
 		exampleUser2.setUserSurname("TestSurname");
 		exampleUser2.setUserEmail("test3@test.mail");
 		exampleUser2.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
+		exampleUser2.setUserDate(new Date(new java.util.Date().getTime()));
 		exampleUser2.setUserAdmin(true);
 		
 		UserModel exampleUser3 = new UserModel();
@@ -174,6 +172,7 @@ public class DatabaseTests {
 		exampleUser3.setUserSurname("TestSurname");
 		exampleUser3.setUserEmail("test4@test.mail");
 		exampleUser3.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
+		exampleUser3.setUserDate(new Date(new java.util.Date().getTime()));
 		exampleUser3.setUserAdmin(true);
 		
 		try {
@@ -245,6 +244,7 @@ public class DatabaseTests {
 		exampleUser.setUserSurname("TestSurname");
 		exampleUser.setUserEmail("test5@test.mail");
 		exampleUser.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
+		exampleUser.setUserDate(new Date(new java.util.Date().getTime()));
 		exampleUser.setUserAdmin(true);
 		try {
 			userDatabaseManager.insertUser(exampleUser);
@@ -320,6 +320,19 @@ public class DatabaseTests {
 			fail("Cannot insert a new message !");
 		}
 		
+		// Test answer insertion
+		MessageModel answer = new MessageModel();
+		answer.setMessageBoardName("test");
+		answer.setMessageDate(new Date(new java.util.Date().getTime()));
+		answer.setMessageId("1.1");
+		answer.setMessagePosterId("@tester");
+		answer.setMessageText("This is a test answer");
+		try {
+			messageDatabaseManager.insertMessage(answer);
+		} catch (MongoException e) {
+			e.printStackTrace();
+			fail("Cannot insert an answer !");
+		}
 	}
 
 }
