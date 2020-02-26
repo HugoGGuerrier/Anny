@@ -77,7 +77,7 @@ public class Database {
 	/**
 	 * Get an Mysql connection with or without the pooling
 	 * 
-	 * @return The mysql connection if 
+	 * @return The mysql connection
 	 * @throws SQLException
 	 */
 	public static Connection getMySQLConnection() throws SQLException {

@@ -1,5 +1,6 @@
 package tools;
 
+import java.sql.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -97,19 +98,6 @@ public class Security {
 	}
 	
 	/**
-	 * Verify if a password is correctly hashed and not empty
-	 * 
-	 * @param hashedPassword The hashed password to verify
-	 * @return Tru if the password is valid
-	 */
-	public boolean isValidPassword(String hashedPassword) {
-		Pattern pattern = Pattern.compile("^([abcdef]|[0-9]){128}$");
-		Matcher matcher = pattern.matcher(hashedPassword);
-		
-		return matcher.matches() && hashedPassword != "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e";
-	}
-	
-	/**
 	 * Verify the email address with a regexp
 	 * 
 	 * @param userMail The mail to verify
@@ -121,6 +109,33 @@ public class Security {
 		
 		return matcher.matches();
 	}
+	
+	/**
+	 * Verify if a password is correctly hashed and not empty
+	 * 
+	 * @param hashedPassword The hashed password to verify
+	 * @return True if the password is valid
+	 */
+	public boolean isValidPassword(String hashedPassword) {
+		Pattern pattern = Pattern.compile("^([abcdef]|[0-9]){128}$");
+		Matcher matcher = pattern.matcher(hashedPassword);
+		
+		return matcher.matches() && hashedPassword != "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e";
+	}
+	
+	/**
+	 * Verify the date with a regexp
+	 * 
+	 * @param userDate The date to verify
+	 * @return True if the date is valid
+	 */
+	public boolean isValidDate(String userDate) {
+		Pattern pattern = Pattern.compile("^2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[0-1])$");
+		Matcher matcher = pattern.matcher(userDate);
+		
+		return matcher.matches();
+	}
+	
 	
 	/**
 	 * Verify the message ID

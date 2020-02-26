@@ -1,6 +1,7 @@
 package servlets;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -65,7 +66,7 @@ public class User extends HttpServlet {
 	public User() {
         super();
         
-        // Get the instances
+        // Get instances
         this.logger = Logger.getInstance();
         this.handler = Handler.getInstance();
         this.security = Security.getInstance();
@@ -100,6 +101,7 @@ public class User extends HttpServlet {
 		String surname = req.getParameter("userSurname");
 		String email = req.getParameter("userEmail");
 		String password = req.getParameter("userPassword");
+		Date date = Date.valueOf(req.getParameter("userDate"));
 		Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
 		
 		// Hash the password to avoid memory leak
@@ -113,6 +115,7 @@ public class User extends HttpServlet {
 		newUser.setUserSurname(surname);
 		newUser.setUserEmail(email);
 		newUser.setUserPassword(password);
+		newUser.setUserDate(date);
 		newUser.setUserAdmin(admin);
 		
 		// Create the response object
@@ -156,7 +159,7 @@ public class User extends HttpServlet {
 	 */
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Gérer ka méthode delete pour supprimer un utilisateur
+		// TODO : Gérer la méthode delete pour supprimer un utilisateur
 		resp.getWriter().append("DELETE : Not implemented...");
 	}
 
