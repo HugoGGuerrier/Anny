@@ -72,8 +72,8 @@ public class BoardDatabaseManager {
 		boardPreparedStatement.executeUpdate();
 
 		// Insert all the message id
-		for(Long messageId : boardModel.getBoardMessagesId()) {
-			belongsPreparedStatement.setLong(1, messageId);
+		for(String messageId : boardModel.getBoardMessagesId()) {
+			belongsPreparedStatement.setString(1, messageId);
 			belongsPreparedStatement.setString(2, boardModel.getBoardName());
 
 			belongsPreparedStatement.executeUpdate();
@@ -214,10 +214,10 @@ public class BoardDatabaseManager {
 			belongsPreparedStatement.setString(1, boardModel.getBoardName());
 			ResultSet belongsResultSet = belongsPreparedStatement.executeQuery();
 
-			List<Long> messagesId = new ArrayList<Long>();
+			List<String> messagesId = new ArrayList<String>();
 
 			while(belongsResultSet.next()) {
-				Long messageId = belongsResultSet.getLong("messageId");
+				String messageId = belongsResultSet.getString("messageId");
 				messagesId.add(messageId);
 			}
 

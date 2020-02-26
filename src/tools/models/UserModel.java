@@ -1,7 +1,5 @@
 package tools.models;
 
-import org.json.simple.JSONObject;
-
 /**
  * This is the wrapper class for a user. It contains all informations about an user
  * 
@@ -37,15 +35,6 @@ public class UserModel {
 	
 	// ----- Constructors -----
 	
-	
-	/**
-	 * Create a new user from a JSON
-	 * 
-	 * @param userJSON The user JSON
-	 */
-	public UserModel(JSONObject userJSON) {
-		// TODO : Faire la création de l'utilisateur avec le JSON
-	}
 	
 	/**
 	 * Create a new empty user

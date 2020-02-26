@@ -3,8 +3,6 @@ package tools.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.JSONObject;
-
 /**
  * This class represent a board, a board is a general subject to sort messages
  * 
@@ -26,20 +24,11 @@ public class BoardModel {
 	private String boardCreatorId;
 	
 	/** List of messages that compose the board */
-	private List<Long> boardMessagesId;
+	private List<String> boardMessagesId;
 	
 	
 	// ----- Constructors -----
 	
-	
-	/**
-	 * Create a board model from a json structure that contains all informations
-	 * 
-	 * @param boardJSON The JSON of the board model
-	 */
-	public BoardModel(JSONObject boardJSON) {
-		// TODO : Construire le board en fonction du JSON
-	}
 	
 	/**
 	 * Create an empty board model
@@ -48,7 +37,7 @@ public class BoardModel {
 		this.boardName = null;
 		this.boardDescription = null;
 		this.boardCreatorId = null;
-		this.boardMessagesId = new ArrayList<Long>();
+		this.boardMessagesId = new ArrayList<String>();
 	}
 	
 	
@@ -67,7 +56,7 @@ public class BoardModel {
 		return this.boardCreatorId;
 	}
 	
-	public List<Long> getBoardMessagesId() {
+	public List<String> getBoardMessagesId() {
 		return this.boardMessagesId;
 	}
 	
@@ -87,17 +76,17 @@ public class BoardModel {
 		this.boardCreatorId = creatorId;
 	}
 	
-	public void addMessageId(Long messageId) {
+	public void addMessageId(String messageId) {
 		if(!this.boardMessagesId.contains(messageId)) {
 			this.boardMessagesId.add(messageId);
 		}
 	}
 	
-	public void removeMessageId(Long messageId) {
+	public void removeMessageId(String messageId) {
 		this.boardMessagesId.remove(messageId);
 	}
 	
-	public void setBoardMessagesId(List<Long> messagesId) {
+	public void setBoardMessagesId(List<String> messagesId) {
 		this.boardMessagesId = messagesId;
 	}
 	

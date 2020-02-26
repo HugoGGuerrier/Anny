@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -18,7 +19,7 @@ public class MessageModel {
 	
 	
 	/** Message database id (DB key) */
-	private Long messageId;
+	private String messageId;
 	
 	/** Message text content */
 	private String messageText;
@@ -33,7 +34,7 @@ public class MessageModel {
 	private Date messageDate;
 	
 	/** Answers to the message which are also message instances created by mongodb */
-	private List<MessageModel> messageAnswers;
+	private List<String> messageAnswersId;
 
 	
 	// ----- Constructors -----
@@ -45,7 +46,19 @@ public class MessageModel {
 	 * @param messageJSON The message JSON
 	 */
 	public MessageModel(JSONObject messageJSON) {
-		// TODO : Créer le message depuis un JSON
+		this.messageId = (String) messageJSON.get("messageId");
+		this.messageText = (String) messageJSON.get("messageText");
+		this.messageBoardName = (String) messageJSON.get("messageBoardName");
+		this.messagePosterId = (String) messageJSON.get("messagePosterId");
+		this.messageDate = new Date((Long) messageJSON.get("messageDate"));
+		this.messageAnswersId = new ArrayList<String>();
+		
+		// Get all the answers ID
+		JSONArray answers = (JSONArray) messageJSON.get("messageAnswersId");
+		for(Object o : answers) {
+			String answerId = (String) o;
+			this.messageAnswersId.add(answerId);
+		}
 	}
 	
 	/**
@@ -57,14 +70,14 @@ public class MessageModel {
 		this.messageBoardName = null;
 		this.messagePosterId = null;
 		this.messageDate = null;
-		this.messageAnswers = new ArrayList<MessageModel>();
+		this.messageAnswersId = new ArrayList<String>();
 	}
 	
 	
 	// ----- Getters -----
 
 	
-	public Long getMessageId() {
+	public String getMessageId() {
 		return this.messageId;
 	}
 
@@ -84,15 +97,60 @@ public class MessageModel {
 		return this.messageDate;
 	}
 
-	public List<MessageModel> getMessageAnswers() {
-		return this.messageAnswers;
+	public List<String> getMessageAnswers() {
+		return this.messageAnswersId;
+	}
+	
+	/**
+	 * Get the message parent ID
+	 * 
+	 * @return The parent ID or null if the message doesn't have parent
+	 */
+	public String getParentId() {
+		String[] path = this.messageId.split("\\.");
+		if(path.length != 1) {
+			List<String> parentPath = new ArrayList<String>();
+			for(int i = 0; i < path.length - 1; i++) {
+				parentPath.add(path[i]);
+			}
+			return String.join(".", parentPath);
+		}
+		return null;
+	}
+	
+	/**
+	 * Get the message formated in a JSON object
+	 * 
+	 * @return The JSON object
+	 */
+	@SuppressWarnings("unchecked")
+	public JSONObject getJSON() {
+		// Prepare the result JSON
+		JSONObject res = new JSONObject();
+		
+		// Add all fields
+		res.put("messageId", this.messageId);
+		res.put("messageText", this.messageText);
+		res.put("messageBoardName", this.messageBoardName);
+		res.put("messagePosterId", this.messagePosterId);
+		res.put("messageDate", this.messageDate.getTime());
+		
+		// Get the answers JSON recusively
+		JSONArray answers = new JSONArray();
+		for(String messageId : this.messageAnswersId) {
+			answers.add(messageId);
+		}
+		res.put("messageAnswersId", answers);
+		
+		// Return the result
+		return res;
 	}
 	
 	
 	// ----- Setters -----
 	
 
-	public void setMessageId(Long id) {
+	public void setMessageId(String id) {
 		this.messageId = id;
 	}
 	
@@ -112,18 +170,12 @@ public class MessageModel {
 		this.messageDate = date;
 	}
 	
-	public void addAnswer(MessageModel answer) {
-		if(!this.messageAnswers.contains(answer)) {
-			this.messageAnswers.add(answer);
-		}
+	public void addAnwserId(String answerId) {
+		this.messageAnswersId.add(answerId);
 	}
 	
-	public void removeAnswer(MessageModel answer) {
-		this.messageAnswers.remove(answer);
-	}
-
-	public void setMessageAnswers(List<MessageModel> answers) {
-		this.messageAnswers = answers;
+	public void removeAnswerId(String answerId) {
+		this.messageAnswersId.remove(answerId);
 	}
 	
 	
