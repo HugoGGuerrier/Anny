@@ -58,13 +58,22 @@ public class CreateFollow {
 	 * @throws SQLException 
 	 */
 	public void createFollow(FollowModel follow) throws FollowException, SQLException {
-		// TODO : Insérer le follow dans la base de donnée
 		// Verify the follow parameters
 		boolean valid = true;
 		StringBuilder message = new StringBuilder();
 		
-		// ...
-		
+		if(follow.getFollowedUserId() == null || !this.security.isValidUserId(follow.getFollowedUserId())) {
+			valid = false;
+			message.append(" - Invalid followed user id : " + follow.getFollowedUserId());
+		}
+		if(follow.getFollowingUserId() == null || !this.security.isValidUserId(follow.getFollowingUserId()) ) {
+			valid = false;
+			message.append(" - Invalid following user id : " + follow.getFollowingUserId());;
+		}
+		if(follow.getFollowDate() == null || !this.security.isValidDate(follow.getFollowDate().toString())) {
+			valid = false;
+			message.append(" - Invalid follow date : " + follow.getFollowDate().toString());
+		}
 		
 		// If there is an error, throw an exception
 		if(!valid) {

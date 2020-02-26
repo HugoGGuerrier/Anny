@@ -87,7 +87,7 @@ public class CreateUser {
 		}
 		if(user.getUserDate() == null || !this.security.isValidDate(user.getUserDate().toString())) {
 			valid = false;
-			message.append(" - Invalid user date : " + user.getUserDate());
+			message.append(" - Invalid user date : " + user.getUserDate().toString());
 		}
 		
 		// If there is an error, throw an exception
