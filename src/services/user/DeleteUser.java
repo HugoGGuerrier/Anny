@@ -62,7 +62,7 @@ public class DeleteUser {
 		
 		if(user.getUserId() == null || !this.security.isValidUserId(user.getUserId())) {
 			valid = false;
-			message.append(" - Invalid user id" + user.getUserId());
+			message.append(" - Invalid user id : " + user.getUserId());
 		}
 		
 		// If there is an error, throw an exception

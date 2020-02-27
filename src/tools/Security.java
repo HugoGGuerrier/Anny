@@ -136,7 +136,6 @@ public class Security {
 		return matcher.matches();
 	}
 	
-	
 	/**
 	 * Verify the message ID
 	 * 
@@ -145,6 +144,24 @@ public class Security {
 	 */
 	public boolean idValidMessageId(long messageId) {
 		return messageId > 1;
+	}
+
+	/**
+	 * Verify the board name (board id)
+	 * @return
+	 */
+	public boolean isValidBoardName(String boardName) {
+		Pattern pattern = Pattern.compile("^[A-Za-z0-9]+$");
+		Matcher matcher = pattern.matcher(boardName);
+		
+		return matcher.matches();
+	}
+
+	public boolean isValidBoardDescription(String boardDescription) {
+		Pattern pattern = Pattern.compile("^.+$");
+		Matcher matcher = pattern.matcher(boardDescription);
+		
+		return matcher.matches();
 	}
 
 }
