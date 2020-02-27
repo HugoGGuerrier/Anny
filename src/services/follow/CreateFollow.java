@@ -70,7 +70,7 @@ public class CreateFollow {
 			valid = false;
 			message.append(" - Invalid following user id : " + follow.getFollowingUserId());;
 		}
-		if(follow.getFollowDate() == null || !this.security.isValidDate(follow.getFollowDate().toString())) {
+		if(follow.getFollowDate() == null) {
 			valid = false;
 			message.append(" - Invalid follow date : " + follow.getFollowDate().toString());
 		}

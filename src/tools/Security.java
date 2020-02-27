@@ -1,6 +1,5 @@
 package tools;
 
-import java.sql.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -134,16 +133,6 @@ public class Security {
 		Matcher matcher = pattern.matcher(userDate);
 		
 		return matcher.matches();
-	}
-	
-	/**
-	 * Verify the message ID
-	 * 
-	 * @param messageId The message ID to validate
-	 * @return True if the message ID is valid
-	 */
-	public boolean idValidMessageId(long messageId) {
-		return messageId > 1;
 	}
 
 	/**
