@@ -39,10 +39,12 @@ public class ServicesTest {
 	// --- User services
 	private CreateUser createUser = CreateUser.getInstance();
 	private DeleteUser deleteUser = DeleteUser.getInstance();
-	private LoginUser loginUser = LoginUser.getInstance();
-	private LogoutUser logoutUser = LogoutUser.getInstance();
 	private ModifyUser modifyUser = ModifyUser.getInstance();
 	private SearchUser searchUser = SearchUser.getInstance();
+	
+	// --- Login services
+	private LoginUser loginUser = LoginUser.getInstance();
+	private LogoutUser logoutUser = LogoutUser.getInstance();
 	
 	
 	// ----- Config methods -----
@@ -74,6 +76,11 @@ public class ServicesTest {
 	
 	@Test
 	public void testUser() {
+		fail("Not implemented yet !");
+	}
+	
+	@Test
+	public void testLogin() {
 		fail("Not implemented yet !");
 	}
 

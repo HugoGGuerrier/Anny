@@ -151,7 +151,7 @@ public class FollowDatabaseManager {
 				preparedStatement.setString(nextArgPointer++, "%" + model.getFollowingUserId() + "%");
 			}
 			if(model.getFollowDate() != null) {
-				preparedStatement.setString(nextArgPointer++, "%" + model.getFollowDate().toString() + "%");
+				preparedStatement.setDate(nextArgPointer++, model.getFollowDate());
 			}
 
 		} else {
@@ -163,7 +163,7 @@ public class FollowDatabaseManager {
 				preparedStatement.setString(nextArgPointer++, model.getFollowingUserId());
 			}
 			if(model.getFollowDate() != null) {
-				preparedStatement.setString(nextArgPointer++, model.getFollowDate().toString());
+				preparedStatement.setDate(nextArgPointer++, model.getFollowDate());
 			}
 
 		}

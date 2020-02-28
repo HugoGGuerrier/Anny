@@ -93,7 +93,7 @@ public class UserDatabaseManager {
 		Connection connection = Database.getMySQLConnection();
 
 		// Create the SQL insertion
-		String update = "UPDATE USER SET userPseudo = ?, userName = ?, userSurname = ?, userEmail = ?, userPassword = ?, userDate = ?, userAdmin = ? WHERE userId = ?";
+		String update = "UPDATE USER SET userPseudo = ?, userName = ?, userSurname = ?, userEmail = ?, userPassword = ?, userAdmin = ? WHERE userId = ?";
 
 		// Prepare the statement
 		PreparedStatement preparedStatement = connection.prepareStatement(update);
@@ -104,9 +104,8 @@ public class UserDatabaseManager {
 		preparedStatement.setString(3, userModel.getUserSurname());
 		preparedStatement.setString(4, userModel.getUserEmail());
 		preparedStatement.setString(5, userModel.getUserPassword());
-		preparedStatement.setDate(6, userModel.getUserDate());
-		preparedStatement.setInt(7, userModel.isUserAdmin() ? 1 : 0);
-		preparedStatement.setString(8, userModel.getUserId());
+		preparedStatement.setInt(6, userModel.isUserAdmin() ? 1 : 0);
+		preparedStatement.setString(7, userModel.getUserId());
 
 		// Execute the statement
 		preparedStatement.executeUpdate();

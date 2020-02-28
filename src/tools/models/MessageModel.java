@@ -119,6 +119,27 @@ public class MessageModel {
 	}
 	
 	/**
+	 * Get the next answer ID
+	 * 
+	 * @return The next available answer ID
+	 */
+	public String getNextAnswerId() {
+		int maxValue = 0;
+
+		// Search the next available id
+		for(String answerId : this.messageAnswersId) {
+			String[] path = answerId.split("\\.");
+			int childId = Integer.valueOf(path[path.length - 1]);
+			if(childId > maxValue) {
+				maxValue = (childId);
+			}
+		}
+
+		// Return the result
+		return this.messageId + "." + (maxValue + 1);
+	}
+	
+	/**
 	 * Get the message formated in a JSON object
 	 * 
 	 * @return The JSON object

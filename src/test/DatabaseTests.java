@@ -13,9 +13,12 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.bson.Document;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.mongodb.client.MongoCollection;
 
 import db.Database;
 import db.Migrator;
@@ -71,6 +74,10 @@ public class DatabaseTests {
 	public static void teardown() {
 		// Close the connections
 		try {
+			// Remove all the test messages
+			MongoCollection<Document> messagesCollection = Database.getMongoDBConnection().getCollection(Config.getMongoMessageCollection());
+			messagesCollection.deleteMany(new Document());
+			
 			DatabaseTests.mysqlConnection.close();
 
 			Migrator migrator = Migrator.getInstance();
@@ -337,7 +344,7 @@ public class DatabaseTests {
 
 		MessageDatabaseManager messageDatabaseManager = MessageDatabaseManager.getInstance();
 
-		// Test insertion
+		// Test message insertion
 		MessageModel message = new MessageModel();
 		message.setMessageBoardName("test_board2");
 		message.setMessageDate(new Date(new java.util.Date().getTime()));
@@ -345,7 +352,9 @@ public class DatabaseTests {
 		message.setMessagePosterId("@tester");
 		message.setMessageText("This is a test message");
 		try {
+			assertEquals(1, messageDatabaseManager.getNextRootMessageId());
 			messageDatabaseManager.insertMessage(message);
+			assertEquals(2, messageDatabaseManager.getNextRootMessageId());
 		} catch (MongoException e) {
 			e.printStackTrace();
 			fail("Cannot insert a new message !");
@@ -358,7 +367,7 @@ public class DatabaseTests {
 		MessageModel answer = new MessageModel();
 		answer.setMessageBoardName("test_board2");
 		answer.setMessageDate(new Date(new java.util.Date().getTime()));
-		answer.setMessageId("1.1");
+		answer.setMessageId(message.getNextAnswerId());
 		answer.setMessagePosterId("@tester");
 		answer.setMessageText("This is a test answer");
 		try {
@@ -370,19 +379,58 @@ public class DatabaseTests {
 			e.printStackTrace();
 			fail("Cannot add the message to the board !");
 		}
-		
+
+		// Test updating
+		answer.setMessageText("LOL");
+		try {
+			messageDatabaseManager.updateMessage(answer);
+		} catch (MongoException e) {
+			e.printStackTrace();
+			fail("Cannot update a message");
+		}
+
 		// Test getting
 		MessageModel filter = new MessageModel();
-		filter.setMessageText("answer");
+		filter.setMessageId("1.");
 		try {
 			List<MessageModel> messages = messageDatabaseManager.getMessage(filter, true);
-			for(MessageModel msg : messages) {
-				System.out.println(msg.getMessageId());
-			}
+			assertEquals("1.1", messages.get(0).getMessageId());
+			assertEquals("LOL", messages.get(0).getMessageText());
 		} catch (MongoException e) {
 			e.printStackTrace();
 			fail("Cannot get messages !");
 		}
+
+		// Test deleting
+		MessageModel answerAnswer = new MessageModel();
+		answerAnswer.setMessageId(answer.getNextAnswerId());
+		answerAnswer.setMessageText("This is an answer to an answer");
+		answerAnswer.setMessageBoardName(newBoard.getBoardName());
+		answerAnswer.setMessagePosterId(exampleUser.getUserId());
+		answerAnswer.setMessageDate(new Date(new java.util.Date().getTime()));
+		
+		message.addAnwserId("1.1");
+		answer.addAnwserId("1.1.1");
+		try {
+			messageDatabaseManager.insertMessage(answerAnswer);
+			assertEquals(3, messageDatabaseManager.getMessage(new MessageModel(), false).size());
+			
+			BoardModel board = boardDatabaseManager.getBoards(newBoard, false).get(0);
+			assertEquals(1, board.getBoardMessagesId().size());
+
+			messageDatabaseManager.deleteMessage(message);
+			assertEquals(0, messageDatabaseManager.getMessage(new MessageModel(), false).size());
+
+			board = boardDatabaseManager.getBoards(newBoard, false).get(0);
+			assertEquals(0, board.getBoardMessagesId().size());
+		} catch (MongoException e) {
+			e.printStackTrace();
+			fail("Cannot delete message !");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			fail("Cannot delete the message from the BELONGS_TO_BOARD table !");
+		}
+
 	}
 
 }

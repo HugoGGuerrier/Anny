@@ -87,7 +87,7 @@ public class Follow extends HttpServlet {
 		String followedUserId = req.getParameter("followedUserId");
 		String followingUserId = req.getParameter("followingUserId");
 		Date date = Date.valueOf(req.getParameter("followDate"));
-		// TODO : la suite.
+		// TODO : la suite
 		resp.getWriter().append("POST : Not implemented...");
 	}
 
