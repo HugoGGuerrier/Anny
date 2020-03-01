@@ -3,7 +3,6 @@ package tools.sessions;
 import java.util.Random;
 
 import tools.exceptions.SessionException;
-import tools.models.UserModel;
 
 /**
  * A class to store all sessions in the cache and manage them
@@ -83,6 +82,7 @@ public class SessionPool {
 			} else {
 				if(doAction) {
 					res.action();
+					this.putSession(res);
 				}
 			}
 		}
@@ -96,22 +96,11 @@ public class SessionPool {
 	}
 
 	/**
-	 * Add a session to the session pool from its ID and an user if there is enough place
-	 * 
-	 * @param sessionId The session ID
-	 * @param user The user liked to the session
-	 */
-	public void addSession(String sessionId, UserModel user) {
-		Session sessionToAdd = new Session(sessionId, user);
-		this.manager.addSessionsAddBuffer(sessionToAdd);
-	}
-
-	/**
-	 * Update the session in the cache
+	 * Put a session in the sessio cache
 	 * 
 	 * @param session The session to update
 	 */
-	public void updateSession(Session session) {
+	public void putSession(Session session) {
 		this.manager.addSessionsAddBuffer(session);
 	}
 

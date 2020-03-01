@@ -3,7 +3,7 @@
 	"version": "0.1.1",
 	"env": 0,
 	
-	"cacheCleaningInterval": 42,
+	"cacheCleaningInterval": 5,
 	"sessionTimeToLive": 3
 },
 "mysqlConfig": {

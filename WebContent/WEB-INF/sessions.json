@@ -1,1 +1,1 @@
-{"a":{"timeToLive":3,"sessionAttriutes":{"testAttribute":"This is a test"},"lastActionDate":1582634431,"sessionId":"a","userId":"1"},"c":{"timeToLive":3,"sessionAttriutes":{},"lastActionDate":1582634431,"sessionId":"c","userId":"3"}}
+{"b":{"timeToLive":3,"sessionAttriutes":{},"lastActionDate":1582901911,"sessionId":"b","userId":"2"},"d":{"timeToLive":3,"sessionAttriutes":{},"lastActionDate":1582901913,"sessionId":"d","userId":"4"}}

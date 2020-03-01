@@ -64,9 +64,9 @@ public class ToolsTest {
 		// Create fake session to test them
 		SessionPool sessionPool = SessionPool.getInstance();
 		sessionPool.reset();
-		sessionPool.addSession(ToolsTest.sessionId1, ToolsTest.user1);
-		sessionPool.addSession(ToolsTest.sessionId2, ToolsTest.user2);
-		sessionPool.addSession(ToolsTest.sessionId3, ToolsTest.user3);
+		sessionPool.putSession(new Session(ToolsTest.sessionId1, ToolsTest.user1));
+		sessionPool.putSession(new Session(ToolsTest.sessionId2, ToolsTest.user2));
+		sessionPool.putSession(new Session(ToolsTest.sessionId3, ToolsTest.user3));
 	}
 
 
@@ -77,7 +77,7 @@ public class ToolsTest {
 	public void testConfig() {
 		assertEquals("0.1.1", Config.getVersion());
 		assertEquals(0, Config.getEnv());
-		assertEquals(42, Config.getCacheCleaningInterval());
+		assertEquals(5, Config.getCacheCleaningInterval());
 		assertEquals(3, Config.getSessionTimeToLive());
 		
 		assertFalse(Config.isMysqlPooling());
@@ -104,59 +104,55 @@ public class ToolsTest {
 	}
 
 	@Test
-	public void testSessionPool() {
-		// Test the session pool simple methods
-		assertEquals(32, this.sessionPool.generateSessionId().length());
+	public void testSessions() {
+		// Test the session getting
 		try {
-			assertEquals(ToolsTest.user1.getUserId(), this.sessionPool.getSession(sessionId1, true).getUserId());
+			Session testSession1 = this.sessionPool.getSession(ToolsTest.sessionId1, false);
+			assertEquals(ToolsTest.user1.getUserId(), testSession1.getUserId());
 		} catch (SessionException e) {
+			e.printStackTrace();
 			fail("Cannot get the session 1 !");
 		}
-
-		// Test the session pool session remove
-		sessionPool.removeSession(ToolsTest.sessionId2);
+		
+		// Test the session deleting
 		try {
-			this.sessionPool.getSession(ToolsTest.sessionId2, false);
-			fail("Session 2 has not been removed !");
+			this.sessionPool.removeSession(ToolsTest.sessionId1);
+			this.sessionPool.getSession(ToolsTest.sessionId1, false);
+			fail("Session 1 has not been removed !");
 		} catch (SessionException e) {
 			// Success !
 		}
-
-		// Test the session update
+		
+		// Test the session updating
 		try {
-			Session session1 = this.sessionPool.getSession(ToolsTest.sessionId1, true);
-			session1.putAttribute("testAttribute", "This is a test");
-			sessionPool.updateSession(session1);
-			assertEquals("This is a test", sessionPool.getSession(ToolsTest.sessionId1, true).getAttribute("testAttribute"));
+			Session test1 = this.sessionPool.getSession(ToolsTest.sessionId2, false);
+			Thread.sleep(2500);
+			this.sessionPool.getSession(ToolsTest.sessionId2, true);
+			Session test2 = this.sessionPool.getSession(ToolsTest.sessionId2, false);
+			assertNotEquals(test1.getLastActionDate(), test2.getLastActionDate());
+		} catch (InterruptedException e) {
+			fail("Please do not stop the test");
 		} catch (SessionException e) {
 			e.printStackTrace();
-			fail("Cannot get the session 1 !");
+			fail("Cannot get the session 2 !");
 		}
-
-		// Test the session cleaner
-	}
-
-	@Test
-	public void testSession() {
-		// Get the session
+		
+		// Test the session clean
 		try {
-			Session testSession = this.sessionPool.getSession(ToolsTest.sessionId1, true);
-
-			// Test the session function
-			assertEquals(ToolsTest.sessionId1, testSession.getSessionId());
-			assertEquals(3, testSession.getTimeToLive());
-			assertEquals(false, testSession.isExpired());
-
-			// Test the session expiration
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				fail("Please don't stop the test !");
-			}
-			assertEquals(true, testSession.isExpired());
+			Thread.sleep(1500);
+			
+			UserModel testUser = new UserModel();
+			testUser.setUserId("4");
+			Session newSession = new Session("d", testUser);
+			
+			this.sessionPool.putSession(newSession);
+			
+			this.sessionPool.getSession(ToolsTest.sessionId3, false);
+			fail("The session 3 were not removed by the clean !");
+		} catch (InterruptedException e) {
+			fail("Please do not stop the test");
 		} catch (SessionException e) {
-			e.printStackTrace();
-			fail("Cannot get the session 1 !");
+			// Success !
 		}
 	}
 

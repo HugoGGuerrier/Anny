@@ -2,8 +2,6 @@ package tools.models;
 
 import java.sql.Date;
 
-import org.json.simple.JSONObject;
-
 /**
  * This is the wrapper class for a user. It contains all informations about an user
  *

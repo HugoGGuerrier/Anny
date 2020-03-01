@@ -205,7 +205,7 @@ public class CacheManager implements Runnable {
 	/**
 	 * Clean the cache from expired sessions, this method only launched from a locked method
 	 */
-	private void clean() {
+	private void cleanSessions() {
 		try {
 			// Get the sessions JSON
 			Reader sessionReader = new FileReader(this.cacheFile);
@@ -242,6 +242,10 @@ public class CacheManager implements Runnable {
 			this.logger.log("Error during the session cache file parsing", Logger.ERROR);
 			this.logger.log(e, Logger.ERROR);
 
+		} finally {
+			
+			this.addedSessions = 0;
+			
 		}
 	}
 
@@ -256,15 +260,15 @@ public class CacheManager implements Runnable {
 			try {
 				// Get the read lock to avoid get request during the writing period
 				this.cacheFileLock.lock();
-				
-				// Verify the added sessions
-				if(this.addedSessions > Config.getSessionTimeToLive()) {
-					this.clean();
-				}
 
 				// Wait for the buffer to be filled
 				while(this.sessionsAddBuffer.size() == 0 && this.sessionsRemoveBuffer.size() == 0) {
 					this.bufferEmptyCondition.await();
+				}
+				
+				// Verify the added sessions
+				if(this.addedSessions >= Config.getCacheCleaningInterval()) {
+					this.cleanSessions();
 				}
 
 				// Get the JSON object of the sessions
