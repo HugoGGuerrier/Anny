@@ -156,7 +156,7 @@ public class MessageModel {
 		res.put("messagePosterId", this.messagePosterId);
 		res.put("messageDate", String.valueOf(this.messageDate.getTime()));
 		
-		// Get the answers JSON recusively
+		// Add the answers ID
 		JSONArray answers = new JSONArray();
 		for(String messageId : this.messageAnswersId) {
 			answers.add(messageId);

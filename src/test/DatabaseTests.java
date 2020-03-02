@@ -352,9 +352,9 @@ public class DatabaseTests {
 		message.setMessagePosterId("@tester");
 		message.setMessageText("This is a test message");
 		try {
-			assertEquals(1, messageDatabaseManager.getNextRootMessageId());
+			assertEquals("1", messageDatabaseManager.getNextRootMessageId());
 			messageDatabaseManager.insertMessage(message);
-			assertEquals(2, messageDatabaseManager.getNextRootMessageId());
+			assertEquals("2", messageDatabaseManager.getNextRootMessageId());
 		} catch (MongoException e) {
 			e.printStackTrace();
 			fail("Cannot insert a new message !");

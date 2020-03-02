@@ -167,7 +167,7 @@ public class MessageDatabaseManager {
 			throw new MongoException("Error in the deletion of the message " + messageModel.getMessageId());
 		};
 
-		// Delete all the answers recusively
+		// Delete all the answers recursively
 		for(String answerId : messageModel.getMessageAnswersId()) {
 			MessageModel filter = new MessageModel();
 			filter.setMessageId(answerId);
@@ -181,7 +181,7 @@ public class MessageDatabaseManager {
 
 				} catch (MongoException e) {
 
-					// Log the error because it's not possible theorically...
+					// Log the error because it's not possible...
 					Logger logger = Logger.getInstance();
 					logger.log("A message you want to delete does not exists or is dereferenced : " + answer.getMessageId(), Logger.WARNING);
 					logger.log(e, Logger.WARNING);
@@ -207,6 +207,7 @@ public class MessageDatabaseManager {
 
 		} else {
 
+			// Get the MySQL connection to insert the message in the board
 			Connection connection = Database.getMySQLConnection();
 			String insert = "DELETE FROM BELONGS_TO_BOARD WHERE messageId = ?";
 			PreparedStatement preparedStatement = connection.prepareStatement(insert);
@@ -326,7 +327,7 @@ public class MessageDatabaseManager {
 
 			} catch (ParseException e) {
 
-				// Log the error because it's not possible theorically...
+				// Log the error because it's not possible...
 				Logger logger = Logger.getInstance();
 				logger.log("Error during a message BSON parsing, this error cannot happend", Logger.ERROR);
 				logger.log(e, Logger.ERROR);
@@ -345,7 +346,7 @@ public class MessageDatabaseManager {
 	 * @return The next available message ID
 	 */
 	public String getNextRootMessageId() throws SQLException {
-		// Get the mysql connection
+		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 		Statement stmt = connection.createStatement();
 		

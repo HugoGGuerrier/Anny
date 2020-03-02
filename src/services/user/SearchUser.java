@@ -3,6 +3,8 @@ package services.user;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.json.simple.JSONArray;
+
 import db.managers.UserDatabaseManager;
 import tools.models.UserModel;
 
@@ -52,9 +54,20 @@ public class SearchUser {
 	 * @return The list of user corresponding to the model
 	 * @throws SQLException 
 	 */
-	public List<UserModel> searchUser(UserModel user, boolean isLike) throws SQLException {
+	@SuppressWarnings("unchecked")
+	public JSONArray searchUser(UserModel user, boolean isLike) throws SQLException {
 		// Call the user database manager to search users
-		return this.userDatabaseManager.getUsers(user, isLike);
+		List<UserModel> users = this.userDatabaseManager.getUsers(user, isLike);
+		
+		// Place the result inside a JSON array
+		JSONArray res = new JSONArray();
+		
+		for(UserModel userRes : users) {
+			res.add(userRes.getJSON());
+		}
+		
+		// Return the result
+		return res;
 	}
 
 }

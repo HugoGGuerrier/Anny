@@ -90,7 +90,7 @@ public class Security {
 	 * @return True if the ID is valid
 	 */
 	public boolean isValidUserId(String userId) {
-		Pattern pattern = Pattern.compile("^@[a-z0-9]+$");
+		Pattern pattern = Pattern.compile("^@[a-z0-9_]+$");
 		Matcher matcher = pattern.matcher(userId);
 		
 		return matcher.matches();

@@ -92,7 +92,7 @@ public class UserDatabaseManager {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
-		// Create the SQL insertion
+		// Create the SQL insertion (no date because you can't update the inscription date)
 		String update = "UPDATE USER SET userPseudo = ?, userName = ?, userSurname = ?, userEmail = ?, userPassword = ?, userAdmin = ? WHERE userId = ?";
 
 		// Prepare the statement

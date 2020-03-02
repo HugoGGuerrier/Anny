@@ -2,6 +2,8 @@ package tools.models;
 
 import java.sql.Date;
 
+import org.json.simple.JSONObject;
+
 /**
  * Class that represents a follow on the application
  * 
@@ -49,6 +51,23 @@ public class FollowModel {
 	
 	public Date getFollowDate() {
 		return this.followDate;
+	}
+	
+	/**
+	 * Get the JSON representing the follow
+	 * 
+	 * @return The follow JSON
+	 */
+	@SuppressWarnings("unchecked")
+	public JSONObject getJSON() {
+		// Place the follow attributes in a JSON
+		JSONObject res = new JSONObject();
+		
+		res.put("followedUserId", this.followedUserId);
+		res.put("followingUserId", this.followingUserId);
+		res.put("followDate", this.followDate);
+		
+		return res;
 	}
 	
 	

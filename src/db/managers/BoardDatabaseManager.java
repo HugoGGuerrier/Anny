@@ -83,11 +83,11 @@ public class BoardDatabaseManager {
 	/**
 	 * Update a board based on its name
 	 * 
-	 * @param boardModel The board ro update
+	 * @param boardModel The board to update
 	 * @throws SQLException Id there is an error during the board updating
 	 */
 	public void updateBoard(BoardModel boardModel) throws SQLException {
-		// Get the mysql connection
+		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
 		// Create the SQL updates
@@ -106,7 +106,7 @@ public class BoardDatabaseManager {
 	}
 
 	public void deleteBoard(BoardModel boardModel) throws SQLException {
-		// Get the mysql connection
+		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
 		// Create the SQL deletion

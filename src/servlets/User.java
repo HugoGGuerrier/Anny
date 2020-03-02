@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import services.user.CreateUser;
@@ -29,71 +30,114 @@ import tools.models.UserModel;
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-@WebServlet("/user")
+@WebServlet("/user/*")
 public class User extends HttpServlet {	
 
 	// ----- Attributes -----
-	
-	
+
+
 	/** Serial version number */
 	private static final long serialVersionUID = 928019971282204835L;
-	
+
 	/** The logger */
 	private Logger logger;
-	
+
 	/** The handler */
 	private Handler handler;
-	
+
 	/** Security tool */
 	private Security security;
-	
+
 	/**	Service to create an user */
 	private CreateUser createUser;
-	
+
 	/** Service to delete an user */
 	private DeleteUser deleteUser;
-	
+
 	/** Service to modify an user */
 	private ModifyUser modifyUser;
-	
+
 	/** Service to search users */
 	private SearchUser searchUser;
 
-	
+
 	// ----- Constructors -----
-	
-	
+
+
 	public User() {
-        super();
-        
-        // Get instances
-        this.logger = Logger.getInstance();
-        this.handler = Handler.getInstance();
-        this.security = Security.getInstance();
-        this.createUser = CreateUser.getInstance();
-        this.deleteUser = DeleteUser.getInstance();
-        this.modifyUser = ModifyUser.getInstance();
-        this.searchUser = SearchUser.getInstance();
-    }
-	
-	
+		super();
+
+		// Get instances
+		this.logger = Logger.getInstance();
+		this.handler = Handler.getInstance();
+		this.security = Security.getInstance();
+		this.createUser = CreateUser.getInstance();
+		this.deleteUser = DeleteUser.getInstance();
+		this.modifyUser = ModifyUser.getInstance();
+		this.searchUser = SearchUser.getInstance();
+	}
+
+
 	// ----- HTTP methods -----
-	
+
 
 	/**
 	 * Get users with parameters
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Gérer la méthode pour récupérer un ou plusieurs utilisateurs
-		resp.getWriter().append("GET : Not implemented...");
+		// Prepare the response JSON
+		JSONObject res = new JSONObject();
+
+		// Test if the query is ID formed
+		String[] splitedUrl = req.getRequestURI().split("/");
+		if(splitedUrl.length >= 4) {	
+
+			// Get the user id and make the request with it
+			String userId = splitedUrl[3];
+			if(this.security.isValidUserId(userId)) {
+
+				UserModel filter = new UserModel();
+				filter.setUserId(userId);
+
+				try {
+
+					JSONArray users = this.searchUser.searchUser(filter, false);
+					res.put("result", users);
+
+				} catch (SQLException e) {
+
+					this.logger.log("Error during the user getting", Logger.ERROR);
+					this.logger.log(e, Logger.ERROR);
+					res = this.handler.handleException(e, Handler.SQL_ERROR);
+
+				}
+
+
+			} else {
+
+				res = this.handler.handleException(new UserException("Invalid user ID"), Handler.WEB_ERROR);
+
+			}
+
+		} else {
+
+			// TODO : Faire la méthode avec les paramètres
+
+		}
+
+		// Send the result
+		resp.setCharacterEncoding(StdVar.APP_ENCODING);
+		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+		resp.getWriter().append(res.toJSONString());
 	}
 
 	/**
 	 * Create a new user in the database
 	 */
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {	
 		// Get the user param
 		String id = req.getParameter("userId");
 		String pseudo = req.getParameter("userPseudo");
@@ -103,10 +147,10 @@ public class User extends HttpServlet {
 		String password = req.getParameter("userPassword");
 		Date date = Date.valueOf(req.getParameter("userDate"));
 		Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
-		
+
 		// Hash the password to avoid memory leak
 		password = this.security.hashString(password);
-		
+
 		// Create the new user to insert
 		UserModel newUser = new UserModel();
 		newUser.setUserId(id);
@@ -117,28 +161,28 @@ public class User extends HttpServlet {
 		newUser.setUserPassword(password);
 		newUser.setUserDate(date);
 		newUser.setUserAdmin(admin);
-		
+
 		// Create the response object
 		JSONObject res = new JSONObject();
-		
+
 		try {
-			
+
 			this.createUser.createUser(newUser);
-			
+
 		} catch (UserException e) {
-			
+
 			this.logger.log("Error with the user informations", Logger.WARNING);
 			this.logger.log(e, Logger.WARNING);
 			res = this.handler.handleException(e, Handler.WEB_ERROR);
-			
+
 		} catch (SQLException e) {
 
 			this.logger.log("Error during the user insertion in database", Logger.ERROR);
 			this.logger.log(e, Logger.ERROR);
 			res = this.handler.handleException(e, Handler.SQL_ERROR);
-			
+
 		}
-		
+
 		// Send the result
 		resp.setCharacterEncoding(StdVar.APP_ENCODING);
 		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
@@ -153,7 +197,7 @@ public class User extends HttpServlet {
 		// TODO : Gérer la méthode put pour modifier un utilisateur
 		resp.getWriter().append("PUT : Not implemented...");
 	}
-	
+
 	/**
 	 * Delete an user in the database
 	 */

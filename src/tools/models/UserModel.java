@@ -2,6 +2,8 @@ package tools.models;
 
 import java.sql.Date;
 
+import org.json.simple.JSONObject;
+
 /**
  * This is the wrapper class for a user. It contains all informations about an user
  *
@@ -94,6 +96,27 @@ public class UserModel {
 	public Boolean isUserAdmin() {
 		return this.userAdmin;
 	}
+	
+	/**
+	 * Get the JSON representation of an user
+	 * 
+	 * @return The user JSON
+	 */
+	@SuppressWarnings("unchecked")
+	public JSONObject getJSON() {
+		// Place the user information in a JSON
+		JSONObject res = new JSONObject();
+		
+		res.put("userId", this.userId);
+		res.put("userPseudo", this.userPseudo);
+		res.put("userName", this.userName);
+		res.put("userSurname", this.userSurname);
+		res.put("userEmail", this.userEmail);
+		res.put("userDate", this.userDate);
+		
+		// Return the result
+		return res;
+	}
 
 
 	// ----- Setters -----
@@ -143,6 +166,6 @@ public class UserModel {
 			UserModel e = (UserModel) obj;
 			return this.userId.equals(e.userId);
 		}
-	}
+	}	
 
 }
