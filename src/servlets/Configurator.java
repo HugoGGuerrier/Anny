@@ -21,17 +21,18 @@ import tools.Logger;
 import tools.StdVar;
 
 /**
- * This servlet is used to initialize the web application. It is mainly use by the administrator.
+ * This servlet is used to initialize the web application. It is use by the administrator.
  * 
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-@WebServlet("/initializer")
-public class Initializer extends HttpServlet {
+@WebServlet("/configurator")
+public class Configurator extends HttpServlet {
 
 	// ----- Attributes -----
 
 
+	/** Serial version number */
 	private static final long serialVersionUID = 5707836903604706333L;
 	
 	/**	Unique instance of the logger */
@@ -70,7 +71,7 @@ public class Initializer extends HttpServlet {
 			
 			// Migrate the database to the correct version
 			Migrator migrator = Migrator.getInstance();
-			if(migrator.upgrade(Config.getDatabaseVersion())) {
+			if(migrator.migrate(Config.getDatabaseVersion())) {
 				logger.log("Database migrated to version " + Config.getDatabaseVersion(), Logger.INFO);
 			}
 

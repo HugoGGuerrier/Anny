@@ -23,6 +23,7 @@ import tools.Security;
 import tools.StdVar;
 import tools.exceptions.UserException;
 import tools.models.UserModel;
+import tools.sessions.SessionPool;
 
 /**
  * This is the servlet to manage users
@@ -47,6 +48,9 @@ public class User extends HttpServlet {
 
 	/** Security tool */
 	private Security security;
+	
+	/** Session pool */
+	private SessionPool sessionPool;
 
 	/**	Service to create an user */
 	private CreateUser createUser;
@@ -71,6 +75,7 @@ public class User extends HttpServlet {
 		this.logger = Logger.getInstance();
 		this.handler = Handler.getInstance();
 		this.security = Security.getInstance();
+		this.sessionPool = SessionPool.getInstance();
 		this.createUser = CreateUser.getInstance();
 		this.deleteUser = DeleteUser.getInstance();
 		this.modifyUser = ModifyUser.getInstance();
@@ -102,7 +107,8 @@ public class User extends HttpServlet {
 				filter.setUserId(userId);
 
 				try {
-
+					
+					// Get the user list
 					JSONArray users = this.searchUser.searchUser(filter, false);
 					res.put("result", users);
 
@@ -123,8 +129,40 @@ public class User extends HttpServlet {
 
 		} else {
 
-			// TODO : Faire la méthode avec les paramètres
+			String id = req.getParameter("userId");
+			String pseudo = req.getParameter("userPseudo");
+			String name = req.getParameter("userName");
+			String surname = req.getParameter("userSurname");
+			String email = req.getParameter("userEmail");
+			String date = req.getParameter("userDate");
+			Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
+			
+			UserModel filter = new UserModel();
+			filter.setUserId(id);
+			filter.setUserPseudo(pseudo);
+			filter.setUserName(name);
+			filter.setUserSurname(surname);
+			filter.setUserEmail(email);
+			try {
+				filter.setUserDate(Date.valueOf(date));
+			} catch (IllegalArgumentException e) {
+				filter.setUserDate(null);
+			}
+			
+			try {
+				
+				// Try to get the users from the database
+				JSONArray users = this.searchUser.searchUser(filter, isLike);
+				res.put("result", users);
+				
+			} catch (SQLException e) {
 
+				this.logger.log("Error during the user getting", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.SQL_ERROR);
+				
+			}
+			
 		}
 
 		// Send the result
@@ -134,10 +172,13 @@ public class User extends HttpServlet {
 	}
 
 	/**
-	 * Create a new user in the database
+	 * Create a new user in the database, this method is only for admin users
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {	
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO : Vérifier que la session est administrateur
+		
 		// Get the user param
 		String id = req.getParameter("userId");
 		String pseudo = req.getParameter("userPseudo");
@@ -145,7 +186,7 @@ public class User extends HttpServlet {
 		String surname = req.getParameter("userSurname");
 		String email = req.getParameter("userEmail");
 		String password = req.getParameter("userPassword");
-		Date date = Date.valueOf(req.getParameter("userDate"));
+		Date date = new Date(new java.util.Date().getTime());
 		Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
 
 		// Hash the password to avoid memory leak
@@ -167,7 +208,9 @@ public class User extends HttpServlet {
 
 		try {
 
+			// Try to insert the user in the database
 			this.createUser.createUser(newUser);
+			res.put("result", "SUCCESS");
 
 		} catch (UserException e) {
 

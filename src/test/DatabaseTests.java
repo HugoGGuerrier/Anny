@@ -57,7 +57,7 @@ public class DatabaseTests {
 
 			// Upgrade the database to the wanted version
 			Migrator migrator = Migrator.getInstance();
-			migrator.upgrade(Config.getDatabaseVersion());
+			migrator.migrate(Config.getDatabaseVersion());
 
 			// Get the database connections
 			DatabaseTests.mysqlConnection = Database.getMySQLConnection();
@@ -81,7 +81,7 @@ public class DatabaseTests {
 			DatabaseTests.mysqlConnection.close();
 
 			Migrator migrator = Migrator.getInstance();
-			migrator.downgrade(0);
+			migrator.migrate(0);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot close the mysql connection !");

@@ -103,7 +103,7 @@ public class Security {
 	 * @return True if the mail is valid
 	 */
 	public boolean isValidEmail(String userMail) {
-		Pattern pattern = Pattern.compile("^[\\\\w!#$%&’*+/=?`{|}~^-]+(?:\\\\.[\\\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\\\.)+[a-zA-Z]{2,6}$");
+		Pattern pattern = Pattern.compile("^.*@[a-z0-9\\-]+\\.[a-z]+$");
 		Matcher matcher = pattern.matcher(userMail);
 		
 		return matcher.matches();

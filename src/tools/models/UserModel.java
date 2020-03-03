@@ -112,7 +112,7 @@ public class UserModel {
 		res.put("userName", this.userName);
 		res.put("userSurname", this.userSurname);
 		res.put("userEmail", this.userEmail);
-		res.put("userDate", this.userDate);
+		res.put("userDate", this.userDate.toString());
 		
 		// Return the result
 		return res;

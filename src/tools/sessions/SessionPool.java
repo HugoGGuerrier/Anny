@@ -70,9 +70,9 @@ public class SessionPool {
 	 * @return The session if it exists and is valid
 	 * @throws SessionException If the wanted session not exists
 	 */
-	public Session getSession(String sessionId, boolean doAction) throws SessionException {
+	public SessionModel getSession(String sessionId, boolean doAction) throws SessionException {
 		// Get the session from the cache manager
-		Session res = this.manager.getSession(sessionId);
+		SessionModel res = this.manager.getSession(sessionId);
 
 		// Verify the session validity
 		if(res != null) {
@@ -100,7 +100,7 @@ public class SessionPool {
 	 * 
 	 * @param session The session to update
 	 */
-	public void putSession(Session session) {
+	public void putSession(SessionModel session) {
 		this.manager.addSessionsAddBuffer(session);
 	}
 
@@ -125,7 +125,7 @@ public class SessionPool {
 		StringBuilder res = new StringBuilder();
 
 		// Generate the session ID
-		Session testSession = null;
+		SessionModel testSession = null;
 
 		do {
 			for (int i = 0; i < 32; i++) {

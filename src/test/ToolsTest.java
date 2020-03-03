@@ -16,7 +16,7 @@ import tools.Security;
 import tools.StdVar;
 import tools.exceptions.SessionException;
 import tools.models.UserModel;
-import tools.sessions.Session;
+import tools.sessions.SessionModel;
 import tools.sessions.SessionPool;
 
 public class ToolsTest {
@@ -64,9 +64,9 @@ public class ToolsTest {
 		// Create fake session to test them
 		SessionPool sessionPool = SessionPool.getInstance();
 		sessionPool.reset();
-		sessionPool.putSession(new Session(ToolsTest.sessionId1, ToolsTest.user1));
-		sessionPool.putSession(new Session(ToolsTest.sessionId2, ToolsTest.user2));
-		sessionPool.putSession(new Session(ToolsTest.sessionId3, ToolsTest.user3));
+		sessionPool.putSession(new SessionModel(ToolsTest.sessionId1, ToolsTest.user1));
+		sessionPool.putSession(new SessionModel(ToolsTest.sessionId2, ToolsTest.user2));
+		sessionPool.putSession(new SessionModel(ToolsTest.sessionId3, ToolsTest.user3));
 	}
 
 
@@ -98,6 +98,10 @@ public class ToolsTest {
 		assertTrue(this.security.isValidPassword(this.security.hashString("this is a test password")));
 		assertFalse(this.security.isValidPassword("12345abcef"));
 		
+		assertTrue(this.security.isValidEmail("test@gmail.com"));
+		assertTrue(this.security.isValidEmail("blablabbla@mail.fr"));
+		assertFalse(this.security.isValidEmail("thisisatest.gmail.com"));
+		
 		assertTrue(this.security.isValidUserId("@test"));
 		assertFalse(this.security.isValidUserId("@"));
 		assertFalse(this.security.isValidUserId("test"));
@@ -107,7 +111,7 @@ public class ToolsTest {
 	public void testSessions() {
 		// Test the session getting
 		try {
-			Session testSession1 = this.sessionPool.getSession(ToolsTest.sessionId1, false);
+			SessionModel testSession1 = this.sessionPool.getSession(ToolsTest.sessionId1, false);
 			assertEquals(ToolsTest.user1.getUserId(), testSession1.getUserId());
 		} catch (SessionException e) {
 			e.printStackTrace();
@@ -125,10 +129,10 @@ public class ToolsTest {
 		
 		// Test the session updating
 		try {
-			Session test1 = this.sessionPool.getSession(ToolsTest.sessionId2, false);
+			SessionModel test1 = this.sessionPool.getSession(ToolsTest.sessionId2, false);
 			Thread.sleep(2500);
 			this.sessionPool.getSession(ToolsTest.sessionId2, true);
-			Session test2 = this.sessionPool.getSession(ToolsTest.sessionId2, false);
+			SessionModel test2 = this.sessionPool.getSession(ToolsTest.sessionId2, false);
 			assertNotEquals(test1.getLastActionDate(), test2.getLastActionDate());
 		} catch (InterruptedException e) {
 			fail("Please do not stop the test");
@@ -143,7 +147,7 @@ public class ToolsTest {
 			
 			UserModel testUser = new UserModel();
 			testUser.setUserId("4");
-			Session newSession = new Session("d", testUser);
+			SessionModel newSession = new SessionModel("d", testUser);
 			
 			this.sessionPool.putSession(newSession);
 			

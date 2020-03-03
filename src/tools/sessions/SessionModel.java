@@ -14,7 +14,7 @@ import tools.models.UserModel;
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-public class Session {
+public class SessionModel {
 
 	// ----- Attributes -----
 
@@ -41,10 +41,10 @@ public class Session {
 	/**
 	 * Construct a new Session with its ID and its user with the las action date to now
 	 * 
-	 * @param sessionId The session's ID
+	 * @param sessionId The session ID
 	 * @param user The user related to the session
 	 */
-	public Session(String sessionId, UserModel user) {
+	public SessionModel(String sessionId, UserModel user) {
 		this.sessionId = sessionId;
 		this.userId = user.getUserId();
 		this.timeToLive = Config.getSessionTimeToLive();
@@ -52,13 +52,22 @@ public class Session {
 
 		this.action();
 	}
+	
+	/**
+	 * Construct an anonymous session without user linked to it
+	 * 
+	 * @param sessionId The session ID
+	 */
+	public SessionModel(String sessionId) {
+		this(sessionId, new UserModel());
+	}
 
 	/**
 	 * Construct a new session from a JSON
 	 * 
 	 * @param sessionJson The JSON of the session you want to create
 	 */
-	public Session(JSONObject sessionJson) throws SessionException {
+	public SessionModel(JSONObject sessionJson) throws SessionException {
 		this.sessionId = (String) sessionJson.get("sessionId");
 		this.userId = (String) sessionJson.get("userId");
 		this.timeToLive = (Long) sessionJson.get("timeToLive");
@@ -89,6 +98,10 @@ public class Session {
 
 	public long getLastActionDate() {
 		return this.lastActionDate;
+	}
+	
+	public boolean isAnonymous() {
+		return this.userId == null;
 	}
 
 

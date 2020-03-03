@@ -35,8 +35,16 @@ public class Login extends HttpServlet {
 	
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Récupérer les arguments de POST et les nettoyer pour les passer au service de log
+		// TODO : Récupérer les arguments de POST et vérifier si la session peut être créée
 		resp.getWriter().append("POST : Not implemented...");
 	}
+
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO : Supprimer la session
+		resp.getWriter().append("DELETE : Not implemented...");
+	}
+	
+	
 
 }

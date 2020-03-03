@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import tools.Config;
 import tools.Logger;
 
 /**
@@ -93,21 +94,21 @@ public class Migrator {
 		try {
 
 			// Fetch the database version
-			ResultSet resultSet = stmt.executeQuery("SELECT * FROM DB_VERSION");
+			ResultSet resultSet = stmt.executeQuery("SELECT * FROM DB_INFO");
 			resultSet.next();
 
-			this.currentDatabaseVersion = resultSet.getInt("databaseVersion");
+			this.currentDatabaseVersion = resultSet.getInt("version");
 
 		} catch (SQLException e) {
 
 			// Create the table and set the current version to 0
 			this.currentDatabaseVersion = 0;
 
-			stmt.executeUpdate("DROP TABLE IF EXISTS DB_VERSION");
-			stmt.executeUpdate("CREATE TABLE DB_VERSION(databaseVersion INT NOT NULL PRIMARY KEY)");
-			stmt.executeUpdate("INSERT INTO DB_VERSION (databaseVersion) VALUES(0)");
+			stmt.executeUpdate("DROP TABLE IF EXISTS DB_INFO");
+			stmt.executeUpdate("CREATE TABLE DB_INFO(name VARCHAR(16) NOT NULL PRIMARY KEY, version INT NOT NULL)");
+			stmt.executeUpdate("INSERT INTO DB_INFO (name, version) VALUES('" + Config.getMysqlDatabase() + "', 0)");
 			
-			this.logger.log("Database version intialized", Logger.INFO);
+			this.logger.log("Database info intialized", Logger.INFO);
 
 		}
 	}
@@ -140,8 +141,7 @@ public class Migrator {
 	private void setCurrentDatabaseVersion(int version) throws SQLException {
 		Connection connection = Database.getMySQLConnection();
 		Statement stmt = connection.createStatement();
-		stmt.executeUpdate("DELETE FROM DB_VERSION");
-		stmt.executeUpdate("INSERT INTO DB_VERSION (databaseVersion) VALUES(" + String.valueOf(version) + ")");
+		stmt.executeUpdate("UPDATE DB_INFO SET version = " + version + " WHERE name = '" + Config.getMysqlDatabase() + "'");
 		this.currentDatabaseVersion = version;
 	}
 
@@ -150,13 +150,28 @@ public class Migrator {
 
 
 	/**
+	 * Migrate the database to the wanted version (upgrade and downgrade)
+	 * 
+	 * @param targetVersion The wanted database version
+	 * @return If the database changed
+	 */
+	public boolean migrate(int targetVersion) throws SQLException {
+		if(this.currentDatabaseVersion < targetVersion) {
+			return this.upgrade(targetVersion);
+		} else if(this.currentDatabaseVersion > targetVersion) {
+			return this.downgrade(targetVersion);
+		}
+		return false;
+	}
+	
+	/**
 	 * Upgrade the database to the targeted version
 	 * 
 	 * @param targetVersion The wanted version
 	 * @return If the database is in the correct version
 	 * @throws SQLException If there is an error during the database upgrading
 	 */
-	public boolean upgrade(int targetVersion) throws SQLException {
+	private boolean upgrade(int targetVersion) throws SQLException {
 		Connection connection = Database.getMySQLConnection();
 		Statement stmt = connection.createStatement();
 
@@ -184,13 +199,13 @@ public class Migrator {
 	 * @return If the database is in the correct state
 	 * @throws SQLException If there is an error during SQL execution
 	 */
-	public boolean downgrade(int targetVersion) throws SQLException {
+	private boolean downgrade(int targetVersion) throws SQLException {
 		Connection connection = Database.getMySQLConnection();
 		Statement stmt = connection.createStatement();
 
 		if(targetVersion < this.currentDatabaseVersion) {
 
-			if(this.currentDatabaseVersion >= 1 && targetVersion < 1) {
+			if(this.currentDatabaseVersion == 1 && targetVersion < 1) {
 				for (String update : this.version1Downgrade) {
 					stmt.executeUpdate(update);
 				}

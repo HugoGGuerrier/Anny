@@ -3,6 +3,9 @@ package tools.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 /**
  * This class represent a board, a board is a general subject to sort messages
  * 
@@ -58,6 +61,31 @@ public class BoardModel {
 	
 	public List<String> getBoardMessagesId() {
 		return this.boardMessagesId;
+	}
+	
+	/**
+	 * Get the JSON representation of the board
+	 * 
+	 * @return The JSON
+	 */
+	@SuppressWarnings("unchecked")
+	public JSONObject getJSON() {
+		// Put the board attributes in a JSON
+		JSONObject res = new JSONObject();
+		
+		res.put("boardName", this.boardName);
+		res.put("boardDescription", this.boardDescription);
+		res.put("boardCreatorId", this.boardCreatorId);
+		
+		// Put all the messages ID in a JSON array
+		JSONArray messagesId = new JSONArray();
+		for (String messageId : this.boardMessagesId) {
+			messagesId.add(messageId);
+		}
+		res.put("boardMessagesId", messagesId);
+		
+		// Return the result
+		return res;
 	}
 	
 	

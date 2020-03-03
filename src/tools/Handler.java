@@ -63,14 +63,16 @@ public class Handler {
 		// Set the result if the environment is dev or prod
 		if(Config.getEnv() == StdVar.DEVELOPMENT_ENV) {
 
-			res.put("Error code", code);
-			res.put("Error type", e.getClass().toString());
-			res.put("Error message", e.getMessage());
+			res.put("result", "FAIL");
+			res.put("errorCode", code);
+			res.put("errorType", e.getClass().toString());
+			res.put("errorMessage", e.getMessage());
 
 		} else {
 
-			res.put("Error code", 500);
-			res.put("Error message", "Internal server error");
+			res.put("result", "FAIL");
+			res.put("errorCode", 500);
+			res.put("errorMessage", "Internal server error");
 
 		}
 

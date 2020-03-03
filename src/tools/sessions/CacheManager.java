@@ -38,7 +38,7 @@ public class CacheManager implements Runnable {
 	private Logger logger;
 
 	/** The sessions to write in the cache file */
-	private Queue<Session> sessionsAddBuffer;
+	private Queue<SessionModel> sessionsAddBuffer;
 
 	/** The sessions to remove from the cache file */
 	private Queue<String> sessionsRemoveBuffer;
@@ -65,7 +65,7 @@ public class CacheManager implements Runnable {
 		this.addedSessions = 0;
 
 		this.logger = Logger.getInstance();
-		this.sessionsAddBuffer = new ConcurrentLinkedQueue<Session>();
+		this.sessionsAddBuffer = new ConcurrentLinkedQueue<SessionModel>();
 		this.sessionsRemoveBuffer = new ConcurrentLinkedQueue<String>();
 
 		this.cacheFileLock = new ReentrantLock(true);
@@ -92,7 +92,7 @@ public class CacheManager implements Runnable {
 	// ----- Setters -----
 
 
-	public void addSessionsAddBuffer(Session session) {
+	public void addSessionsAddBuffer(SessionModel session) {
 		this.cacheFileLock.lock();
 		this.sessionsAddBuffer.add(session);
 		this.bufferEmptyCondition.signalAll();
@@ -142,12 +142,12 @@ public class CacheManager implements Runnable {
 	 * @param sessionId The session id you want to get
 	 * @return The wanted session or null if it doesn't exists
 	 */
-	public Session getSession(String sessionId) {
+	public SessionModel getSession(String sessionId) {
 		// Aquire the read lock
 		this.cacheFileLock.lock();
 
 		// Prepare the result
-		Session res = null;
+		SessionModel res = null;
 
 		try {
 
@@ -164,7 +164,7 @@ public class CacheManager implements Runnable {
 				// Get the session in the cache
 				try {
 
-					res = new Session(sessionWantedJSON);
+					res = new SessionModel(sessionWantedJSON);
 					if(this.sessionsRemoveBuffer.contains(res.getSessionId())) {
 						res = null;
 					}
@@ -176,7 +176,7 @@ public class CacheManager implements Runnable {
 				}
 			} else {
 				// Get the session in the add buffer
-				for (Session session : sessionsAddBuffer) {
+				for (SessionModel session : sessionsAddBuffer) {
 					if(session.getSessionId() == sessionId) {
 						res = session;
 					}
@@ -220,7 +220,7 @@ public class CacheManager implements Runnable {
 				try {
 
 					// If the session is expired add it to the remove buffer
-					Session session = new Session(sessionJSON);
+					SessionModel session = new SessionModel(sessionJSON);
 					if(session.isExpired()) {
 						this.sessionsRemoveBuffer.add(session.getSessionId());
 					}
@@ -279,7 +279,7 @@ public class CacheManager implements Runnable {
 
 				// Add a session in the JSON
 				if(this.sessionsAddBuffer.size() > 0) {
-					Session sessionToAdd = this.sessionsAddBuffer.poll();
+					SessionModel sessionToAdd = this.sessionsAddBuffer.poll();
 					sessionsJSON.put(sessionToAdd.getSessionId(), sessionToAdd.getJSON());
 					this.addedSessions++;
 				}
