@@ -65,15 +65,15 @@ public class CreateUser {
 			valid = false;
 			message.append(" - Invalid user id : " + user.getUserId());
 		}
-		if(user.getUserPseudo() == null || user.getUserPseudo().equals("")) {
+		if(user.getUserPseudo() == null || !this.security.isStringNotEmpty(user.getUserPseudo())) {
 			valid = false;
 			message.append(" - Invalid user pseudo : " + user.getUserPseudo());
 		}
-		if(user.getUserName() == null || user.getUserName().equals("")) {
+		if(user.getUserName() == null || !this.security.isStringNotEmpty(user.getUserName())) {
 			valid = false;
 			message.append(" - Invalid user name : " + user.getUserName());
 		}
-		if(user.getUserSurname() == null || user.getUserSurname().equals("")) {
+		if(user.getUserSurname() == null || !this.security.isStringNotEmpty(user.getUserSurname())) {
 			valid = false;
 			message.append(" - Invalid user surname : " + user.getUserSurname());
 		}
@@ -87,7 +87,7 @@ public class CreateUser {
 		}
 		if(user.getUserDate() == null) {
 			valid = false;
-			message.append(" - Invalid user date : " + user.getUserDate().toString());
+			message.append(" - Invalid user date : null");
 		}
 		
 		// If there is an error, throw an exception

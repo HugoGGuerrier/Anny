@@ -124,7 +124,7 @@ public class MessageDatabaseManager {
 
 		} else {
 
-			throw new MongoException("Multiple message ID");
+			throw new MongoException("Multiple message ID : " + messageModel.getMessageId());
 
 		}
 	}

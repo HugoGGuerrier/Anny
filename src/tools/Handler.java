@@ -16,8 +16,11 @@ public class Handler {
 	/** SQL error code if there is an error in the database */
 	public static final int SQL_ERROR = 1000;
 	
+	/** MongoDB error code */
+	public static final int MONGO_ERROR = 10000;
+	
 	/** Java error code if there is an error in Java */
-	public static final int JAVA_ERROR = 10000;
+	public static final int JAVA_ERROR = 100000;
 
 	/** Handler's unique instance */
 	private static Handler instance = null;

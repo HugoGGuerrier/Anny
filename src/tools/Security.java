@@ -13,24 +13,24 @@ import org.apache.commons.text.StringEscapeUtils;
  * @author Hugo Guerrier
  */
 public class Security {
-	
+
 	// ----- Attributes -----
-	
-	
+
+
 	/** Unique security instance (singleton) */
 	private static Security instance;
-	
-	
+
+
 	// ----- Constructors -----
-	
-	
+
+
 	/**
 	 * Create a new security instance
 	 */
 	private Security() {
-		
+
 	}
-	
+
 	/**
 	 * Get the security unique instance
 	 * 
@@ -42,11 +42,11 @@ public class Security {
 		}
 		return Security.instance;
 	}
-	
-	
+
+
 	// ----- Class methods -----
-	
-	
+
+
 	/**
 	 * Encode a string with the html entities
 	 * 
@@ -57,7 +57,7 @@ public class Security {
 		String res = StringEscapeUtils.escapeHtml4(stringToEncode);
 		return res;
 	}
-	
+
 	/**
 	 * Decode the html entities in a string
 	 * 
@@ -68,7 +68,7 @@ public class Security {
 		String res = StringEscapeUtils.unescapeHtml4(stringToDecode);
 		return res;
 	}
-	
+
 	/**
 	 * Get the correctly hashed string with the sha-512 algorithm
 	 * 
@@ -78,50 +78,13 @@ public class Security {
 	public String hashString(String stringToHash) {
 		return DigestUtils.sha512Hex(stringToHash);
 	}
-	
-	
+
+
 	// ----- Verify methods -----
-	
-	
-	/**
-	 * Verify the user ID with a regexp
-	 * 
-	 * @param userId The ID to validate
-	 * @return True if the ID is valid
-	 */
-	public boolean isValidUserId(String userId) {
-		Pattern pattern = Pattern.compile("^@[a-z0-9_]+$");
-		Matcher matcher = pattern.matcher(userId);
-		
-		return matcher.matches();
-	}
-	
-	/**
-	 * Verify the email address with a regexp
-	 * 
-	 * @param userMail The mail to verify
-	 * @return True if the mail is valid
-	 */
-	public boolean isValidEmail(String userMail) {
-		Pattern pattern = Pattern.compile("^.*@[a-z0-9\\-]+\\.[a-z]+$");
-		Matcher matcher = pattern.matcher(userMail);
-		
-		return matcher.matches();
-	}
-	
-	/**
-	 * Verify if a password is correctly hashed and not empty
-	 * 
-	 * @param hashedPassword The hashed password to verify
-	 * @return True if the password is valid
-	 */
-	public boolean isValidPassword(String hashedPassword) {
-		Pattern pattern = Pattern.compile("^([abcdef]|[0-9]){128}$");
-		Matcher matcher = pattern.matcher(hashedPassword);
-		
-		return matcher.matches() && hashedPassword != "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e";
-	}
-	
+
+
+	// --- General verification
+
 	/**
 	 * Verify the date with a regexp
 	 * 
@@ -131,25 +94,90 @@ public class Security {
 	public boolean isValidDate(String userDate) {
 		Pattern pattern = Pattern.compile("^2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[0-1])$");
 		Matcher matcher = pattern.matcher(userDate);
-		
+
+		return matcher.matches();
+	}
+	
+	/**
+	 * Verify the board description
+	 * 
+	 * @param boardDescription The board description
+	 * @return True if the board description is valid
+	 */
+	public boolean isStringNotEmpty(String string) {
+		Pattern pattern = Pattern.compile("^.+$");
+		Matcher matcher = pattern.matcher(string);
+
+		return matcher.matches();
+	}
+
+	// --- User verification
+
+	/**
+	 * Verify the user ID with a regexp
+	 * 
+	 * @param userId The ID to validate
+	 * @return True if the ID is valid
+	 */
+	public boolean isValidUserId(String userId) {
+		Pattern pattern = Pattern.compile("^@[a-z0-9_]+$");
+		Matcher matcher = pattern.matcher(userId);
+
 		return matcher.matches();
 	}
 
 	/**
+	 * Verify the email address with a regexp
+	 * 
+	 * @param userMail The mail to verify
+	 * @return True if the mail is valid
+	 */
+	public boolean isValidEmail(String userMail) {
+		Pattern pattern = Pattern.compile("^.*@[a-z0-9\\-]+\\.[a-z]+$");
+		Matcher matcher = pattern.matcher(userMail);
+
+		return matcher.matches();
+	}
+
+	/**
+	 * Verify if a password is correctly hashed and not empty
+	 * 
+	 * @param hashedPassword The hashed password to verify
+	 * @return True if the password is valid
+	 */
+	public boolean isValidPassword(String hashedPassword) {
+		Pattern pattern = Pattern.compile("^([abcdef]|[0-9]){128}$");
+		Matcher matcher = pattern.matcher(hashedPassword);
+
+		return matcher.matches() && hashedPassword != "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e";
+	}
+
+	// --- Board verification
+
+	/**
 	 * Verify the board name (board id)
-	 * @return
+	 * 
+	 * @return True if the board name is correct
 	 */
 	public boolean isValidBoardName(String boardName) {
 		Pattern pattern = Pattern.compile("^[A-Za-z0-9]+$");
 		Matcher matcher = pattern.matcher(boardName);
-		
+
 		return matcher.matches();
 	}
 
-	public boolean isValidBoardDescription(String boardDescription) {
-		Pattern pattern = Pattern.compile("^.+$");
-		Matcher matcher = pattern.matcher(boardDescription);
-		
+	// --- Message verification
+
+	/**
+	 * Verify the message ID
+	 * 
+	 * @param messageId The message ID to verify
+	 * @return True if the ID iv valid
+	 */
+	public boolean isValidMessageId(String messageId) {
+		Pattern pattern = Pattern.compile("^([0-9]\\.)*[0-9]$");
+		Matcher matcher = pattern.matcher(messageId);
+
 		return matcher.matches();
 	}
 

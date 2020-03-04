@@ -68,7 +68,7 @@ public class CreateBoard {
 			valid = false;
 			message.append(" - Invalid board creator id : " + board.getBoardCreatorId());
 		}
-		if(board.getBoardDescription() == null || !this.security.isValidBoardDescription(board.getBoardDescription())) {
+		if(board.getBoardDescription() == null || !this.security.isStringNotEmpty(board.getBoardDescription())) {
 			valid = false;
 			message.append(" - Invalid board description : " + board.getBoardDescription());
 		}

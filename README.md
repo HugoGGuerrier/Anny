@@ -1,4 +1,7 @@
-# Birdy (This name could change) - The simple well-organised social network !
+# Anny - The simple well-organised social network !
+
+Anny is a simple social network for people who want to be anonymous and doesn't want censorship on the Internet.
+Anny is designed to provide an anonymous navigation and posting with the simplicity of modern social networks, as Twitter.
 
 # Workspace
 

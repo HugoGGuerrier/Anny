@@ -28,7 +28,13 @@ public class Logger {
 	public static final int INFO =  2;
 	
 	/** Error log file */
-	private File logFile;
+	private File errorFile;
+	
+	/** Warning log file */
+	private File warningFile;
+	
+	/** Info log file */
+	private File infoFile;
 	
 	/** Unique logger instance (singleton) */
 	private static Logger instance = null;
@@ -41,11 +47,15 @@ public class Logger {
 	 * Create the unique logger instance and create the log file if it doesn't exists
 	 */
 	private Logger() {
-		this.logFile = Paths.get(Config.getBasePath() + StdVar.LOG_FILE).toFile();
+		this.errorFile = Paths.get(Config.getBasePath() + StdVar.ERROR_LOG_FILE).toFile();
+		this.warningFile = Paths.get(Config.getBasePath() + StdVar.WARNING_LOG_FILE).toFile();
+		this.infoFile = Paths.get(Config.getBasePath() + StdVar.INFO_LOG_FILE).toFile();
 		
 		try {
 			
-			this.logFile.createNewFile();
+			this.errorFile.createNewFile();
+			this.warningFile.createNewFile();
+			this.infoFile.createNewFile();
 			
 		} catch (IOException e) {
 			
@@ -85,21 +95,21 @@ public class Logger {
 		
 		try {
 			
-			// Open the log file
-			writer = new FileWriter(this.logFile, true);
-			
 			// Add the log type
 			switch (level) {
 			
 			case Logger.ERROR:
+				writer = new FileWriter(this.errorFile, true);
 				toWrite.append("[ERROR - ");
 				break;
 
 			case Logger.WARNING:
+				writer = new FileWriter(this.warningFile, true);
 				toWrite.append("[WARNING - ");
 				break;
 				
 			case Logger.INFO:
+				writer = new FileWriter(this.infoFile, true);
 				toWrite.append("[INFO - ");
 				break;
 				
@@ -129,7 +139,7 @@ public class Logger {
 	/**
 	 * Write an integer in the log file
 	 * 
-	 * @param message The int to write
+	 * @param message The integer to write
 	 * @param level The log level
 	 */
 	public void log(int message, int level) {
