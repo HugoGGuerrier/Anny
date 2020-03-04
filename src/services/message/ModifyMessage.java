@@ -24,10 +24,19 @@ public class ModifyMessage {
 	// ----- Constructors -----
 
 
+	/**
+	 * Construct a new service instance
+	 */
 	private ModifyMessage() {
-
+		this.messageDatabaseManager = MessageDatabaseManager.getInstance();
+		this.security = Security.getInstance();
 	}
 
+	/**
+	 * Get the unique service instance
+	 * 
+	 * @return The instance
+	 */
 	public static ModifyMessage getInstance() {
 		if(ModifyMessage.instance ==  null) {
 			ModifyMessage.instance = new ModifyMessage();
