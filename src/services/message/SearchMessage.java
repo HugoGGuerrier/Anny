@@ -51,9 +51,10 @@ public class SearchMessage {
 	 * 
 	 * @param message The message model
 	 * @return The list of messages
+	 * @throws MongoException 
 	 */
 	@SuppressWarnings("unchecked")
-	public JSONArray searchMessage(MessageModel message, boolean isRegex) throws MongoException{
+	public JSONArray searchMessage(MessageModel message, boolean isRegex) {
 		// Call the database manager to get the messages
 		List<MessageModel> messages = this.messageDatabaseManager.getMessage(message, isRegex);
 		

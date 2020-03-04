@@ -101,29 +101,22 @@ public class User extends HttpServlet {
 
 			// Get the user id and make the request with it
 			String id = splitedUrl[3];
-			if(this.security.isValidUserId(id)) {
 
-				UserModel filter = new UserModel();
-				filter.setUserId(id);
+			// Create the filter to get the user
+			UserModel filter = new UserModel();
+			filter.setUserId(id);
 
-				try {
+			try {
 
-					// Get the user list
-					JSONArray users = this.searchUser.searchUser(filter, false);
-					res.put("result", users);
+				// Get the user list
+				JSONArray users = this.searchUser.searchUser(filter, false);
+				res.put("result", users);
 
-				} catch (SQLException e) {
+			} catch (SQLException e) {
 
-					this.logger.log("Error during the user getting", Logger.ERROR);
-					this.logger.log(e, Logger.ERROR);
-					res = this.handler.handleException(e, Handler.SQL_ERROR);
-
-				}
-
-
-			} else {
-
-				res = this.handler.handleException(new UserException("Invalid user ID"), Handler.WEB_ERROR);
+				this.logger.log("Error during the user getting", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.SQL_ERROR);
 
 			}
 
@@ -239,7 +232,7 @@ public class User extends HttpServlet {
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// TODO : Vérifier que la session est la bonne ou administrateur
-		
+
 		// Create the response object
 		JSONObject res = new JSONObject();
 
@@ -297,7 +290,7 @@ public class User extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Faire la vérification de la session si c'est le bonne utilisateur ou un admin
+		// TODO : Faire la vérification de la session si c'est le bon utilisateur ou un admin
 
 		// Prepare the response JSON
 		JSONObject res = new JSONObject();

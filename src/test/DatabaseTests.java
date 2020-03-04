@@ -392,14 +392,10 @@ public class DatabaseTests {
 		// Test getting
 		MessageModel filter = new MessageModel();
 		filter.setMessageId("1.");
-		try {
-			List<MessageModel> messages = messageDatabaseManager.getMessage(filter, true);
-			assertEquals("1.1", messages.get(0).getMessageId());
-			assertEquals("LOL", messages.get(0).getMessageText());
-		} catch (MongoException e) {
-			e.printStackTrace();
-			fail("Cannot get messages !");
-		}
+		List<MessageModel> messages = messageDatabaseManager.getMessage(filter, true);
+		assertEquals("1.1", messages.get(0).getMessageId());
+		assertEquals("LOL", messages.get(0).getMessageText());
+		
 
 		// Test deleting
 		MessageModel answerAnswer = new MessageModel();

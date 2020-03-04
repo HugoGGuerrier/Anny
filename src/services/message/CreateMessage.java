@@ -1,6 +1,7 @@
 package services.message;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import db.managers.MessageDatabaseManager;
 import tools.Security;
@@ -53,19 +54,15 @@ public class CreateMessage {
 	/**
 	 * Try to insert the message in database
 	 * 
-	 * @param message The message to insert in database
+	 * @param message The message to insert in database WITHOUT ITS ID
 	 * @throws MessageException If the message already exists or if there is an database exception
 	 * @throws MongoException If the message cannot be inserted in the database
 	 */
-	public void createMessage(MessageModel message) throws MessageException, MongoException, SQLException {
+	public synchronized void createMessage(MessageModel message, String parentMessageId) throws MessageException, MongoException, SQLException {
 		// Verify the message parameters
 		boolean valid = true;
 		StringBuilder errorMessage = new StringBuilder();
 		
-		if(message.getMessageId() == null || !this.security.isValidMessageId(message.getMessageId())) {
-			valid = false;
-			errorMessage.append(" - Invalid message ID : " + message.getMessageId());
-		}
 		if(message.getMessageText() == null || !this.security.isStringNotEmpty(message.getMessageText())) {
 			valid = false;
 			errorMessage.append(" - Invalid message text : " + message.getMessageText());
@@ -89,6 +86,29 @@ public class CreateMessage {
 			throw new MessageException(errorMessage.toString());
 			
 		} else {
+			
+			// Get message ID dynamically
+			if(parentMessageId != null && !parentMessageId.equals("")) {
+				
+				MessageModel parentFilter = new MessageModel();
+				parentFilter.setMessageId(parentMessageId);
+				List<MessageModel> parents = this.messageDatabaseManager.getMessage(parentFilter, false);
+				if(parents.size() != 1) {
+					
+					MessageModel parent = parents.get(0);
+					message.setMessageId(parent.getNextAnswerId());
+					
+				} else {
+					
+					throw new MessageException("Parent message not found : " + parentMessageId);
+					
+				}
+				
+			} else {
+				
+				message.setMessageId(messageDatabaseManager.getNextRootMessageId());
+				
+			}
 			
 			// Insert the new message
 			this.messageDatabaseManager.insertMessage(message);

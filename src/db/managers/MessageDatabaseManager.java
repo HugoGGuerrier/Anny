@@ -229,7 +229,7 @@ public class MessageDatabaseManager {
 	 * @return The wanted message or null if it doesn't exists
 	 * @throws MongoException If there is an error in the message getting
 	 */
-	public List<MessageModel> getMessage(MessageModel model, boolean regexSearch) throws MongoException {
+	public List<MessageModel> getMessage(MessageModel model, boolean regexSearch) {
 		// Prepare the and queries
 		List<Bson> andQueries = new ArrayList<Bson>();
 
