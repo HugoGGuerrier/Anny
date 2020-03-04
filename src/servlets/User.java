@@ -48,7 +48,7 @@ public class User extends HttpServlet {
 
 	/** Security tool */
 	private Security security;
-	
+
 	/** Session pool */
 	private SessionPool sessionPool;
 
@@ -100,14 +100,14 @@ public class User extends HttpServlet {
 		if(splitedUrl.length >= 4) {	
 
 			// Get the user id and make the request with it
-			String userId = splitedUrl[3];
-			if(this.security.isValidUserId(userId)) {
+			String id = splitedUrl[3];
+			if(this.security.isValidUserId(id)) {
 
 				UserModel filter = new UserModel();
-				filter.setUserId(userId);
+				filter.setUserId(id);
 
 				try {
-					
+
 					// Get the user list
 					JSONArray users = this.searchUser.searchUser(filter, false);
 					res.put("result", users);
@@ -136,7 +136,7 @@ public class User extends HttpServlet {
 			String email = req.getParameter("userEmail");
 			String date = req.getParameter("userDate");
 			Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
-			
+
 			UserModel filter = new UserModel();
 			filter.setUserId(id);
 			filter.setUserPseudo(pseudo);
@@ -148,21 +148,21 @@ public class User extends HttpServlet {
 			} catch (IllegalArgumentException e) {
 				filter.setUserDate(null);
 			}
-			
+
 			try {
-				
+
 				// Try to get the users from the database
 				JSONArray users = this.searchUser.searchUser(filter, isLike);
 				res.put("result", users);
-				
+
 			} catch (SQLException e) {
 
 				this.logger.log("Error during the user getting", Logger.ERROR);
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.SQL_ERROR);
-				
+
 			}
-			
+
 		}
 
 		// Send the result
@@ -178,8 +178,8 @@ public class User extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// TODO : Vérifier que la session est administrateur
-		
-		// Get the user param
+
+		// Get the user parameters
 		String id = req.getParameter("userId");
 		String pseudo = req.getParameter("userPseudo");
 		String name = req.getParameter("userName");
@@ -214,13 +214,13 @@ public class User extends HttpServlet {
 
 		} catch (UserException e) {
 
-			this.logger.log("Error with the user informations", Logger.WARNING);
+			this.logger.log("Error during the user insertion", Logger.WARNING);
 			this.logger.log(e, Logger.WARNING);
 			res = this.handler.handleException(e, Handler.WEB_ERROR);
 
 		} catch (SQLException e) {
 
-			this.logger.log("Error during the user insertion in database", Logger.ERROR);
+			this.logger.log("Error during the user insertion", Logger.ERROR);
 			this.logger.log(e, Logger.ERROR);
 			res = this.handler.handleException(e, Handler.SQL_ERROR);
 
@@ -235,19 +235,110 @@ public class User extends HttpServlet {
 	/**
 	 * Modify an user in the database
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Gérer la méthode put pour modifier un utilisateur
-		resp.getWriter().append("PUT : Not implemented...");
+		// TODO : Vérifier que la session est la bonne ou administrateur
+		
+		// Create the response object
+		JSONObject res = new JSONObject();
+
+		// Get the user parameters
+		String id = req.getParameter("userId");
+		String pseudo = req.getParameter("userPseudo");
+		String name = req.getParameter("userName");
+		String surname = req.getParameter("userSurname");
+		String email = req.getParameter("userEmail");
+		String password = req.getParameter("userPassword");
+		Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
+
+		// Hash the password to update it
+		password = this.security.hashString(password);
+
+		// Create the user to modify it
+		UserModel modifiedUser = new UserModel();
+		modifiedUser.setUserId(id);
+		modifiedUser.setUserPseudo(pseudo);
+		modifiedUser.setUserName(name);
+		modifiedUser.setUserSurname(surname);
+		modifiedUser.setUserEmail(email);
+		modifiedUser.setUserPassword(password);
+		modifiedUser.setUserAdmin(admin);
+
+		try {
+
+			// Try to insert the user in the database
+			this.modifyUser.modifyUser(modifiedUser);
+			res.put("result", "SUCCESS");
+
+		} catch (UserException e) {
+
+			this.logger.log("Error during the user modifying", Logger.WARNING);
+			this.logger.log(e, Logger.WARNING);
+			res = this.handler.handleException(e, Handler.WEB_ERROR);
+
+		} catch (SQLException e) {
+
+			this.logger.log("Error during the user modifying", Logger.ERROR);
+			this.logger.log(e, Logger.ERROR);
+			res = this.handler.handleException(e, Handler.SQL_ERROR);
+
+		}
+
+		// Send the result
+		resp.setCharacterEncoding(StdVar.APP_ENCODING);
+		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+		resp.getWriter().append(res.toJSONString());
 	}
 
 	/**
 	 * Delete an user in the database
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Gérer la méthode delete pour supprimer un utilisateur
-		resp.getWriter().append("DELETE : Not implemented...");
+		// TODO : Faire la vérification de la session si c'est le bonne utilisateur ou un admin
+
+		// Prepare the response JSON
+		JSONObject res = new JSONObject();
+
+		// Parse the URL to get the user ID
+		String[] splitedUrl = req.getRequestURI().split("/");
+		if(splitedUrl.length >= 4) {
+
+			// Get the user id and make the request with it
+			String id = splitedUrl[3];
+
+			// Prepare the filter
+			UserModel filter = new UserModel();
+			filter.setUserId(id);
+
+			try {
+
+				// Try to delete the user
+				this.deleteUser.deleteUser(filter);
+				res.put("result", "SUCCESS");
+
+			} catch (UserException e) {
+
+				this.logger.log("Error during the user deletion", Logger.WARNING);
+				this.logger.log(e, Logger.WARNING);
+				this.handler.handleException(e, Handler.WEB_ERROR);
+
+			} catch (SQLException e) {
+
+				this.logger.log("Error during the user deletion", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				this.handler.handleException(e, Handler.SQL_ERROR);
+
+			}
+
+		}
+
+		// Send the result
+		resp.setCharacterEncoding(StdVar.APP_ENCODING);
+		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+		resp.getWriter().append(res.toJSONString());
 	}
 
 }

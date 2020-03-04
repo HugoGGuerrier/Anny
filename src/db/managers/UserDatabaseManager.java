@@ -282,6 +282,7 @@ public class UserDatabaseManager {
 			String password = resultSet.getString("userPassword");
 			Date date = resultSet.getDate("userDate");
 			Boolean admin = resultSet.getBoolean("userAdmin");
+			
 			UserModel newUser = new UserModel();
 			newUser.setUserId(id);
 			newUser.setUserPseudo(pseudo);

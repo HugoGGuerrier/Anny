@@ -84,6 +84,10 @@ public class ModifyUser {
 			valid = false;
 			message.append(" - Invalid user password : " + user.getUserPassword());
 		}
+		if(user.isUserAdmin() == null) {
+			valid = false;
+			message.append(" - Invalid user admin : " + user.isUserAdmin());
+		}
 
 		// If there is an error, throw an exception
 		if(!valid) {
