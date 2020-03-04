@@ -8,12 +8,12 @@
 "mysqlConfig": {
 	"mysqlPooling": false,
 	"mysqlHost": "localhost",
-	"mysqlDatabase": "DB_BIRDY",
-	"mysqlLogin": "birdy_user",
-	"mysqlPassword": "birdy_password"
+	"mysqlDatabase": "DB_ANNY",
+	"mysqlLogin": "anny_user",
+	"mysqlPassword": "A04n08n11y12;"
 },
 "mongoConfig": {
-	"mongoDatabase": "DB_BIRDY",
+	"mongoDatabase": "DB_ANNY",
 	"mongoMessageCollection": "messages"
 }
 }

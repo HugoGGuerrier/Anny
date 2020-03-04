@@ -2,19 +2,18 @@
 "appConfig": {
 	"version": "0.1.1",
 	"env": 0,
-	
 	"cacheCleaningInterval": 5,
 	"sessionTimeToLive": 3
 },
 "mysqlConfig": {
 	"mysqlPooling": false,
 	"mysqlHost": "localhost",
-	"mysqlDatabase": "DB_BIRDY_TEST",
-	"mysqlLogin": "birdy_user",
-	"mysqlPassword": "birdy_password"
+	"mysqlDatabase": "DB_ANNY_TEST",
+	"mysqlLogin": "anny_user",
+	"mysqlPassword": "A04n08n11y12;"
 },
 "mongoConfig": {
-	"mongoDatabase": "DB_BIRDY_TEST",
+	"mongoDatabase": "DB_ANNY_TEST",
 	"mongoMessageCollection": "messages"
 }
 }
