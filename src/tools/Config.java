@@ -241,7 +241,7 @@ public class Config {
 	public static String display() {
 		StringBuilder res = new StringBuilder();
 
-		res.append("Birdy config : {\n");
+		res.append("Anny config : {\n");
 
 		res.append("  version: " + Config.version + "\n");
 		res.append("  environment: " + Config.env + "\n");

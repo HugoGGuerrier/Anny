@@ -33,7 +33,7 @@ public class Index extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().append("Welcome on birdy, current version is ").append(Config.getVersion());
+		response.getWriter().append("Welcome on Anny ^^ , current version is ").append(Config.getVersion());
 	}
 
 }

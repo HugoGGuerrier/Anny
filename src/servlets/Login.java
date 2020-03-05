@@ -13,13 +13,13 @@ import javax.servlet.http.HttpServletResponse;
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-
 @WebServlet("/login")
 public class Login extends HttpServlet {
 
 	// ----- Attributes -----
 	
 	
+	/** Serial version number */
 	private static final long serialVersionUID = -8116808647814082234L;
 
 	

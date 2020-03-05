@@ -153,6 +153,8 @@ public class Message extends HttpServlet {
 		
 		// Create the message model
 		MessageModel newMessage = new MessageModel();
+		newMessage.setMessageText(text);
+		newMessage.setMessageBoardName(boardName);
 		
 	}
 

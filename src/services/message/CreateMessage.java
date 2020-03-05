@@ -90,6 +90,7 @@ public class CreateMessage {
 			// Get message ID dynamically
 			if(parentMessageId != null && !parentMessageId.equals("")) {
 				
+				// Get the message parent
 				MessageModel parentFilter = new MessageModel();
 				parentFilter.setMessageId(parentMessageId);
 				List<MessageModel> parents = this.messageDatabaseManager.getMessage(parentFilter, false);
@@ -106,6 +107,7 @@ public class CreateMessage {
 				
 			} else {
 				
+				// Get the next root message ID
 				message.setMessageId(messageDatabaseManager.getNextRootMessageId());
 				
 			}
