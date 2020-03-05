@@ -21,8 +21,10 @@ import tools.Handler;
 import tools.Logger;
 import tools.Security;
 import tools.StdVar;
+import tools.exceptions.SessionException;
 import tools.exceptions.UserException;
 import tools.models.UserModel;
+import tools.sessions.SessionModel;
 import tools.sessions.SessionPool;
 
 /**
@@ -167,56 +169,63 @@ public class User extends HttpServlet {
 	/**
 	 * Create a new user in the database, this method is only for admin users
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Vérifier que la session est administrateur
-
-		// Get the user parameters
-		String id = req.getParameter("userId");
-		String pseudo = req.getParameter("userPseudo");
-		String name = req.getParameter("userName");
-		String surname = req.getParameter("userSurname");
-		String email = req.getParameter("userEmail");
-		String password = req.getParameter("userPassword");
-		Date date = new Date(new java.util.Date().getTime());
-		Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
-
-		// Hash the password to avoid memory leak
-		password = this.security.hashString(password);
-
-		// Create the new user to insert
-		UserModel newUser = new UserModel();
-		newUser.setUserId(id);
-		newUser.setUserPseudo(pseudo);
-		newUser.setUserName(name);
-		newUser.setUserSurname(surname);
-		newUser.setUserEmail(email);
-		newUser.setUserPassword(password);
-		newUser.setUserDate(date);
-		newUser.setUserAdmin(admin);
-
 		// Create the response object
-		JSONObject res = new JSONObject();
+		JSONObject res = this.handler.getDefaultResponse();
 
-		try {
+		// Get the current session
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
 
-			// Try to insert the user in the database
-			this.createUser.createUser(newUser);
-			res.put("result", "SUCCESS");
+		if(currentSession != null && Boolean.parseBoolean(currentSession.getAttribute("adminSession"))) {
+			
+			// Get the user parameters
+			String id = req.getParameter("userId");
+			String pseudo = req.getParameter("userPseudo");
+			String name = req.getParameter("userName");
+			String surname = req.getParameter("userSurname");
+			String email = req.getParameter("userEmail");
+			String password = req.getParameter("userPassword");
+			Date date = new Date(new java.util.Date().getTime());
+			Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
 
-		} catch (UserException e) {
+			// Hash the password to avoid memory leak
+			password = this.security.hashString(password);
 
-			this.logger.log("Error during the user insertion", Logger.WARNING);
-			this.logger.log(e, Logger.WARNING);
-			res = this.handler.handleException(e, Handler.WEB_ERROR);
+			// Create the new user to insert
+			UserModel newUser = new UserModel();
+			newUser.setUserId(id);
+			newUser.setUserPseudo(pseudo);
+			newUser.setUserName(name);
+			newUser.setUserSurname(surname);
+			newUser.setUserEmail(email);
+			newUser.setUserPassword(password);
+			newUser.setUserDate(date);
+			newUser.setUserAdmin(admin);
 
-		} catch (SQLException e) {
+			try {
 
-			this.logger.log("Error during the user insertion", Logger.ERROR);
-			this.logger.log(e, Logger.ERROR);
-			res = this.handler.handleException(e, Handler.SQL_ERROR);
+				// Try to insert the user in the database
+				this.createUser.createUser(newUser);
 
+			} catch (UserException e) {
+
+				this.logger.log("Error during the user insertion", Logger.WARNING);
+				this.logger.log(e, Logger.WARNING);
+				res = this.handler.handleException(e, Handler.WEB_ERROR);
+
+			} catch (SQLException e) {
+
+				this.logger.log("Error during the user insertion", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.SQL_ERROR);
+
+			}
+			
+		} else {
+			
+			res = this.handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
+			
 		}
 
 		// Send the result
@@ -228,53 +237,70 @@ public class User extends HttpServlet {
 	/**
 	 * Modify an user in the database
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Vérifier que la session est la bonne ou administrateur
-
 		// Create the response object
-		JSONObject res = new JSONObject();
+		JSONObject res = this.handler.getDefaultResponse();
 
-		// Get the user parameters
-		String id = req.getParameter("userId");
-		String pseudo = req.getParameter("userPseudo");
-		String name = req.getParameter("userName");
-		String surname = req.getParameter("userSurname");
-		String email = req.getParameter("userEmail");
-		String password = req.getParameter("userPassword");
-		Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
+		// Get the current session
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
 
-		// Hash the password to update it
-		password = this.security.hashString(password);
+		if(currentSession != null) {
 
-		// Create the user to modify it
-		UserModel modifiedUser = new UserModel();
-		modifiedUser.setUserId(id);
-		modifiedUser.setUserPseudo(pseudo);
-		modifiedUser.setUserName(name);
-		modifiedUser.setUserSurname(surname);
-		modifiedUser.setUserEmail(email);
-		modifiedUser.setUserPassword(password);
-		modifiedUser.setUserAdmin(admin);
+			// Get the user parameters
+			String id = req.getParameter("userId");
+			String pseudo = req.getParameter("userPseudo");
+			String name = req.getParameter("userName");
+			String surname = req.getParameter("userSurname");
+			String email = req.getParameter("userEmail");
+			String password = req.getParameter("userPassword");
+			Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
 
-		try {
+			// Hash the password to update it
+			password = this.security.hashString(password);
 
-			// Try to insert the user in the database
-			this.modifyUser.modifyUser(modifiedUser);
-			res.put("result", "SUCCESS");
+			// Create the user to modify it
+			UserModel modifiedUser = new UserModel();
+			modifiedUser.setUserId(id);
+			modifiedUser.setUserPseudo(pseudo);
+			modifiedUser.setUserName(name);
+			modifiedUser.setUserSurname(surname);
+			modifiedUser.setUserEmail(email);
+			modifiedUser.setUserPassword(password);
+			modifiedUser.setUserAdmin(admin);
 
-		} catch (UserException e) {
+			try {
 
-			this.logger.log("Error during the user modifying", Logger.WARNING);
-			this.logger.log(e, Logger.WARNING);
-			res = this.handler.handleException(e, Handler.WEB_ERROR);
+				// Try to insert the user in the database
+				boolean isSessionAdmin = Boolean.parseBoolean(currentSession.getAttribute("adminSession"));
+				if(id.equals(currentSession.getUserId()) || isSessionAdmin) {
 
-		} catch (SQLException e) {
+					this.modifyUser.modifyUser(modifiedUser);
 
-			this.logger.log("Error during the user modifying", Logger.ERROR);
-			this.logger.log(e, Logger.ERROR);
-			res = this.handler.handleException(e, Handler.SQL_ERROR);
+				} else {
+
+					res = this.handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
+
+				}
+
+
+			} catch (UserException e) {
+
+				this.logger.log("Error during the user modifying", Logger.WARNING);
+				this.logger.log(e, Logger.WARNING);
+				res = this.handler.handleException(e, Handler.WEB_ERROR);
+
+			} catch (SQLException e) {
+
+				this.logger.log("Error during the user modifying", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.SQL_ERROR);
+
+			}
+
+		} else {
+
+			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
 
 		}
 
@@ -287,44 +313,64 @@ public class User extends HttpServlet {
 	/**
 	 * Delete an user in the database
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Faire la vérification de la session si c'est le bon utilisateur ou un admin
-
 		// Prepare the response JSON
-		JSONObject res = new JSONObject();
+		JSONObject res = this.handler.getDefaultResponse();
 
-		// Parse the URL to get the user ID
-		String[] splitedUrl = req.getRequestURI().split("/");
-		if(splitedUrl.length >= 4) {
+		// Get the session
+		SessionModel currentSession = this.sessionPool.getSession(req, false);
 
-			// Get the user id and make the request with it
-			String id = splitedUrl[3];
+		if(currentSession != null) {
 
-			// Prepare the filter
-			UserModel filter = new UserModel();
-			filter.setUserId(id);
+			// Parse the URL to get the user ID
+			String[] splitedUrl = req.getRequestURI().split("/");
+			if(splitedUrl.length >= 4) {
 
-			try {
+				// Get the user id and make the request with it
+				String id = splitedUrl[3];
 
-				// Try to delete the user
-				this.deleteUser.deleteUser(filter);
-				res.put("result", "SUCCESS");
+				// Prepare the filter
+				UserModel filter = new UserModel();
+				filter.setUserId(id);
 
-			} catch (UserException e) {
+				try {
 
-				this.logger.log("Error during the user deletion", Logger.WARNING);
-				this.logger.log(e, Logger.WARNING);
-				this.handler.handleException(e, Handler.WEB_ERROR);
+					// Try to delete the user
+					boolean isSessionAdmin = Boolean.parseBoolean(currentSession.getAttribute("adminSession"));
+					if(id.equals(currentSession.getUserId()) || isSessionAdmin) {
 
-			} catch (SQLException e) {
+						// Delete the user and destroy the session if the user is not an admin
+						this.deleteUser.deleteUser(filter);
+						if(!isSessionAdmin) {
+							this.sessionPool.removeSession(currentSession.getSessionId(), resp);
+						}
 
-				this.logger.log("Error during the user deletion", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				this.handler.handleException(e, Handler.SQL_ERROR);
+					} else {
+
+						res = this.handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
+
+					}
+
+				} catch (UserException e) {
+
+					this.logger.log("Error during the user deletion", Logger.WARNING);
+					this.logger.log(e, Logger.WARNING);
+					res = this.handler.handleException(e, Handler.WEB_ERROR);
+
+				} catch (SQLException e) {
+
+					this.logger.log("Error during the user deletion", Logger.ERROR);
+					this.logger.log(e, Logger.ERROR);
+					res = this.handler.handleException(e, Handler.SQL_ERROR);
+
+				}
 
 			}
+
+		} else {
+
+			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
 
 		}
 

@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-@WebServlet("/register")
+@WebServlet("/register/*")
 public class Register extends HttpServlet {
 	
 	// ----- Attributes -----

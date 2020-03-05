@@ -53,6 +53,20 @@ public class Handler {
 
 
 	/**
+	 * Get the default success JSON
+	 * 
+	 * @return The JSON for a success
+	 */
+	@SuppressWarnings("unchecked")
+	public JSONObject getDefaultResponse() {
+		JSONObject res = new JSONObject();
+		
+		res.put("result", "SUCCESS");
+		
+		return res;
+	}
+	
+	/**
 	 * Get the JSON of the refused service with a message
 	 * 
 	 * @param msg The wanted message

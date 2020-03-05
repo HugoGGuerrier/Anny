@@ -16,7 +16,7 @@ import tools.Config;
  * @author Hugo Guerrier
  */
 
-@WebServlet("/index")
+@WebServlet("/index/*")
 public class Index extends HttpServlet {	
 
 	// ----- Attributes -----

@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/board")
+@WebServlet("/board/*")
 public class Board extends HttpServlet {
 	
 	// ----- Attributes -----

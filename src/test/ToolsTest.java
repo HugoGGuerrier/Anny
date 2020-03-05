@@ -123,22 +123,13 @@ public class ToolsTest {
 	@Test
 	public void testSessions() {
 		// Test the session getting
-		try {
 			SessionModel testSession1 = this.sessionPool.getSession(ToolsTest.sessionId1, false);
 			assertEquals(ToolsTest.user1.getUserId(), testSession1.getUserId());
-		} catch (SessionException e) {
-			e.printStackTrace();
-			fail("Cannot get the session 1 !");
-		}
 		
 		// Test the session deleting
-		try {
 			this.sessionPool.removeSession(ToolsTest.sessionId1);
 			this.sessionPool.getSession(ToolsTest.sessionId1, false);
 			fail("Session 1 has not been removed !");
-		} catch (SessionException e) {
-			// Success !
-		}
 		
 		// Test the session updating
 		try {
@@ -149,9 +140,6 @@ public class ToolsTest {
 			assertNotEquals(test1.getLastActionDate(), test2.getLastActionDate());
 		} catch (InterruptedException e) {
 			fail("Please do not stop the test");
-		} catch (SessionException e) {
-			e.printStackTrace();
-			fail("Cannot get the session 2 !");
 		}
 		
 		// Test the session clean
@@ -164,12 +152,10 @@ public class ToolsTest {
 			
 			this.sessionPool.putSession(newSession);
 			
-			this.sessionPool.getSession(ToolsTest.sessionId3, false);
+			assertNull(this.sessionPool.getSession(ToolsTest.sessionId3, false));
 			fail("The session 3 were not removed by the clean !");
 		} catch (InterruptedException e) {
 			fail("Please do not stop the test");
-		} catch (SessionException e) {
-			// Success !
 		}
 	}
 

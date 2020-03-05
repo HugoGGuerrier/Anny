@@ -146,6 +146,9 @@ public class Message extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// TODO : Vérifier que la session est valide
 		
+		// Prepare the JSON result
+		JSONObject res = this.handler.getDefaultResponse();
+		
 		// Get the message parameters
 		String text = req.getParameter("messageText");
 		String boardName = req.getParameter("messageBoardName");

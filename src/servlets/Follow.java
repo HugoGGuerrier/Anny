@@ -22,7 +22,7 @@ import tools.Security;
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-@WebServlet("/follow")
+@WebServlet("/follow/*")
 public class Follow extends HttpServlet {
 
 	// ----- Attributes -----

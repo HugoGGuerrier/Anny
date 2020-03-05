@@ -26,7 +26,7 @@ import tools.StdVar;
  * @author Emilie Siau
  * @author Hugo Guerrier
  */
-@WebServlet("/configurator")
+@WebServlet("/configurator/*")
 public class Configurator extends HttpServlet {
 
 	// ----- Attributes -----
@@ -49,6 +49,8 @@ public class Configurator extends HttpServlet {
 		// Get the application base path
 		ServletContext context = this.getServletContext();
 		String basePath = context.getRealPath("./");
+		
+		System.out.println(basePath);
 		
 		// Set the application base path
 		Config.setBasePath(basePath);

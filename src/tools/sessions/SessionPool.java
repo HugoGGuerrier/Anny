@@ -2,7 +2,11 @@ package tools.sessions;
 
 import java.util.Random;
 
-import tools.exceptions.SessionException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import tools.Config;
 
 /**
  * A class to store all sessions in the cache and manage them
@@ -61,16 +65,15 @@ public class SessionPool {
 	public void reset() {
 		this.manager.resetSessions();
 	}
-	
+
 	/**
 	 * Get a stored session and verify if it's not expired and execute the action if you want
 	 * 
 	 * @param sessionId The session ID you want to get
 	 * @param autoAction If you want to execute the action automatically
-	 * @return The session if it exists and is valid
-	 * @throws SessionException If the wanted session not exists
+	 * @return The session if it exists and is valid null else
 	 */
-	public SessionModel getSession(String sessionId, boolean doAction) throws SessionException {
+	public SessionModel getSession(String sessionId, boolean doAction) {
 		// Get the session from the cache manager
 		SessionModel res = this.manager.getSession(sessionId);
 
@@ -86,9 +89,47 @@ public class SessionPool {
 				}
 			}
 		}
-		
-		if(res == null) {
-			throw new SessionException("Session " + sessionId + " does not exists");
+
+		// Return the result
+		return res;
+	}
+
+	/**
+	 * Get the session from the request cookies, a shortcut
+	 * 
+	 * @param req The request
+	 * @param doAction Do an action on the session
+	 * @return The session or null if it does not exists
+	 */
+	public SessionModel getSession(HttpServletRequest req, boolean doAction) {
+		String sessionId = this.getSessionIdFromRequest(req);
+
+		// If the session is in the cookies get it
+		if(sessionId != null) {
+			return this.getSession(sessionId, doAction);
+		}
+
+		// Else just return null
+		return null;
+	}
+	
+	/**
+	 * Get the session from the request cookies, a shortcut
+	 * 
+	 * @param req The request
+	 * @param resp The response to update the cookie on the client
+	 * @param doAction Do an action on the session
+	 * @return The session or null if it does not exists
+	 */
+	public SessionModel getSession(HttpServletRequest req, HttpServletResponse resp, boolean doAction) {
+		SessionModel res = this.getSession(req, doAction);
+
+		// If the session exists update the clie,t
+		if(res != null) {
+			Cookie sessionCookie = new Cookie("annySessionId", res.getSessionId());
+			sessionCookie.setMaxAge((int) Config.getSessionTimeToLive());
+			sessionCookie.setPath("/");
+			resp.addCookie(sessionCookie);
 		}
 
 		// Return the result
@@ -105,12 +146,40 @@ public class SessionPool {
 	}
 
 	/**
+	 * Put a new sessio in the cache and in the response
+	 * 
+	 * @param session The session tu put
+	 * @param resp The response to put the sesison in
+	 */
+	public void putSession(SessionModel session, HttpServletResponse resp) {
+		this.putSession(session);
+		Cookie sessionCookie = new Cookie("annySessionId", session.getSessionId());
+		sessionCookie.setMaxAge((int) Config.getSessionTimeToLive());
+		sessionCookie.setPath("/");
+		resp.addCookie(sessionCookie);
+	}
+
+	/**
 	 * Remove the session from the session pool
 	 * 
 	 * @param sessionId The session ID
 	 */
 	public void removeSession(String sessionId) {
 		this.manager.addSessionsRemoveBuffer(sessionId);
+	}
+
+	/**
+	 * Remove a session from the cache and from the client
+	 * 
+	 * @param sessionId The session ID
+	 * @param resp The response to the client
+	 */
+	public void removeSession(String sessionId, HttpServletResponse resp) {
+		this.removeSession(sessionId);
+		Cookie sessionCookie = new Cookie("annySessionId", sessionId);
+		sessionCookie.setMaxAge(0);
+		sessionCookie.setPath("/");
+		resp.addCookie(sessionCookie);
 	}
 
 	/**
@@ -132,16 +201,37 @@ public class SessionPool {
 				int selectedChar = random.nextInt(possibleChars.length());
 				res.append(possibleChars.charAt(selectedChar));
 			}
-			try {
-				testSession = this.getSession(res.toString(), false);
-			} catch (SessionException e) {
-				testSession = null;
-			}
+			testSession = this.getSession(res.toString(), false);
 		} while (testSession != null);
 
 
 		// Return the generated ID
 		return res.toString();
+	}
+
+	/**
+	 * Get the session ID from the HTTP request
+	 * 
+	 * @param req The request
+	 * @return The session ID or null if it does not exists
+	 */
+	public String getSessionIdFromRequest(HttpServletRequest req) {
+		String res = null;
+
+		// Get the session id from the cookies
+		Cookie[] cookies = req.getCookies();
+		
+		if(cookies != null) {
+			for (int i = 0; i < cookies.length; i++) {
+				Cookie cookie = cookies[i];
+				if(cookie.getName().equals("annySessionId")) {
+					res = cookie.getValue();
+				}
+			}
+		}
+		
+		// Return the result
+		return res;
 	}
 
 }
