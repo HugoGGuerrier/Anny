@@ -78,6 +78,8 @@ public class Security {
 	public String hashString(String stringToHash) {
 		return DigestUtils.sha512Hex(stringToHash);
 	}
+	
+	public String generateCSRFToken
 
 
 	// ----- Verify methods -----
