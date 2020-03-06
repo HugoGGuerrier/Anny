@@ -208,10 +208,13 @@ public class Logger {
         message.append("\n");
 
         // Add the error stack trace
-        for(StackTraceElement ste : e.getStackTrace()) {
+        for(int i = 0; i < e.getStackTrace().length; i++) {
+        	StackTraceElement ste = e.getStackTrace()[i];
         	message.append("    at ");
         	message.append(ste.toString());
-        	message.append("\n");
+        	if(i < e.getStackTrace().length - 1) {
+        		message.append("\n");
+        	}
         }
 
         // Log the error

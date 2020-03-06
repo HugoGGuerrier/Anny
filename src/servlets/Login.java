@@ -81,10 +81,10 @@ public class Login extends HttpServlet {
 		JSONObject res = this.handler.getDefaultResponse();
 
 		// Try to get the session
-		SessionModel sessionTest = this.sessionPool.getSession(req, false);
+		SessionModel currentSession = this.sessionPool.getSession(req, false);
 
-		// If the session does not exists create it
-		if(sessionTest == null) {
+		// If the session does not exists or is anonymous create it
+		if(currentSession == null || currentSession.isAnonymous()) {
 
 			// Get the user attributes
 			String userId = req.getParameter("userId");
@@ -104,12 +104,19 @@ public class Login extends HttpServlet {
 
 				if(users.size() == 1) {
 
-					// Create the session in the cache and put it to the client
+					// Create or update the session in the cache and put it to the client
 					UserModel user = users.get(0);
-					String sessionId = this.sessionPool.generateSessionId();
-					SessionModel newSession = new SessionModel(sessionId, user);
-					newSession.putAttribute("adminSession", String.valueOf(user.isUserAdmin()));
-					this.sessionPool.putSession(newSession, resp);
+					
+					if(currentSession == null) {
+						String sessionId = this.sessionPool.generateSessionId();
+						SessionModel newSession = new SessionModel(sessionId, user);
+						newSession.putAttribute("adminSession", String.valueOf(user.isUserAdmin()));
+						this.sessionPool.putSession(newSession, resp);
+					} else {
+						currentSession.setUserId(user.getUserId());
+						currentSession.putAttribute("adminSession", String.valueOf(user.isUserAdmin()));
+						this.sessionPool.putSession(currentSession);
+					}
 
 				} else {
 

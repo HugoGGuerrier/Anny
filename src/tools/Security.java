@@ -1,5 +1,6 @@
 package tools;
 
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,8 +79,27 @@ public class Security {
 	public String hashString(String stringToHash) {
 		return DigestUtils.sha512Hex(stringToHash);
 	}
-	
-	public String generateCSRFToken
+
+	/**
+	 * Generate a CSRF token to verify forms
+	 * 
+	 * @return The generated CSRF token
+	 */
+	public String generateCSRFToken() {
+		// Define needed variables
+		String possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		Random random = new Random();
+		StringBuilder res = new StringBuilder();
+
+		// Generate the token
+		for (int i = 0; i < 64; i++) {
+			int selectedChar = random.nextInt(possibleChars.length());
+			res.append(possibleChars.charAt(selectedChar));
+		}
+
+		// Return the generated token
+		return res.toString();
+	}
 
 
 	// ----- Verify methods -----
@@ -99,7 +119,7 @@ public class Security {
 
 		return matcher.matches();
 	}
-	
+
 	/**
 	 * Verify the board description
 	 * 

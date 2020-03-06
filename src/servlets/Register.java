@@ -1,8 +1,12 @@
 package servlets;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.sql.SQLException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,11 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONObject;
 
 import services.user.CreateUser;
+import tools.Config;
 import tools.Handler;
 import tools.Logger;
 import tools.Security;
 import tools.StdVar;
 import tools.exceptions.SessionException;
+import tools.exceptions.UserException;
+import tools.models.UserModel;
 import tools.sessions.SessionModel;
 import tools.sessions.SessionPool;
 
@@ -67,23 +74,39 @@ public class Register extends HttpServlet {
 	// ----- HTTP methods -----
 
 
+	/**
+	 * Put a CSRF token to the client to avoid multiple register
+	 */
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
 		JSONObject res = this.handler.getDefaultResponse();
-		
+
 		// Try to get the session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
-		Boolean isSessionAdmin = Boolean.parseBoolean(currentSession.getAttribute("adminSession"));
-		
-		if(isSessionAdmin || currentSession == null) {
-			
-			
-			
+
+		if(currentSession == null) {
+
+			// Generate a CSRF token
+			String token = this.security.generateCSRFToken();
+
+			// Create an anonymous session
+			String sessionId = this.sessionPool.generateSessionId();
+			SessionModel anonSession = new SessionModel(sessionId);
+			anonSession.putAttribute("adminSession", "false");
+			anonSession.putAttribute("csrfToken", token);
+			this.sessionPool.putSession(anonSession, resp);
+
+			// Put the CSRF token in the cookies
+			Cookie csrfCookie = new Cookie("annyCsrfToken", token);
+			csrfCookie.setMaxAge((int) Config.getSessionTimeToLive());
+			resp.addCookie(csrfCookie);
+
 		} else {
-			
-			res = this.handler.handleException(new SessionException("Cannot create an user with an existing session"), Handler.WEB_ERROR);
-			
+
+			// If the user is already logged in
+			res = this.handler.handleException(new SessionException("Cannot register with an existing session"), Handler.WEB_ERROR);
+
 		}
 
 		// Send the result
@@ -92,12 +115,109 @@ public class Register extends HttpServlet {
 		resp.getWriter().append(res.toJSONString());
 	}
 
+	/**
+	 * Register a new user with the CSRF verification
+	 */
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// TODO LATER : Une vérification par mail de l'utilisateur pour l'obliger à confirmer son mail
 
-		// TODO : Faire l'enregistrement du nouvel utilisateur et créer sa session
-		resp.getWriter().append("POST : Not implemented...");
+		// Prepare the JSON result
+		JSONObject res = this.handler.getDefaultResponse();
+
+		// Get the current session
+		SessionModel currentSession = this.sessionPool.getSession(req, false);
+
+		if(currentSession != null && currentSession.isAnonymous()) {
+
+			// Get the CSRF tokens from the session and the cookie
+			String sessionCsrf = currentSession.getAttribute("csrfToken");
+			String cookieCsrf = null;
+			Cookie[] cookies = req.getCookies();
+			for(int i = 0; i < cookies.length; i++) {
+				Cookie cookie = cookies[i];
+				if(cookie.getName().equals("annyCsrfToken")) {
+					cookieCsrf = cookie.getValue();
+				}
+			}
+
+			if(sessionCsrf != null && sessionCsrf.equals(cookieCsrf)) {
+
+				try {
+
+					// Get the user parameters
+					String id = req.getParameter("userId");
+					String pseudo = req.getParameter("userPseudo");
+					String name = req.getParameter("userName");
+					String surname = req.getParameter("userSurname");
+					String email = req.getParameter("userEmail");
+					String password = req.getParameter("userPassword");
+					Date date = new Date(new java.util.Date().getTime());
+					Boolean admin = false;
+
+					// Hash the password to avoid memory leak
+					password = this.security.hashString(password);
+
+					// Create the new user to insert
+					UserModel newUser = new UserModel();
+					newUser.setUserId(id);
+					newUser.setUserPseudo(pseudo);
+					newUser.setUserName(name);
+					newUser.setUserSurname(surname);
+					newUser.setUserEmail(email);
+					newUser.setUserPassword(password);
+					newUser.setUserDate(date);
+					newUser.setUserAdmin(admin);
+
+					// Try to insert the user in the database
+					this.createUser.createUser(newUser);
+					
+					// Set the session to the registered user
+					currentSession.setUserId(id);
+					currentSession.putAttribute("sessionAdmin", "false");
+					currentSession.removeAttribute("csrfToken");
+					this.sessionPool.putSession(currentSession, resp);
+					
+					// Remove the CSRF cookie
+					Cookie csrfCookie = new Cookie("annyCsrfToken", "");
+					csrfCookie.setMaxAge(0);
+					resp.addCookie(csrfCookie);
+
+				} catch (UserException e) {
+
+					this.logger.log("Error during the user insertion", Logger.WARNING);
+					this.logger.log(e, Logger.WARNING);
+					res = this.handler.handleException(e, Handler.WEB_ERROR);
+
+				} catch (SQLException e) {
+
+					this.logger.log("Error during the user insertion", Logger.ERROR);
+					this.logger.log(e, Logger.ERROR);
+					res = this.handler.handleException(e, Handler.SQL_ERROR);
+
+				} catch (NullPointerException e) {
+
+					res = this.handler.handleException(e, Handler.JAVA_ERROR);
+					
+				}
+
+			} else {
+
+				this.logger.log("User try to register with an invalid CSRF token", Logger.WARNING);
+				res = this.handler.handleException(new SessionException("Invalid CSRF token"), Handler.WEB_ERROR);
+
+			}
+
+		} else {
+
+			res = this.handler.handleException(new SessionException("Invalid session"), Handler.WEB_ERROR);
+
+		}
+
+		// Send the result
+		resp.setCharacterEncoding(StdVar.APP_ENCODING);
+		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+		resp.getWriter().append(res.toJSONString());
 	}
 
 }

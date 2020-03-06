@@ -74,7 +74,7 @@ public class SessionModel {
 		this.lastActionDate = (Long) sessionJson.get("lastActionDate");
 		this.sessionAttriutes = (JSONObject) sessionJson.get("sessionAttriutes");
 		
-		if(this.sessionId == null || this.userId == null || this.timeToLive == null || this.lastActionDate == null || this.sessionAttriutes == null ) {
+		if(this.sessionId == null || this.timeToLive == null || this.lastActionDate == null || this.sessionAttriutes == null) {
 			throw new SessionException("Cannot create a session from a corrupted json");
 		}
 	}
@@ -100,8 +100,21 @@ public class SessionModel {
 		return this.lastActionDate;
 	}
 	
+	/**
+	 * Get if the session is anonymous
+	 * 
+	 * @return True if the session is anonymous
+	 */
 	public boolean isAnonymous() {
 		return this.userId == null;
+	}
+	
+	
+	// ----- Setters -----
+	
+	
+	public void setUserId(String id) {
+		this.userId = id;
 	}
 
 

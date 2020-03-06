@@ -174,36 +174,36 @@ public class User extends HttpServlet {
 		// Create the response object
 		JSONObject res = this.handler.getDefaultResponse();
 
-		// Get the current session
+		// Get the current session to verify that it's an admin session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
 
 		if(currentSession != null && Boolean.parseBoolean(currentSession.getAttribute("adminSession"))) {
-			
-			// Get the user parameters
-			String id = req.getParameter("userId");
-			String pseudo = req.getParameter("userPseudo");
-			String name = req.getParameter("userName");
-			String surname = req.getParameter("userSurname");
-			String email = req.getParameter("userEmail");
-			String password = req.getParameter("userPassword");
-			Date date = new Date(new java.util.Date().getTime());
-			Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
-
-			// Hash the password to avoid memory leak
-			password = this.security.hashString(password);
-
-			// Create the new user to insert
-			UserModel newUser = new UserModel();
-			newUser.setUserId(id);
-			newUser.setUserPseudo(pseudo);
-			newUser.setUserName(name);
-			newUser.setUserSurname(surname);
-			newUser.setUserEmail(email);
-			newUser.setUserPassword(password);
-			newUser.setUserDate(date);
-			newUser.setUserAdmin(admin);
 
 			try {
+				
+				// Get the user parameters
+				String id = req.getParameter("userId");
+				String pseudo = req.getParameter("userPseudo");
+				String name = req.getParameter("userName");
+				String surname = req.getParameter("userSurname");
+				String email = req.getParameter("userEmail");
+				String password = req.getParameter("userPassword");
+				Date date = new Date(new java.util.Date().getTime());
+				Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
+
+				// Hash the password to avoid memory leak
+				password = this.security.hashString(password);
+
+				// Create the new user to insert
+				UserModel newUser = new UserModel();
+				newUser.setUserId(id);
+				newUser.setUserPseudo(pseudo);
+				newUser.setUserName(name);
+				newUser.setUserSurname(surname);
+				newUser.setUserEmail(email);
+				newUser.setUserPassword(password);
+				newUser.setUserDate(date);
+				newUser.setUserAdmin(admin);
 
 				// Try to insert the user in the database
 				this.createUser.createUser(newUser);
@@ -220,6 +220,10 @@ public class User extends HttpServlet {
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.SQL_ERROR);
 
+			} catch (NullPointerException e) {
+
+				res = this.handler.handleException(e, Handler.JAVA_ERROR);
+				
 			}
 			
 		} else {
@@ -247,29 +251,28 @@ public class User extends HttpServlet {
 
 		if(currentSession != null) {
 
-			// Get the user parameters
-			String id = req.getParameter("userId");
-			String pseudo = req.getParameter("userPseudo");
-			String name = req.getParameter("userName");
-			String surname = req.getParameter("userSurname");
-			String email = req.getParameter("userEmail");
-			String password = req.getParameter("userPassword");
-			Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
-
-			// Hash the password to update it
-			password = this.security.hashString(password);
-
-			// Create the user to modify it
-			UserModel modifiedUser = new UserModel();
-			modifiedUser.setUserId(id);
-			modifiedUser.setUserPseudo(pseudo);
-			modifiedUser.setUserName(name);
-			modifiedUser.setUserSurname(surname);
-			modifiedUser.setUserEmail(email);
-			modifiedUser.setUserPassword(password);
-			modifiedUser.setUserAdmin(admin);
-
 			try {
+				// Get the user parameters
+				String id = req.getParameter("userId");
+				String pseudo = req.getParameter("userPseudo");
+				String name = req.getParameter("userName");
+				String surname = req.getParameter("userSurname");
+				String email = req.getParameter("userEmail");
+				String password = req.getParameter("userPassword");
+				Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
+
+				// Hash the password to update it
+				password = this.security.hashString(password);
+
+				// Create the user to modify it
+				UserModel modifiedUser = new UserModel();
+				modifiedUser.setUserId(id);
+				modifiedUser.setUserPseudo(pseudo);
+				modifiedUser.setUserName(name);
+				modifiedUser.setUserSurname(surname);
+				modifiedUser.setUserEmail(email);
+				modifiedUser.setUserPassword(password);
+				modifiedUser.setUserAdmin(admin);
 
 				// Try to insert the user in the database
 				boolean isSessionAdmin = Boolean.parseBoolean(currentSession.getAttribute("adminSession"));
@@ -296,6 +299,10 @@ public class User extends HttpServlet {
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.SQL_ERROR);
 
+			} catch (NullPointerException e) {
+
+				res = this.handler.handleException(e, Handler.JAVA_ERROR);
+				
 			}
 
 		} else {
@@ -354,18 +361,26 @@ public class User extends HttpServlet {
 
 				} catch (UserException e) {
 
-					this.logger.log("Error during the user deletion", Logger.WARNING);
+					this.logger.log("Input error during the user deletion", Logger.WARNING);
 					this.logger.log(e, Logger.WARNING);
 					res = this.handler.handleException(e, Handler.WEB_ERROR);
 
 				} catch (SQLException e) {
 
-					this.logger.log("Error during the user deletion", Logger.ERROR);
+					this.logger.log("SQL error during the user deletion", Logger.ERROR);
 					this.logger.log(e, Logger.ERROR);
 					res = this.handler.handleException(e, Handler.SQL_ERROR);
 
+				} catch (NullPointerException e) {
+					
+					res = this.handler.handleException(e, Handler.JAVA_ERROR);
+					
 				}
 
+			} else {
+				
+				res = this.handler.handleException(new UserException("Invalid input"), Handler.WEB_ERROR);
+				
 			}
 
 		} else {
