@@ -92,9 +92,9 @@ public class CreateMessage {
 				
 				// Get the message parent
 				MessageModel parentFilter = new MessageModel();
-				parentFilter.setMessageId(parentMessageId);
+				parentFilter.setMessageId(parentMessageId);				
 				List<MessageModel> parents = this.messageDatabaseManager.getMessage(parentFilter, false);
-				if(parents.size() != 1) {
+				if(parents.size() == 1) {
 					
 					MessageModel parent = parents.get(0);
 					message.setMessageId(parent.getNextAnswerId());

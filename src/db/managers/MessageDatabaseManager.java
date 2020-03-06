@@ -34,7 +34,7 @@ public class MessageDatabaseManager {
 	// ----- Attributes -----
 
 
-	/** The mongo message collection */
+	/** The Mongo message collection */
 	private MongoCollection<Document> messageCollection;
 
 	/** Unique instance of the message manager */
@@ -321,7 +321,7 @@ public class MessageDatabaseManager {
 			try {
 
 				// Parse all message result
-				JSONObject messageJSON = (JSONObject) new JSONParser().parse(message.toJson());
+				JSONObject messageJSON = (JSONObject) new JSONParser().parse(message.toJson());				
 				MessageModel newMessage = new MessageModel(messageJSON);
 				res.add(newMessage);
 

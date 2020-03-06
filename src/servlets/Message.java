@@ -20,7 +20,11 @@ import services.message.SearchMessage;
 import tools.Handler;
 import tools.Logger;
 import tools.StdVar;
+import tools.exceptions.MessageException;
+import tools.exceptions.MongoException;
+import tools.exceptions.SessionException;
 import tools.models.MessageModel;
+import tools.sessions.SessionModel;
 import tools.sessions.SessionPool;
 
 
@@ -114,7 +118,7 @@ public class Message extends HttpServlet {
 			String posterId = req.getParameter("messagePosterId");
 			String date = req.getParameter("messageDate");
 			Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
-			
+
 			// Prepare the filter
 			MessageModel filter = new MessageModel();
 			filter.setMessageId(id);
@@ -144,21 +148,66 @@ public class Message extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Vérifier que la session est valide
-		
 		// Prepare the JSON result
 		JSONObject res = this.handler.getDefaultResponse();
+
+		// Get the current session
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
 		
-		// Get the message parameters
-		String text = req.getParameter("messageText");
-		String boardName = req.getParameter("messageBoardName");
-		String parentId = req.getParameter("messageParentId");
-		
-		// Create the message model
-		MessageModel newMessage = new MessageModel();
-		newMessage.setMessageText(text);
-		newMessage.setMessageBoardName(boardName);
-		
+		if(currentSession != null && !currentSession.isAnonymous()) {
+			
+			try {
+				
+				// Get the message parameters
+				String text = req.getParameter("messageText");
+				String boardName = req.getParameter("messageBoardName");
+				String parentId = req.getParameter("messageParentId");
+
+				// Create the message model
+				MessageModel newMessage = new MessageModel();
+				newMessage.setMessageText(text);
+				newMessage.setMessageBoardName(boardName);
+				newMessage.setMessagePosterId(currentSession.getUserId());
+				newMessage.setMessageDate(new Date(new java.util.Date().getTime()));
+				
+				// Create the new message
+				this.createMessage.createMessage(newMessage, parentId);
+				
+			} catch (MessageException e) {
+
+				this.logger.log("Error during the message creation", Logger.WARNING);
+				this.logger.log(e, Logger.WARNING);
+				res = this.handler.handleException(e, Handler.WEB_ERROR);
+				
+			} catch (MongoException e) {
+
+				this.logger.log("Error during the message insertion", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.MONGO_ERROR);
+				
+			} catch (SQLException e) {
+
+				this.logger.log("Error during the message insertion", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.SQL_ERROR);
+				
+			} catch (NullPointerException e) {
+
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.JAVA_ERROR);
+				
+			}
+			
+		} else {
+			
+			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			
+		}
+
+		// Send the result
+		resp.setCharacterEncoding(StdVar.APP_ENCODING);
+		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+		resp.getWriter().append(res.toJSONString());
 	}
 
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

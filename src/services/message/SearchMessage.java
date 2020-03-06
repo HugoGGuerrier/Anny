@@ -61,7 +61,7 @@ public class SearchMessage {
 		// Place the result in a JSON array
 		JSONArray res = new JSONArray();
 		for (MessageModel messageModel : messages) {
-			res.add(messageModel);
+			res.add(messageModel.getJSON());
 		}
 
 		// Return the result
