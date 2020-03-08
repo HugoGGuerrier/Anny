@@ -8,7 +8,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 /**
- * A security utils class to make sure the applciation is safe
+ * A security tool class to make sure the application is safe
  * 
  * @author Emiie Siau
  * @author Hugo Guerrier
@@ -49,7 +49,7 @@ public class Security {
 
 
 	/**
-	 * Encode a string with the html entities
+	 * Encode a string with the HTML entities
 	 * 
 	 * @param stringToClean The string to encode
 	 * @return The encoded string
@@ -60,7 +60,7 @@ public class Security {
 	}
 
 	/**
-	 * Decode the html entities in a string
+	 * Decode the HTML entities in a string
 	 * 
 	 * @param stringToDecode The string to decode
 	 * @return The decoded string
@@ -71,7 +71,7 @@ public class Security {
 	}
 
 	/**
-	 * Get the correctly hashed string with the sha-512 algorithm
+	 * Get the correctly hashed string with the SHA-512 algorithm
 	 * 
 	 * @param stringToHash The string to hash
 	 * @return The hashed string

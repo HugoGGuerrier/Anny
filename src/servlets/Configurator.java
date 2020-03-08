@@ -19,6 +19,8 @@ import db.Migrator;
 import tools.Config;
 import tools.Logger;
 import tools.StdVar;
+import tools.sessions.SessionModel;
+import tools.sessions.SessionPool;
 
 /**
  * This servlet is used to initialize the web application. It is use by the administrator.
@@ -37,9 +39,24 @@ public class Configurator extends HttpServlet {
 	
 	/**	Unique instance of the logger */
 	private Logger logger = null;
+	
+	/** The session pool */
+	private SessionPool sessionPool;
 
+	
+	// ----- Constructors -----
+	
+	
+	public Configurator() {
+		super();
+		
+		// Get instances
+		this.logger = Logger.getInstance();
+		this.sessionPool = SessionPool.getInstance();
+	}
+	
 
-	// ----- Class methods -----
+	// ----- HTTP methods -----
 
 
 	/**
@@ -60,7 +77,7 @@ public class Configurator extends HttpServlet {
 
 		try {
 
-			// Get the file reader of the config file
+			// Get the file reader of the configuration file
 			Reader configReader = new FileReader(Paths.get(basePath + StdVar.CONFIG_FILE).toFile());
 
 			// Initialize the application configuration
@@ -68,7 +85,7 @@ public class Configurator extends HttpServlet {
 
 			configReader.close();
 
-			// Log the app start
+			// Log the application configuration loading
 			logger.log("Configuration loaded", Logger.INFO);
 			
 			// Migrate the database to the correct version
@@ -97,18 +114,26 @@ public class Configurator extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Vérifier si la session est présente et que l'utilisateur est admin
+		// Get the current session
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
+		boolean isSessionAdmin = Boolean.parseBoolean(currentSession.getAttribute("adminSession"));
+		
+		if(currentSession != null && isSessionAdmin) {
+			JSONObject res = new JSONObject();
+			res = Config.getJSON();
 
-		JSONObject res = new JSONObject();
-		res = Config.getJSON();
+			// Send the result
+			resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+			resp.setCharacterEncoding(StdVar.APP_ENCODING);
+			resp.getWriter().append(res.toJSONString());
 
-		// Send the result
-		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
-		resp.setCharacterEncoding(StdVar.APP_ENCODING);
-		resp.getWriter().append(res.toJSONString());
-
-		// Reload the configuration
-		this.init();
+			// Reload the configuration
+			this.init();
+		} else {
+			
+			// TODO : rediriger vers la page 404
+			
+		}
 	}
 
 	/**
