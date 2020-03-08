@@ -23,6 +23,7 @@ import tools.StdVar;
 import tools.exceptions.MessageException;
 import tools.exceptions.MongoException;
 import tools.exceptions.SessionException;
+import tools.exceptions.UserException;
 import tools.models.MessageModel;
 import tools.sessions.SessionModel;
 import tools.sessions.SessionPool;
@@ -153,11 +154,11 @@ public class Message extends HttpServlet {
 
 		// Get the current session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
-		
+
 		if(currentSession != null && !currentSession.isAnonymous()) {
-			
+
 			try {
-				
+
 				// Get the message parameters
 				String text = req.getParameter("messageText");
 				String boardName = req.getParameter("messageBoardName");
@@ -169,39 +170,39 @@ public class Message extends HttpServlet {
 				newMessage.setMessageBoardName(boardName);
 				newMessage.setMessagePosterId(currentSession.getUserId());
 				newMessage.setMessageDate(new Date(new java.util.Date().getTime()));
-				
+
 				// Create the new message
 				this.createMessage.createMessage(newMessage, parentId);
-				
+
 			} catch (MessageException e) {
 
-				this.logger.log("Error during the message creation", Logger.WARNING);
+				this.logger.log("Error during the message insertion", Logger.WARNING);
 				this.logger.log(e, Logger.WARNING);
 				res = this.handler.handleException(e, Handler.WEB_ERROR);
-				
+
 			} catch (MongoException e) {
 
 				this.logger.log("Error during the message insertion", Logger.ERROR);
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.MONGO_ERROR);
-				
+
 			} catch (SQLException e) {
 
 				this.logger.log("Error during the message insertion", Logger.ERROR);
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.SQL_ERROR);
-				
+
 			} catch (NullPointerException e) {
 
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.JAVA_ERROR);
-				
+
 			}
-			
+
 		} else {
-			
+
 			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
-			
+
 		}
 
 		// Send the result
@@ -210,12 +211,124 @@ public class Message extends HttpServlet {
 		resp.getWriter().append(res.toJSONString());
 	}
 
+	/**
+	 * Modify a message text
+	 */
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// Prepare the JSON result
+		JSONObject res = this.handler.getDefaultResponse();
 
+		// Get the current session
+		SessionModel currentSession = this.sessionPool.getSession(req,  resp, true);
+
+		if(currentSession != null && !currentSession.isAnonymous()) {
+
+			// Get the message parameter
+			String id = req.getParameter("messageId");
+			String text = req.getParameter("messageText");
+			
+			// Create the message model
+			MessageModel message = new MessageModel();
+			message.setMessageId(id);
+			message.setMessageText(text);
+			message.setMessagePosterId(currentSession.getUserId());
+			
+			try {
+				
+				this.modifyMessage.modifyMessage(message);
+				
+			} catch (MessageException e) {
+
+				this.logger.log("Error during the message updating", Logger.WARNING);
+				this.logger.log(e, Logger.WARNING);
+				res = this.handler.handleException(e, Handler.WEB_ERROR);
+				
+			} catch (MongoException e) {
+
+				this.logger.log("Error during the message deletion", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.MONGO_ERROR);
+				
+			}
+
+		} else {
+
+			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+
+		}
+
+		// Send the result
+		resp.setCharacterEncoding(StdVar.APP_ENCODING);
+		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+		resp.getWriter().append(res.toJSONString());
 	}
 
+	/**
+	 * Delete a message by its id 
+	 */
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// Prepare the JSON result
+		JSONObject res = this.handler.getDefaultResponse();
 
+		// Get the current session
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
+
+		if(currentSession != null && !currentSession.isAnonymous()) {
+			// Get if the session is admin
+			boolean isSessionAdmin = Boolean.parseBoolean(currentSession.getAttribute("adminSession"));
+
+			// Parse URL to get the message ID
+			String[] splitedUrl = req.getRequestURI().split("/");
+			if(splitedUrl.length >= 4) {
+
+				String id = splitedUrl[3];
+
+				MessageModel filter = new MessageModel();
+				filter.setMessageId(id);
+				if(!isSessionAdmin) {
+					filter.setMessagePosterId(currentSession.getUserId());
+				}
+
+				try {
+
+					this.deleteMessage.deleteMessage(filter);
+
+				} catch (MessageException e) {
+
+					this.logger.log("Error during the message deletion", Logger.WARNING);
+					this.logger.log(e, Logger.WARNING);
+					res = this.handler.handleException(e, Handler.WEB_ERROR);
+
+				} catch (MongoException e) {
+
+					this.logger.log("Error during the message deletion", Logger.ERROR);
+					this.logger.log(e, Logger.ERROR);
+					res = this.handler.handleException(e, Handler.MONGO_ERROR);
+
+				} catch (SQLException e) {
+
+					this.logger.log("Error during the message deletion", Logger.ERROR);
+					this.logger.log(e, Logger.ERROR);
+					res = this.handler.handleException(e, Handler.SQL_ERROR);
+
+				}
+
+			} else {
+
+				res = this.handler.handleException(new UserException("Invalid input"), Handler.WEB_ERROR);
+
+			}
+
+		} else {
+
+			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+
+		}
+
+		// Send the result
+		resp.setCharacterEncoding(StdVar.APP_ENCODING);
+		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+		resp.getWriter().append(res.toJSONString());
 	}
 
 }

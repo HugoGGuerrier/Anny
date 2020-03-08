@@ -19,10 +19,10 @@ public class SessionPool {
 	// ----- Attributes -----
 
 
-	/** Cache writter instance */
+	/** Cache writer instance */
 	private CacheManager manager;
 
-	/** Thread of the cache writter */
+	/** Thread of the cache writer */
 	private Thread managerThread;
 
 	/** Instance of the session pool (singleton) */
@@ -93,25 +93,6 @@ public class SessionPool {
 		// Return the result
 		return res;
 	}
-
-	/**
-	 * Get the session from the request cookies, a shortcut
-	 * 
-	 * @param req The request
-	 * @param doAction Do an action on the session
-	 * @return The session or null if it does not exists
-	 */
-	public SessionModel getSession(HttpServletRequest req, boolean doAction) {
-		String sessionId = this.getSessionIdFromRequest(req);
-
-		// If the session is in the cookies get it
-		if(sessionId != null) {
-			return this.getSession(sessionId, doAction);
-		}
-
-		// Else just return null
-		return null;
-	}
 	
 	/**
 	 * Get the session from the request cookies, a shortcut
@@ -122,7 +103,13 @@ public class SessionPool {
 	 * @return The session or null if it does not exists
 	 */
 	public SessionModel getSession(HttpServletRequest req, HttpServletResponse resp, boolean doAction) {
-		SessionModel res = this.getSession(req, doAction);
+		String sessionId = this.getSessionIdFromRequest(req);
+		SessionModel res = null;
+
+		// If the session is in the cookies get it
+		if(sessionId != null) {
+			res = this.getSession(sessionId, doAction);
+		}
 
 		// If the session exists update the clie,t
 		if(res != null) {

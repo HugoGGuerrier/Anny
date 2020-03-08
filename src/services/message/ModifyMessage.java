@@ -67,6 +67,10 @@ public class ModifyMessage {
 			valid = false;
 			errorMessage.append(" - Invalid message text : " + message.getMessageText());
 		}
+		if(message.getMessagePosterId() == null || !this.security.isValidUserId(message.getMessagePosterId())) {
+			valid = false;
+			errorMessage.append(" - Invalid message poster id : " + message.getMessagePosterId());
+		}
 
 		// If there is an error, throw an error
 		if(!valid) {

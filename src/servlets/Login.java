@@ -81,7 +81,7 @@ public class Login extends HttpServlet {
 		JSONObject res = this.handler.getDefaultResponse();
 
 		// Try to get the session
-		SessionModel currentSession = this.sessionPool.getSession(req, false);
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, false);
 
 		// If the session does not exists or is anonymous create it
 		if(currentSession == null || currentSession.isAnonymous()) {

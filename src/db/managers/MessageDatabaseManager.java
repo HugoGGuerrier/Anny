@@ -139,6 +139,7 @@ public class MessageDatabaseManager {
 		// Prepare the update filter and set
 		Document updateFilter = new Document();
 		updateFilter.append("messageId", messageModel.getMessageId());
+		updateFilter.append("messagePosterId", messageModel.getMessagePosterId());
 
 		Document updateSet = new Document();
 		Document updateElems = new Document();
@@ -156,16 +157,27 @@ public class MessageDatabaseManager {
 	 * 
 	 * @param messageModel The message to delete
 	 * @throws MongoException If there is an error during the message deletion
+	 * @throws SQLException If there is an error during the deletion in the BELONGS_TO_BOARD
 	 */
 	public void deleteMessage(MessageModel messageModel) throws MongoException, SQLException {
 		// Prepare the delete query
-		Document deleteQuery = new Document();
-		deleteQuery.append("messageId", messageModel.getMessageId());
+		Document query = new Document();
+		query.append("messageId", messageModel.getMessageId());
+		if(messageModel.getMessagePosterId() != null) {
+			query.append("messagePosterId", messageModel.getMessagePosterId());
+		}
+		
+		// Get the full message model
+		try {
+			messageModel = this.getMessage(messageModel, false).get(0);
+		} catch (IndexOutOfBoundsException e) {
+			throw new MongoException("Wrong message id and poster ID : " + messageModel.getMessageId() + " - " + messageModel.getMessagePosterId());
+		}
 
 		// Execute the query
-		if(this.messageCollection.deleteOne(deleteQuery).getDeletedCount() != 1) {
-			throw new MongoException("Error in the deletion of the message " + messageModel.getMessageId());
-		};
+		if(this.messageCollection.deleteOne(query).getDeletedCount() != 1) {
+			throw new MongoException("Error in the deletion of the message : " + messageModel.getMessageId());
+		}
 
 		// Delete all the answers recursively
 		for(String answerId : messageModel.getMessageAnswersId()) {

@@ -326,7 +326,7 @@ public class User extends HttpServlet {
 		JSONObject res = this.handler.getDefaultResponse();
 
 		// Get the session
-		SessionModel currentSession = this.sessionPool.getSession(req, false);
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, false);
 
 		if(currentSession != null) {
 

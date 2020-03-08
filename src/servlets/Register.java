@@ -126,7 +126,7 @@ public class Register extends HttpServlet {
 		JSONObject res = this.handler.getDefaultResponse();
 
 		// Get the current session
-		SessionModel currentSession = this.sessionPool.getSession(req, false);
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, false);
 
 		if(currentSession != null && currentSession.isAnonymous()) {
 
