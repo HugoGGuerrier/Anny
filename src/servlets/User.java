@@ -97,66 +97,56 @@ public class User extends HttpServlet {
 		// Prepare the response JSON
 		JSONObject res = new JSONObject();
 
-		// Test if the query is ID formed
-		String[] splitedUrl = req.getRequestURI().split("/");
-		if(splitedUrl.length >= 4) {	
+		try {
 
-			// Get the user id and make the request with it
-			String id = splitedUrl[3];
+			// Test if the query is ID formed
+			String[] splitedUrl = req.getRequestURI().split("/");
+			if(splitedUrl.length >= 4) {	
 
-			// Create the filter to get the user
-			UserModel filter = new UserModel();
-			filter.setUserId(id);
+				// Get the user id and make the request with it
+				String id = splitedUrl[3];
 
-			try {
+				// Create the filter to get the user
+				UserModel filter = new UserModel();
+				filter.setUserId(id);
 
 				// Get the user list
 				JSONArray users = this.searchUser.searchUser(filter, false);
 				res.put("result", users);
 
-			} catch (SQLException e) {
+			} else {
 
-				this.logger.log("Error during the user getting", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.SQL_ERROR);
+				String id = req.getParameter("userId");
+				String pseudo = req.getParameter("userPseudo");
+				String name = req.getParameter("userName");
+				String surname = req.getParameter("userSurname");
+				String email = req.getParameter("userEmail");
+				String date = req.getParameter("userDate");
+				Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
 
-			}
-
-		} else {
-
-			String id = req.getParameter("userId");
-			String pseudo = req.getParameter("userPseudo");
-			String name = req.getParameter("userName");
-			String surname = req.getParameter("userSurname");
-			String email = req.getParameter("userEmail");
-			String date = req.getParameter("userDate");
-			Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
-
-			UserModel filter = new UserModel();
-			filter.setUserId(id);
-			filter.setUserPseudo(pseudo);
-			filter.setUserName(name);
-			filter.setUserSurname(surname);
-			filter.setUserEmail(email);
-			try {
-				filter.setUserDate(Date.valueOf(date));
-			} catch (IllegalArgumentException e) {
-				filter.setUserDate(null);
-			}
-
-			try {
+				UserModel filter = new UserModel();
+				filter.setUserId(id);
+				filter.setUserPseudo(pseudo);
+				filter.setUserName(name);
+				filter.setUserSurname(surname);
+				filter.setUserEmail(email);
+				try {
+					filter.setUserDate(Date.valueOf(date));
+				} catch (IllegalArgumentException e) {
+					filter.setUserDate(null);
+				}
 
 				// Try to get the users from the database
 				JSONArray users = this.searchUser.searchUser(filter, isLike);
 				res.put("result", users);
 
-			} catch (SQLException e) {
-
-				this.logger.log("Error during the user getting", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.SQL_ERROR);
-
 			}
+
+		} catch (SQLException e) {
+
+			this.logger.log("Error during the user getting", Logger.ERROR);
+			this.logger.log(e, Logger.ERROR);
+			res = this.handler.handleException(e, Handler.SQL_ERROR);
 
 		}
 
@@ -180,7 +170,7 @@ public class User extends HttpServlet {
 		if(currentSession != null && currentSession.isAdmin()) {
 
 			try {
-				
+
 				// Get the user parameters
 				String id = req.getParameter("userId");
 				String pseudo = req.getParameter("userPseudo");
@@ -223,13 +213,13 @@ public class User extends HttpServlet {
 			} catch (NullPointerException e) {
 
 				res = this.handler.handleException(e, Handler.JAVA_ERROR);
-				
+
 			}
-			
+
 		} else {
-			
+
 			res = this.handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
-			
+
 		}
 
 		// Send the result
@@ -303,7 +293,7 @@ public class User extends HttpServlet {
 				this.logger.log("Error during the user modifying", Logger.ERROR);
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.JAVA_ERROR);
-				
+
 			}
 
 		} else {
@@ -372,17 +362,17 @@ public class User extends HttpServlet {
 					res = this.handler.handleException(e, Handler.SQL_ERROR);
 
 				} catch (NullPointerException e) {
-					
+
 					this.logger.log("SQL error during the user deletion", Logger.ERROR);
 					this.logger.log(e, Logger.ERROR);
 					res = this.handler.handleException(e, Handler.JAVA_ERROR);
-					
+
 				}
 
 			} else {
-				
+
 				res = this.handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
-				
+
 			}
 
 		} else {

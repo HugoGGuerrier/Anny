@@ -10,13 +10,13 @@ public class ModifyMessage {
 
 	// ----- Attributes -----
 
-	
+
 	/** The message database manager */
 	private MessageDatabaseManager messageDatabaseManager;
 
 	/** Security tool */
 	private Security security;
-	
+
 	/** The ModifyMessage unique instance (singleton) */
 	private static ModifyMessage instance = null;
 
@@ -78,6 +78,10 @@ public class ModifyMessage {
 			throw new MessageException(errorMessage.toString());
 
 		} else {
+
+			// Escape the HTML special characters
+			message.setMessageText(this.security.htmlEncode(message.getMessageText()));
+			message.setMessageBoardName(this.security.htmlEncode(message.getMessageBoardName()));
 
 			// Update the message
 			this.messageDatabaseManager.updateMessage(message);

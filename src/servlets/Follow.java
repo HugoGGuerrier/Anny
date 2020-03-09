@@ -18,7 +18,6 @@ import services.follow.DeleteFollow;
 import services.follow.SearchFollow;
 import tools.Handler;
 import tools.Logger;
-import tools.Security;
 import tools.StdVar;
 import tools.exceptions.FollowException;
 import tools.exceptions.SessionException;
@@ -89,58 +88,48 @@ public class Follow extends HttpServlet {
 		// Prepare the JSON response
 		JSONObject res = new JSONObject();
 
-		// Parse the URL
-		String[] splitedUrl = req.getRequestURI().split("/");
-		if(splitedUrl.length >= 4) {
+		try {
 
-			String followingId = splitedUrl[3];
+			// Parse the URL
+			String[] splitedUrl = req.getRequestURI().split("/");
+			if(splitedUrl.length >= 4) {
 
-			FollowModel filter = new FollowModel();
-			filter.setFollowingUserId(followingId);
+				String followingId = splitedUrl[3];
 
-			try {
+				FollowModel filter = new FollowModel();
+				filter.setFollowingUserId(followingId);
 
 				JSONArray follows = this.searchFollow.searchFollow(filter, false);
 				res.put("result", follows);
 
-			} catch (SQLException e) {
+			} else {
 
-				this.logger.log("Error during the follow getting", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.SQL_ERROR);
+				// Get the follow parameters
+				String followedId = req.getParameter("followedUserId");
+				String followingId = req.getParameter("followingUserId");
+				String followDate = req.getParameter("followDate");
+				Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
 
-			}
-
-		} else {
-
-			// Get the follow parameters
-			String followedId = req.getParameter("followedUserId");
-			String followingId = req.getParameter("followingUserId");
-			String followDate = req.getParameter("followDate");
-			Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
-
-			// Create the follow filter
-			FollowModel filter = new FollowModel();
-			filter.setFollowedUserId(followedId);
-			filter.setFollowingUserId(followingId);
-			try {
-				filter.setFollowDate(Date.valueOf(followDate));
-			} catch (IllegalArgumentException e) {
-				filter.setFollowDate(null);
-			}
-
-			try {
+				// Create the follow filter
+				FollowModel filter = new FollowModel();
+				filter.setFollowedUserId(followedId);
+				filter.setFollowingUserId(followingId);
+				try {
+					filter.setFollowDate(Date.valueOf(followDate));
+				} catch (IllegalArgumentException e) {
+					filter.setFollowDate(null);
+				}
 
 				JSONArray follows = this.searchFollow.searchFollow(filter, isLike);
 				res.put("result", follows);
 
-			} catch (SQLException e) {
-
-				this.logger.log("Error during the follow getting", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.SQL_ERROR);
-
 			}
+
+		} catch (SQLException e) {
+
+			this.logger.log("Error during the follow getting", Logger.ERROR);
+			this.logger.log(e, Logger.ERROR);
+			res = this.handler.handleException(e, Handler.SQL_ERROR);
 
 		}
 
@@ -212,53 +201,53 @@ public class Follow extends HttpServlet {
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
 		JSONObject res = this.handler.getDefaultResponse();
-		
+
 		// Get the current session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
-		
+
 		if(currentSession != null && !currentSession.isAnonymous()) {
-			
+
 			// Get the deletion parameter
 			String[] splitedUrl = req.getRequestURI().split("/");
 			if(splitedUrl.length >= 4) {
-				
+
 				// Get the follow parameters
 				String followedId = splitedUrl[3];
 				String followingId = currentSession.getUserId();
-				
+
 				// Create the follow filter
 				FollowModel filter = new FollowModel();
 				filter.setFollowedUserId(followedId);
 				filter.setFollowingUserId(followingId);
-				
+
 				try {
-					
+
 					this.deleteFollow.deleteFollow(filter);
-					
+
 				} catch (FollowException e) {
-					
+
 					this.logger.log("Error during the follow deletion", Logger.WARNING);
 					this.logger.log(e, Logger.WARNING);
 					res = this.handler.handleException(e, Handler.WEB_ERROR);
-					
+
 				} catch (SQLException e) {
-					
+
 					this.logger.log("Error during the follow deletion", Logger.ERROR);
 					this.logger.log(e, Logger.ERROR);
 					res = this.handler.handleException(e, Handler.WEB_ERROR);
-					
+
 				}
-				
+
 			} else {
-				
+
 				res = this.handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
-				
+
 			}
-			
+
 		} else {
-			
+
 			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
-			
+
 		}
 
 		// Send the result

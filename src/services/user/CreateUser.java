@@ -97,6 +97,11 @@ public class CreateUser {
 		
 		} else {
 			
+			// Escape the HTML special characters
+			user.setUserPseudo(this.security.htmlEncode(user.getUserPseudo()));
+			user.setUserName(this.security.htmlEncode(user.getUserName()));
+			user.setUserSurname(this.security.htmlEncode(user.getUserSurname()));
+			
 			// Call the user database manager to insert a new user
 			this.userDatabaseManager.insertUser(user);
 			

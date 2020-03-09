@@ -29,7 +29,8 @@ public class DeleteFollow {
 	 * Construct a new service
 	 */
 	private DeleteFollow() {
-
+		this.followDatabaseManager = FollowDatabaseManager.getInstance();
+		this.security = Security.getInstance();
 	}
 	
 	/**

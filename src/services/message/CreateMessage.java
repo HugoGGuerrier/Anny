@@ -87,6 +87,10 @@ public class CreateMessage {
 			
 		} else {
 			
+			// Escape the HTML special characters
+			message.setMessageText(this.security.htmlEncode(message.getMessageText()));
+			message.setMessageBoardName(this.security.htmlEncode(message.getMessageBoardName()));
+			
 			// Get message ID dynamically
 			if(parentMessageId != null && !parentMessageId.equals("")) {
 				

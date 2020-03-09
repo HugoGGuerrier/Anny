@@ -13,17 +13,17 @@ public class ModifyUser {
 
 	/**	The user database manager unique instance */
 	private UserDatabaseManager userDatabaseManager;
-	
+
 	/** Security tool */
 	private Security security;
-	
+
 	/** The service unique instance (singleton) */
 	private static ModifyUser instance = null;
 
 
 	// ----- Constructors -----
 
-	
+
 	/**
 	 * Construct a new service
 	 */
@@ -31,7 +31,7 @@ public class ModifyUser {
 		this.userDatabaseManager = UserDatabaseManager.getInstance();
 		this.security = Security.getInstance();
 	}
-	
+
 	/**
 	 * Get the service unique instance
 	 * 
@@ -95,6 +95,11 @@ public class ModifyUser {
 			throw new UserException(message.toString());
 
 		} else {
+
+			// Escape the HTML special characters
+			user.setUserPseudo(this.security.htmlEncode(user.getUserPseudo()));
+			user.setUserName(this.security.htmlEncode(user.getUserName()));
+			user.setUserSurname(this.security.htmlEncode(user.getUserSurname()));
 
 			// Call the user database manager to insert a new user
 			this.userDatabaseManager.updateUser(user);

@@ -100,10 +100,10 @@ public class Message extends HttpServlet {
 		String[] splitedUrl = req.getRequestURI().split("/");
 		if(splitedUrl.length >= 4) {
 
-			// Get the user id and make the request with it
+			// Get the message id and make the request with it
 			String id = splitedUrl[3];
 
-			// Create the filter to get the user
+			// Create the filter to get the message
 			MessageModel filter = new MessageModel();
 			filter.setMessageId(id);
 
@@ -133,7 +133,7 @@ public class Message extends HttpServlet {
 				filter.setMessageDate(null);
 			}
 
-			// Try to get the users from the database
+			// Try to get the messages from the database
 			JSONArray messages = this.searchMessage.searchMessage(filter, isLike);
 			res.put("result", messages);
 

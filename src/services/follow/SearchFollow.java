@@ -27,7 +27,7 @@ public class SearchFollow {
 	 * Construct a new service
 	 */
 	private SearchFollow() {
-
+		this.followDatabaseManager = FollowDatabaseManager.getInstance();
 	}
 	
 	/**
