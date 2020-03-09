@@ -3,7 +3,8 @@
 	"version": "0.2.1",
 	"env": 0,
 	"cacheCleaningInterval": 5,
-	"sessionTimeToLive": 3
+	"sessionTimeToLive": 3,
+	"verbose": true
 },
 "mysqlConfig": {
 	"mysqlPooling": false,

@@ -109,9 +109,6 @@ public class UserModel {
 		
 		res.put("userId", this.userId);
 		res.put("userPseudo", this.userPseudo);
-		res.put("userName", this.userName);
-		res.put("userSurname", this.userSurname);
-		res.put("userEmail", this.userEmail);
 		res.put("userDate", this.userDate.toString());
 		
 		// Return the result

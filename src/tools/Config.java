@@ -43,6 +43,9 @@ public class Config {
 
 	/** Sessions time to live */
 	private static long sessionTimeToLive;
+	
+	/** If the server is in verbose mode */
+	private static boolean verbose;
 
 	// --- Mysql configuration
 
@@ -81,7 +84,7 @@ public class Config {
 		return Config.configJSON;
 	}
 
-	// --- Application setters
+	// --- Application getters
 
 	public static String getVersion() {
 		return Config.version;
@@ -105,6 +108,10 @@ public class Config {
 
 	public static long getSessionTimeToLive() {
 		return Config.sessionTimeToLive;
+	}
+	
+	public static boolean isVerbose() {
+		return Config.verbose;
 	}
 
 	// --- Mysql getters
@@ -189,6 +196,9 @@ public class Config {
 
 			Long sessionTTL = (Long) appConfig.get("sessionTimeToLive");
 			Config.sessionTimeToLive = sessionTTL == null ? 1800 : sessionTTL;
+			
+			Boolean verbose = (Boolean) appConfig.get("verbose");
+			Config.verbose = verbose != true ? false : true;
 
 			// --- Get the mysql configuration
 			JSONObject mysqlConfig = (JSONObject) configJSON.get("mysqlConfig");
@@ -246,13 +256,17 @@ public class Config {
 		res.append("  version: " + Config.version + "\n");
 		res.append("  environment: " + Config.env + "\n");
 		res.append("  cacheCleaningInterval: " + Config.cacheCleaningInterval + "\n");
-		res.append("  sessionTTL: " + Config.sessionTimeToLive + "\n\n");
+		res.append("  sessionTTL: " + Config.sessionTimeToLive + "\n");
+		res.append("  verbose: " + Config.isVerbose() + "\n\n");
 
 		res.append("  mysqlPooling: " + Config.mysqlPooling + "\n");
 		res.append("  mysqlHost: " + Config.mysqlHost + "\n");
 		res.append("  mysqlDatabase: " + Config.mysqlDatabase + "\n");
 		res.append("  mysqlLogin: " + Config.mysqlLogin + "\n");
-		res.append("  mysqlPassword: " + Config.mysqlPassword + "\n");
+		res.append("  mysqlPassword: " + Config.mysqlPassword + "\n\n");
+		
+		res.append("  mongoDatabase: " + Config.mongoDatabase + "\n");
+		res.append("  mongoMessageCollection: " + Config.mongoMessageCollection + "\n");
 
 		res.append("}");
 

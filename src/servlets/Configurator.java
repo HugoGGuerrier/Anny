@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -36,25 +37,15 @@ public class Configurator extends HttpServlet {
 
 	/** Serial version number */
 	private static final long serialVersionUID = 5707836903604706333L;
-	
-	/**	Unique instance of the logger */
-	private Logger logger = null;
-	
-	/** The session pool */
-	private SessionPool sessionPool;
 
-	
+
 	// ----- Constructors -----
-	
-	
+
+
 	public Configurator() {
 		super();
-		
-		// Get instances
-		this.logger = Logger.getInstance();
-		this.sessionPool = SessionPool.getInstance();
 	}
-	
+
 
 	// ----- HTTP methods -----
 
@@ -66,14 +57,12 @@ public class Configurator extends HttpServlet {
 		// Get the application base path
 		ServletContext context = this.getServletContext();
 		String basePath = context.getRealPath("./");
-		
-		System.out.println(basePath);
-		
+
 		// Set the application base path
 		Config.setBasePath(basePath);
 
 		// Get the logger
-		this.logger = Logger.getInstance();
+		Logger logger = Logger.getInstance();
 
 		try {
 
@@ -87,7 +76,7 @@ public class Configurator extends HttpServlet {
 
 			// Log the application configuration loading
 			logger.log("Configuration loaded", Logger.INFO);
-			
+
 			// Migrate the database to the correct version
 			Migrator migrator = Migrator.getInstance();
 			if(migrator.migrate(Config.getDatabaseVersion())) {
@@ -103,10 +92,16 @@ public class Configurator extends HttpServlet {
 
 			logger.log("Cannot migrate the database to the app version", Logger.ERROR);
 			logger.log(e, Logger.ERROR);
+
+		}
+
+		// DEBUG SECTION
+		if(Config.getEnv() == StdVar.DEVELOPMENT_ENV) {
+			
+			logger.log("Base path : " + basePath, Logger.INFO);
+			logger.log("\n" + Config.display(), Logger.INFO);
 			
 		}
-		
-		// DEBUG SECTION
 	}
 
 	/**
@@ -114,11 +109,13 @@ public class Configurator extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		SessionPool sessionPool = SessionPool.getInstance();
+
 		// Get the current session
-		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
-		boolean isSessionAdmin = Boolean.parseBoolean(currentSession.getAttribute("adminSession"));
-		
-		if(currentSession != null && isSessionAdmin) {
+		SessionModel currentSession = sessionPool.getSession(req, resp, true);
+
+		if(currentSession != null && Boolean.parseBoolean(currentSession.getAttribute("adminSession"))) {
+
 			JSONObject res = new JSONObject();
 			res = Config.getJSON();
 
@@ -129,10 +126,12 @@ public class Configurator extends HttpServlet {
 
 			// Reload the configuration
 			this.init();
+
 		} else {
-			
-			// TODO : rediriger vers la page 404
-			
+
+			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/404");
+			dispatcher.forward(req, resp);
+
 		}
 	}
 
@@ -141,10 +140,21 @@ public class Configurator extends HttpServlet {
 	 */
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Mettre à jour la configuration
-
-		// Reload the configuration
-		this.init();
+		SessionPool sessionPool = SessionPool.getInstance();
+		
+		// Get the current session
+		SessionModel currentSession = sessionPool.getSession(req, resp, true);
+		
+		if(currentSession != null && Boolean.parseBoolean(currentSession.getAttribute("adminSession"))) {
+			
+			// TODO LATER : Faire la mise à jour de la configuration
+			
+		} else {
+			
+			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/404");
+			dispatcher.forward(req, resp);
+			
+		}
 	}
 
 }

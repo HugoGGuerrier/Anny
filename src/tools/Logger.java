@@ -124,7 +124,9 @@ public class Logger {
 			writer.write(toWrite.toString());
 			
 			// Print the message in the console
-			System.out.print(toWrite.toString());
+			if(Config.isVerbose()) {
+				System.out.print(toWrite.toString());
+			}
 			
 			// Close the file writer
 			writer.close();
