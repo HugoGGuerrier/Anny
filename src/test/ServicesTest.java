@@ -9,8 +9,6 @@ import org.junit.Test;
 import services.follow.CreateFollow;
 import services.follow.DeleteFollow;
 import services.follow.SearchFollow;
-import services.log.LoginUser;
-import services.log.LogoutUser;
 import services.message.CreateMessage;
 import services.message.DeleteMessage;
 import services.message.ModifyMessage;
@@ -41,10 +39,6 @@ public class ServicesTest {
 	private DeleteUser deleteUser = DeleteUser.getInstance();
 	private ModifyUser modifyUser = ModifyUser.getInstance();
 	private SearchUser searchUser = SearchUser.getInstance();
-	
-	// --- Login services
-	private LoginUser loginUser = LoginUser.getInstance();
-	private LogoutUser logoutUser = LogoutUser.getInstance();
 	
 	
 	// ----- Config methods -----

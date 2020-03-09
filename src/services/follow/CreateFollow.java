@@ -72,7 +72,7 @@ public class CreateFollow {
 		}
 		if(follow.getFollowDate() == null) {
 			valid = false;
-			message.append(" - Invalid follow date : " + follow.getFollowDate().toString());
+			message.append(" - Invalid follow date : null");
 		}
 		
 		// If there is an error, throw an exception

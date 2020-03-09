@@ -3,6 +3,8 @@ package services.follow;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.json.simple.JSONArray;
+
 import db.managers.FollowDatabaseManager;
 import tools.models.FollowModel;
 
@@ -52,9 +54,19 @@ public class SearchFollow {
 	 * @return the list of follow that correspond to the model
 	 * @throws SQLException 
 	 */
-	public List<FollowModel> searchFollow(FollowModel follow, boolean isLike) throws SQLException {
+	@SuppressWarnings("unchecked")
+	public JSONArray searchFollow(FollowModel follow, boolean isLike) throws SQLException {
 		// Call the follow database manager to search following links
-		return this.followDatabaseManager.getFollows(follow, isLike);
+		List<FollowModel> follows = this.followDatabaseManager.getFollows(follow, isLike);
+		
+		// Put all follows in a JSONArray
+		JSONArray res = new JSONArray();
+		
+		for (FollowModel followModel : follows) {
+			res.add(followModel.getJSON());
+		}
+		
+		return res;
 	}
 
 }

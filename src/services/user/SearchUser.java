@@ -61,6 +61,7 @@ public class SearchUser {
 		
 		// Place the result inside a JSON array
 		JSONArray res = new JSONArray();
+		
 		for(UserModel userRes : users) {
 			res.add(userRes.getJSON());
 		}
