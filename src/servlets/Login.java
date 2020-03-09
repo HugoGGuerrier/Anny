@@ -108,14 +108,18 @@ public class Login extends HttpServlet {
 					UserModel user = users.get(0);
 					
 					if(currentSession == null) {
+						
 						String sessionId = this.sessionPool.generateSessionId();
 						SessionModel newSession = new SessionModel(sessionId, user);
 						newSession.putAttribute("adminSession", String.valueOf(user.isUserAdmin()));
 						this.sessionPool.putSession(newSession, resp);
+						
 					} else {
+						
 						currentSession.setUserId(user.getUserId());
 						currentSession.putAttribute("adminSession", String.valueOf(user.isUserAdmin()));
 						this.sessionPool.putSession(currentSession);
+						
 					}
 
 				} else {
