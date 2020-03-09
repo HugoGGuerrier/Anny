@@ -381,7 +381,7 @@ public class User extends HttpServlet {
 
 			} else {
 				
-				res = this.handler.handleException(new UserException("Invalid input"), Handler.WEB_ERROR);
+				res = this.handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
 				
 			}
 

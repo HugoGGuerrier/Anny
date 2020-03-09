@@ -2,6 +2,7 @@ package servlets;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.PseudoColumnUsage;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -163,13 +164,15 @@ public class Message extends HttpServlet {
 				String text = req.getParameter("messageText");
 				String boardName = req.getParameter("messageBoardName");
 				String parentId = req.getParameter("messageParentId");
+				String posterId = currentSession.getUserId();
+				Date date = new Date(new java.util.Date().getTime());
 
 				// Create the message model
 				MessageModel newMessage = new MessageModel();
 				newMessage.setMessageText(text);
 				newMessage.setMessageBoardName(boardName);
-				newMessage.setMessagePosterId(currentSession.getUserId());
-				newMessage.setMessageDate(new Date(new java.util.Date().getTime()));
+				newMessage.setMessagePosterId(posterId);
+				newMessage.setMessageDate(date);
 
 				// Create the new message
 				this.createMessage.createMessage(newMessage, parentId);
@@ -227,12 +230,13 @@ public class Message extends HttpServlet {
 			// Get the message parameter
 			String id = req.getParameter("messageId");
 			String text = req.getParameter("messageText");
+			String posterId = currentSession.getUserId();
 			
 			// Create the message model
 			MessageModel message = new MessageModel();
 			message.setMessageId(id);
 			message.setMessageText(text);
-			message.setMessagePosterId(currentSession.getUserId());
+			message.setMessagePosterId(posterId);
 			
 			try {
 				
@@ -315,7 +319,7 @@ public class Message extends HttpServlet {
 
 			} else {
 
-				res = this.handler.handleException(new UserException("Invalid input"), Handler.WEB_ERROR);
+				res = this.handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
 
 			}
 

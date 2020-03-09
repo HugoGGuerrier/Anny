@@ -114,7 +114,7 @@ public class Configurator extends HttpServlet {
 		// Get the current session
 		SessionModel currentSession = sessionPool.getSession(req, resp, true);
 
-		if(currentSession != null && Boolean.parseBoolean(currentSession.getAttribute("adminSession"))) {
+		if(currentSession != null && currentSession.isAdmin()) {
 
 			JSONObject res = new JSONObject();
 			res = Config.getJSON();
@@ -145,7 +145,7 @@ public class Configurator extends HttpServlet {
 		// Get the current session
 		SessionModel currentSession = sessionPool.getSession(req, resp, true);
 		
-		if(currentSession != null && Boolean.parseBoolean(currentSession.getAttribute("adminSession"))) {
+		if(currentSession != null && currentSession.isAdmin()) {
 			
 			// TODO LATER : Faire la mise à jour de la configuration
 			

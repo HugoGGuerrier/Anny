@@ -2,6 +2,7 @@ package servlets;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,12 +10,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import services.follow.CreateFollow;
 import services.follow.DeleteFollow;
 import services.follow.SearchFollow;
 import tools.Handler;
 import tools.Logger;
 import tools.Security;
+import tools.StdVar;
+import tools.exceptions.FollowException;
+import tools.exceptions.SessionException;
+import tools.exceptions.UserException;
+import tools.models.FollowModel;
+import tools.sessions.SessionModel;
+import tools.sessions.SessionPool;
 
 /**
  * The follow servlet to manage following links
@@ -30,36 +41,36 @@ public class Follow extends HttpServlet {
 
 	/** Serial version number */
 	private static final long serialVersionUID = 4169235877331702798L;
-	
+
 	/** The logger */
 	private Logger logger;
-	
+
 	/** The handler */
 	private Handler handler;
-	
-	/** The security tool */
-	private Security security;
-	
+
+	/** The session pool */
+	private SessionPool sessionPool;
+
 	/** Service to create a following link */
 	private CreateFollow createFollow;
-	
+
 	/** Service to delete a following link */
 	private DeleteFollow deleteFollow;
-	
+
 	/** Service to create a following link */
 	private SearchFollow searchFollow;
-	
-	
+
+
 	// ----- Constructors -----
 
 
 	public Follow() {
 		super();
-		
+
 		// Get instances
 		this.logger = Logger.getInstance();
 		this.handler = Handler.getInstance();
-		this.security = Security.getInstance();
+		this.sessionPool = SessionPool.getInstance();
 		this.createFollow = CreateFollow.getInstance();
 		this.deleteFollow = DeleteFollow.getInstance();
 		this.searchFollow = SearchFollow.getInstance();
@@ -68,14 +79,75 @@ public class Follow extends HttpServlet {
 
 	// ----- HTTP methods -----
 
-	
+
 	/**
 	 * Get following links with parameters
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Récupérer les follows avec les paramètres
-		resp.getWriter().append("GET : Not implemented...");
+		// Prepare the JSON response
+		JSONObject res = new JSONObject();
+
+		// Parse the URL
+		String[] splitedUrl = req.getRequestURI().split("/");
+		if(splitedUrl.length >= 4) {
+
+			String followingId = splitedUrl[3];
+
+			FollowModel filter = new FollowModel();
+			filter.setFollowingUserId(followingId);
+
+			try {
+
+				JSONArray follows = this.searchFollow.searchFollow(filter, false);
+				res.put("result", follows);
+
+			} catch (SQLException e) {
+
+				this.logger.log("Error during the follow getting", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.SQL_ERROR);
+
+			}
+
+		} else {
+
+			// Get the follow parameters
+			String followedId = req.getParameter("followedUserId");
+			String followingId = req.getParameter("followingUserId");
+			String followDate = req.getParameter("followDate");
+			Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
+
+			// Create the follow filter
+			FollowModel filter = new FollowModel();
+			filter.setFollowedUserId(followedId);
+			filter.setFollowingUserId(followingId);
+			try {
+				filter.setFollowDate(Date.valueOf(followDate));
+			} catch (IllegalArgumentException e) {
+				filter.setFollowDate(null);
+			}
+
+			try {
+
+				JSONArray follows = this.searchFollow.searchFollow(filter, isLike);
+				res.put("result", follows);
+
+			} catch (SQLException e) {
+
+				this.logger.log("Error during the follow getting", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.SQL_ERROR);
+
+			}
+
+		}
+
+		// Send the result
+		resp.setCharacterEncoding(StdVar.APP_ENCODING);
+		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+		resp.getWriter().append(res.toJSONString());
 	}
 
 	/**
@@ -83,12 +155,54 @@ public class Follow extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// Get the follows param
-		String followedUserId = req.getParameter("followedUserId");
-		String followingUserId = req.getParameter("followingUserId");
-		Date date = Date.valueOf(req.getParameter("followDate"));
-		// TODO : la suite
-		resp.getWriter().append("POST : Not implemented...");
+		// Prepare the JSON result
+		JSONObject res = this.handler.getDefaultResponse();
+
+		// Get the current session
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
+
+		if(currentSession != null && !currentSession.isAnonymous()) {
+
+			try {
+
+				// Get the follow parameters
+				String followedId = req.getParameter("followedUserId");
+				String followingId = currentSession.getUserId();
+				Date followDate = new Date(new java.util.Date().getTime());
+
+				// Create the follow model
+				FollowModel newFollow = new FollowModel();
+				newFollow.setFollowedUserId(followedId);
+				newFollow.setFollowingUserId(followingId);
+				newFollow.setFollowDate(followDate);
+
+				// Insert the new follow in the database
+				this.createFollow.createFollow(newFollow);
+
+			} catch (FollowException e) {
+
+				this.logger.log("Error during the follow insertion", Logger.WARNING);
+				this.logger.log(e, Logger.WARNING);
+				res = this.handler.handleException(e, Handler.WEB_ERROR);
+
+			} catch (SQLException e) {
+
+				this.logger.log("Error during the follow insertion", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.SQL_ERROR);
+
+			}
+
+		} else {
+
+			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+
+		}
+
+		// Send the result
+		resp.setCharacterEncoding(StdVar.APP_ENCODING);
+		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+		resp.getWriter().append(res.toJSONString());
 	}
 
 	/**
@@ -96,8 +210,61 @@ public class Follow extends HttpServlet {
 	 */
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO : Supprimer le follow à l'aide des paramètres
-		resp.getWriter().append("DELETE : Not implemented...");
+		// Prepare the JSON result
+		JSONObject res = this.handler.getDefaultResponse();
+		
+		// Get the current session
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
+		
+		if(currentSession != null && !currentSession.isAnonymous()) {
+			
+			// Get the deletion parameter
+			String[] splitedUrl = req.getRequestURI().split("/");
+			if(splitedUrl.length >= 4) {
+				
+				// Get the follow parameters
+				String followedId = splitedUrl[3];
+				String followingId = currentSession.getUserId();
+				
+				// Create the follow filter
+				FollowModel filter = new FollowModel();
+				filter.setFollowedUserId(followedId);
+				filter.setFollowingUserId(followingId);
+				
+				try {
+					
+					this.deleteFollow.deleteFollow(filter);
+					
+				} catch (FollowException e) {
+					
+					this.logger.log("Error during the follow deletion", Logger.WARNING);
+					this.logger.log(e, Logger.WARNING);
+					res = this.handler.handleException(e, Handler.WEB_ERROR);
+					
+				} catch (SQLException e) {
+					
+					this.logger.log("Error during the follow deletion", Logger.ERROR);
+					this.logger.log(e, Logger.ERROR);
+					res = this.handler.handleException(e, Handler.WEB_ERROR);
+					
+				}
+				
+			} else {
+				
+				res = this.handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
+				
+			}
+			
+		} else {
+			
+			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			
+		}
+
+		// Send the result
+		resp.setCharacterEncoding(StdVar.APP_ENCODING);
+		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+		resp.getWriter().append(res.toJSONString());
 	}
 
 }
