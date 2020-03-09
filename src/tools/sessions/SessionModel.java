@@ -109,12 +109,25 @@ public class SessionModel {
 		return this.userId == null;
 	}
 	
+	/**
+	 * Get if the session is admin
+	 * 
+	 * @return True if the session is an admin session
+	 */
+	public boolean isAdmin() {
+		return Boolean.parseBoolean(this.getAttribute("adminSession"));
+	}
+	
 	
 	// ----- Setters -----
 	
 	
 	public void setUserId(String id) {
 		this.userId = id;
+	}
+	
+	public void setAdmin(boolean isAdmin) {
+		this.putAttribute("adminSession", String.valueOf(isAdmin));
 	}
 
 

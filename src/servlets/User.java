@@ -177,7 +177,7 @@ public class User extends HttpServlet {
 		// Get the current session to verify that it's an admin session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
 
-		if(currentSession != null && Boolean.parseBoolean(currentSession.getAttribute("adminSession"))) {
+		if(currentSession != null && currentSession.isAdmin()) {
 
 			try {
 				
@@ -275,8 +275,7 @@ public class User extends HttpServlet {
 				modifiedUser.setUserAdmin(admin);
 
 				// Try to insert the user in the database
-				boolean isSessionAdmin = Boolean.parseBoolean(currentSession.getAttribute("adminSession"));
-				if(id.equals(currentSession.getUserId()) || isSessionAdmin) {
+				if(id.equals(currentSession.getUserId()) || currentSession.isAdmin()) {
 
 					this.modifyUser.modifyUser(modifiedUser);
 
@@ -301,6 +300,8 @@ public class User extends HttpServlet {
 
 			} catch (NullPointerException e) {
 
+				this.logger.log("Error during the user modifying", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.JAVA_ERROR);
 				
 			}
@@ -344,12 +345,11 @@ public class User extends HttpServlet {
 				try {
 
 					// Try to delete the user
-					boolean isSessionAdmin = Boolean.parseBoolean(currentSession.getAttribute("adminSession"));
-					if(id.equals(currentSession.getUserId()) || isSessionAdmin) {
+					if(id.equals(currentSession.getUserId()) || currentSession.isAdmin()) {
 
 						// Delete the user and destroy the session if the user is not an admin
 						this.deleteUser.deleteUser(filter);
-						if(!isSessionAdmin) {
+						if(!currentSession.isAdmin()) {
 							this.sessionPool.removeSession(currentSession.getSessionId(), resp);
 						}
 
@@ -373,6 +373,8 @@ public class User extends HttpServlet {
 
 				} catch (NullPointerException e) {
 					
+					this.logger.log("SQL error during the user deletion", Logger.ERROR);
+					this.logger.log(e, Logger.ERROR);
 					res = this.handler.handleException(e, Handler.JAVA_ERROR);
 					
 				}

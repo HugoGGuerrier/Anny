@@ -33,6 +33,8 @@ public class Index extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO : Envoyer le code de l'application cliente
+		
 		response.getWriter().append("Welcome on Anny ^^ , current version is ").append(Config.getVersion());
 	}
 

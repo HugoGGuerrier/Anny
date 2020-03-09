@@ -185,25 +185,27 @@ public class Register extends HttpServlet {
 
 				} catch (UserException e) {
 
-					this.logger.log("Error during the user insertion", Logger.WARNING);
+					this.logger.log("Error during the user registration", Logger.WARNING);
 					this.logger.log(e, Logger.WARNING);
 					res = this.handler.handleException(e, Handler.WEB_ERROR);
 
 				} catch (SQLException e) {
 
-					this.logger.log("Error during the user insertion", Logger.ERROR);
+					this.logger.log("Error during the user registration", Logger.ERROR);
 					this.logger.log(e, Logger.ERROR);
 					res = this.handler.handleException(e, Handler.SQL_ERROR);
 
 				} catch (NullPointerException e) {
 
+					this.logger.log("Error during the user registration", Logger.ERROR);
+					this.logger.log(e, Logger.ERROR);
 					res = this.handler.handleException(e, Handler.JAVA_ERROR);
 					
 				}
 
 			} else {
 
-				this.logger.log("User try to register with an invalid CSRF token", Logger.WARNING);
+				this.logger.log("User try to register with an invalid CSRF token - IP = " + req.getRemoteAddr(), Logger.WARNING);
 				res = this.handler.handleException(new SessionException("Invalid CSRF token"), Handler.WEB_ERROR);
 
 			}

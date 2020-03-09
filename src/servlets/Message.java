@@ -194,6 +194,7 @@ public class Message extends HttpServlet {
 
 			} catch (NullPointerException e) {
 
+				this.logger.log("Error during the message insertion", Logger.ERROR);
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.JAVA_ERROR);
 
@@ -275,7 +276,6 @@ public class Message extends HttpServlet {
 
 		if(currentSession != null && !currentSession.isAnonymous()) {
 			// Get if the session is admin
-			boolean isSessionAdmin = Boolean.parseBoolean(currentSession.getAttribute("adminSession"));
 
 			// Parse URL to get the message ID
 			String[] splitedUrl = req.getRequestURI().split("/");
@@ -285,7 +285,7 @@ public class Message extends HttpServlet {
 
 				MessageModel filter = new MessageModel();
 				filter.setMessageId(id);
-				if(!isSessionAdmin) {
+				if(!currentSession.isAdmin()) {
 					filter.setMessagePosterId(currentSession.getUserId());
 				}
 
