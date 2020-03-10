@@ -75,7 +75,7 @@ public class ToolsTest {
 
 	@Test
 	public void testConfig() {
-		assertEquals("0.2.1", Config.getVersion());
+		assertEquals("test.version.1", Config.getVersion());
 		assertEquals(0, Config.getEnv());
 		assertEquals(5, Config.getCacheCleaningInterval());
 		assertEquals(3, Config.getSessionTimeToLive());

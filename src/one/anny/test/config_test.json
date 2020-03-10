@@ -1,6 +1,6 @@
 {
 "appConfig": {
-	"version": "0.2.1",
+	"version": "test.version.1",
 	"env": 0,
 	"cacheCleaningInterval": 5,
 	"sessionTimeToLive": 3,
