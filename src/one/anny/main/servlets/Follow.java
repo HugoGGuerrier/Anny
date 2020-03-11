@@ -127,7 +127,7 @@ public class Follow extends HttpServlet {
 
 		} catch (SQLException e) {
 
-			this.logger.log("Error during the follow getting", Logger.ERROR);
+			this.logger.log("SQl error during the follow getting", Logger.ERROR);
 			this.logger.log(e, Logger.ERROR);
 			res = this.handler.handleException(e, Handler.SQL_ERROR);
 
@@ -170,16 +170,22 @@ public class Follow extends HttpServlet {
 
 			} catch (FollowException e) {
 
-				this.logger.log("Error during the follow insertion", Logger.WARNING);
+				this.logger.log("Follow data error during the follow insertion", Logger.WARNING);
 				this.logger.log(e, Logger.WARNING);
 				res = this.handler.handleException(e, Handler.WEB_ERROR);
 
 			} catch (SQLException e) {
 
-				this.logger.log("Error during the follow insertion", Logger.ERROR);
+				this.logger.log("SQL error during the follow insertion", Logger.ERROR);
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.SQL_ERROR);
 
+			} catch (Exception e) {
+
+				this.logger.log("Java error during the follow insertion", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.JAVA_ERROR);
+				
 			}
 
 		} else {
@@ -226,13 +232,13 @@ public class Follow extends HttpServlet {
 
 				} catch (FollowException e) {
 
-					this.logger.log("Error during the follow deletion", Logger.WARNING);
+					this.logger.log("Follow data error during the follow deletion", Logger.WARNING);
 					this.logger.log(e, Logger.WARNING);
 					res = this.handler.handleException(e, Handler.WEB_ERROR);
 
 				} catch (SQLException e) {
 
-					this.logger.log("Error during the follow deletion", Logger.ERROR);
+					this.logger.log("SQL error during the follow deletion", Logger.ERROR);
 					this.logger.log(e, Logger.ERROR);
 					res = this.handler.handleException(e, Handler.WEB_ERROR);
 

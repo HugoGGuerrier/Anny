@@ -185,19 +185,19 @@ public class Register extends HttpServlet {
 
 				} catch (UserException e) {
 
-					this.logger.log("Error during the user registration", Logger.WARNING);
+					this.logger.log("User data error during the user registration", Logger.WARNING);
 					this.logger.log(e, Logger.WARNING);
 					res = this.handler.handleException(e, Handler.WEB_ERROR);
 
 				} catch (SQLException e) {
 
-					this.logger.log("Error during the user registration", Logger.ERROR);
+					this.logger.log("SQL error during the user registration", Logger.ERROR);
 					this.logger.log(e, Logger.ERROR);
 					res = this.handler.handleException(e, Handler.SQL_ERROR);
 
-				} catch (NullPointerException e) {
+				} catch (Exception e) {
 
-					this.logger.log("Error during the user registration", Logger.ERROR);
+					this.logger.log("Java error during the user registration", Logger.ERROR);
 					this.logger.log(e, Logger.ERROR);
 					res = this.handler.handleException(e, Handler.JAVA_ERROR);
 					

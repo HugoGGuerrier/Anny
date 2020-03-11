@@ -178,25 +178,25 @@ public class Message extends HttpServlet {
 
 			} catch (MessageException e) {
 
-				this.logger.log("Error during the message insertion", Logger.WARNING);
+				this.logger.log("Message data error during the message insertion", Logger.WARNING);
 				this.logger.log(e, Logger.WARNING);
 				res = this.handler.handleException(e, Handler.WEB_ERROR);
 
 			} catch (MongoException e) {
 
-				this.logger.log("Error during the message insertion", Logger.ERROR);
+				this.logger.log("MongoDB error during the message insertion", Logger.ERROR);
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.MONGO_ERROR);
 
 			} catch (SQLException e) {
 
-				this.logger.log("Error during the message insertion", Logger.ERROR);
+				this.logger.log("SQL error during the message insertion", Logger.ERROR);
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.SQL_ERROR);
 
 			} catch (NullPointerException e) {
 
-				this.logger.log("Error during the message insertion", Logger.ERROR);
+				this.logger.log("Java error during the message insertion", Logger.ERROR);
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.JAVA_ERROR);
 
@@ -222,36 +222,42 @@ public class Message extends HttpServlet {
 		JSONObject res = this.handler.getDefaultResponse();
 
 		// Get the current session
-		SessionModel currentSession = this.sessionPool.getSession(req,  resp, true);
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
 
 		if(currentSession != null && !currentSession.isAnonymous()) {
 
-			// Get the message parameter
-			String id = req.getParameter("messageId");
-			String text = req.getParameter("messageText");
-			String posterId = currentSession.getUserId();
-			
-			// Create the message model
-			MessageModel message = new MessageModel();
-			message.setMessageId(id);
-			message.setMessageText(text);
-			message.setMessagePosterId(posterId);
-			
 			try {
-				
+
+				// Get the message parameter
+				String id = req.getParameter("messageId");
+				String text = req.getParameter("messageText");
+				String posterId = currentSession.getUserId();
+
+				// Create the message model
+				MessageModel message = new MessageModel();
+				message.setMessageId(id);
+				message.setMessageText(text);
+				message.setMessagePosterId(posterId);
+
 				this.modifyMessage.modifyMessage(message);
-				
+
 			} catch (MessageException e) {
 
-				this.logger.log("Error during the message updating", Logger.WARNING);
+				this.logger.log("Message data error during the message updating", Logger.WARNING);
 				this.logger.log(e, Logger.WARNING);
 				res = this.handler.handleException(e, Handler.WEB_ERROR);
-				
+
 			} catch (MongoException e) {
 
-				this.logger.log("Error during the message deletion", Logger.ERROR);
+				this.logger.log("MongoDB error during the message updating", Logger.ERROR);
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.MONGO_ERROR);
+
+			} catch (NullPointerException e) {
+				
+				this.logger.log("Java error during the message updating", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
+				res = this.handler.handleException(e, Handler.JAVA_ERROR);
 				
 			}
 
@@ -278,8 +284,7 @@ public class Message extends HttpServlet {
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
 
 		if(currentSession != null && !currentSession.isAnonymous()) {
-			// Get if the session is admin
-
+			
 			// Parse URL to get the message ID
 			String[] splitedUrl = req.getRequestURI().split("/");
 			if(splitedUrl.length >= 4) {
@@ -298,19 +303,19 @@ public class Message extends HttpServlet {
 
 				} catch (MessageException e) {
 
-					this.logger.log("Error during the message deletion", Logger.WARNING);
+					this.logger.log("Message data error during the message deletion", Logger.WARNING);
 					this.logger.log(e, Logger.WARNING);
 					res = this.handler.handleException(e, Handler.WEB_ERROR);
 
 				} catch (MongoException e) {
 
-					this.logger.log("Error during the message deletion", Logger.ERROR);
+					this.logger.log("MongoDB error during the message deletion", Logger.ERROR);
 					this.logger.log(e, Logger.ERROR);
 					res = this.handler.handleException(e, Handler.MONGO_ERROR);
 
 				} catch (SQLException e) {
 
-					this.logger.log("Error during the message deletion", Logger.ERROR);
+					this.logger.log("SQL error during the message deletion", Logger.ERROR);
 					this.logger.log(e, Logger.ERROR);
 					res = this.handler.handleException(e, Handler.SQL_ERROR);
 

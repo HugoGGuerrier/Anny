@@ -17,15 +17,16 @@ import one.anny.main.tools.Config;
  */
 
 @WebServlet("/index/*")
-public class Index extends HttpServlet {	
+public class Index extends HttpServlet {
 
 	// ----- Attributes -----
 	
 	
+	/** The serial version number */
 	private static final long serialVersionUID = 966304929303826141L;
 
 	
-	// ----- Class methods -----
+	// ----- HTTP methods -----
 
 
 	/**

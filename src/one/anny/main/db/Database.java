@@ -16,7 +16,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
- * Class which handle sql connections and use connection pooling
+ * Class which handle SQL connections and use connection pooling
  * 
  * @author Laure Soulier
  */
@@ -68,9 +68,9 @@ public class Database {
 	}
 
 	/**
-	 * Get an Mysql connection with or without the pooling
+	 * Get an MySQL connection with or without the pooling
 	 * 
-	 * @return The mysql connection
+	 * @return The MySQL connection
 	 * @throws SQLException
 	 */
 	public static Connection getMySQLConnection() throws SQLException {
@@ -78,7 +78,7 @@ public class Database {
 		if(!Config.isMysqlPooling()) {
 			try {
 				
-				// Import the jsbc mysql driver and return the connection
+				// Import the JDBC MySQL driver and return the connection
 				Class.forName("com.mysql.cj.jdbc.Driver");
 				String dsn = "jdbc:mysql://" + Config.getMysqlHost() + "/" + Config.getMysqlDatabase();
 				return DriverManager.getConnection(dsn , Config.getMysqlLogin(), Config.getMysqlPassword());
@@ -104,7 +104,7 @@ public class Database {
 	}
 
 	/**
-	 * Get the mongoDB connections
+	 * Get the MongoDB connection
 	 * 
 	 * @return The connection
 	 */

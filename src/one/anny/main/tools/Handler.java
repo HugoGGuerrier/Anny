@@ -1,5 +1,6 @@
 package one.anny.main.tools;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class Handler {
@@ -77,13 +78,20 @@ public class Handler {
 	public JSONObject handleException(Exception e, int code) {
 		JSONObject res = new JSONObject();
 
-		// Set the result if the environment is dev or prod
+		// Set the result if the environment is development or production
 		if(Config.getEnv() == StdVar.DEVELOPMENT_ENV) {
 
 			res.put("result", "FAIL");
 			res.put("errorCode", code);
 			res.put("errorType", e.getClass().toString());
 			res.put("errorMessage", e.getMessage());
+			
+			// Create the stack trace
+			JSONArray trace = new JSONArray();
+			for(StackTraceElement element : e.getStackTrace()) {
+				trace.add(element.toString());
+			}
+			res.put("errorStackTrace", trace);
 
 		} else {
 

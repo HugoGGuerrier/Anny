@@ -116,6 +116,7 @@ public class User extends HttpServlet {
 
 			} else {
 
+				// Get the user parameters
 				String id = req.getParameter("userId");
 				String pseudo = req.getParameter("userPseudo");
 				String name = req.getParameter("userName");
@@ -124,6 +125,7 @@ public class User extends HttpServlet {
 				String date = req.getParameter("userDate");
 				Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
 
+				// Prepare the user search filter
 				UserModel filter = new UserModel();
 				filter.setUserId(id);
 				filter.setUserPseudo(pseudo);
@@ -210,8 +212,10 @@ public class User extends HttpServlet {
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.SQL_ERROR);
 
-			} catch (NullPointerException e) {
+			} catch (Exception e) {
 
+				this.logger.log("Java error during the user insertion", Logger.ERROR);
+				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.JAVA_ERROR);
 
 			}
@@ -275,22 +279,21 @@ public class User extends HttpServlet {
 
 				}
 
-
 			} catch (UserException e) {
 
-				this.logger.log("Error during the user modifying", Logger.WARNING);
+				this.logger.log("User data error during the user updating", Logger.WARNING);
 				this.logger.log(e, Logger.WARNING);
 				res = this.handler.handleException(e, Handler.WEB_ERROR);
 
 			} catch (SQLException e) {
 
-				this.logger.log("Error during the user modifying", Logger.ERROR);
+				this.logger.log("SQL error during the user updating", Logger.ERROR);
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.SQL_ERROR);
 
-			} catch (NullPointerException e) {
+			} catch (Exception e) {
 
-				this.logger.log("Error during the user modifying", Logger.ERROR);
+				this.logger.log("Java error during the user updating", Logger.ERROR);
 				this.logger.log(e, Logger.ERROR);
 				res = this.handler.handleException(e, Handler.JAVA_ERROR);
 
@@ -332,41 +335,46 @@ public class User extends HttpServlet {
 				UserModel filter = new UserModel();
 				filter.setUserId(id);
 
-				try {
-
-					// Try to delete the user
-					if(id.equals(currentSession.getUserId()) || currentSession.isAdmin()) {
+				if(id.equals(currentSession.getUserId()) || currentSession.isAdmin()) {
+					
+					try {
 
 						// Delete the user and destroy the session if the user is not an admin
 						this.deleteUser.deleteUser(filter);
 						if(!currentSession.isAdmin()) {
+							
 							this.sessionPool.removeSession(currentSession.getSessionId(), resp);
+
+						} else {
+
+							res = this.handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
+
 						}
 
-					} else {
+					} catch (UserException e) {
 
-						res = this.handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
+						this.logger.log("Input error during the user deletion", Logger.WARNING);
+						this.logger.log(e, Logger.WARNING);
+						res = this.handler.handleException(e, Handler.WEB_ERROR);
+
+					} catch (SQLException e) {
+
+						this.logger.log("SQL error during the user deletion", Logger.ERROR);
+						this.logger.log(e, Logger.ERROR);
+						res = this.handler.handleException(e, Handler.SQL_ERROR);
+
+					} catch (Exception e) {
+
+						this.logger.log("Java error during the user deletion", Logger.ERROR);
+						this.logger.log(e, Logger.ERROR);
+						res = this.handler.handleException(e, Handler.JAVA_ERROR);
 
 					}
-
-				} catch (UserException e) {
-
-					this.logger.log("Input error during the user deletion", Logger.WARNING);
-					this.logger.log(e, Logger.WARNING);
-					res = this.handler.handleException(e, Handler.WEB_ERROR);
-
-				} catch (SQLException e) {
-
-					this.logger.log("SQL error during the user deletion", Logger.ERROR);
-					this.logger.log(e, Logger.ERROR);
-					res = this.handler.handleException(e, Handler.SQL_ERROR);
-
-				} catch (NullPointerException e) {
-
-					this.logger.log("SQL error during the user deletion", Logger.ERROR);
-					this.logger.log(e, Logger.ERROR);
-					res = this.handler.handleException(e, Handler.JAVA_ERROR);
-
+					
+				} else {
+					
+					res = this.handler.handleException(new UserException("Authorization denied"), Handler.WEB_ERROR);
+					
 				}
 
 			} else {

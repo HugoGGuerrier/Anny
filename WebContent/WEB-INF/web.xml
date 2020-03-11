@@ -9,7 +9,7 @@
 	</welcome-file-list>
 	<servlet>
 		<servlet-name>Configurator</servlet-name>
-		<servlet-class>servlets.Configurator</servlet-class>
+		<servlet-class>one.anny.main.servlets.Configurator</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<error-page>
