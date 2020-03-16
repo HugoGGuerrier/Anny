@@ -3,5 +3,7 @@
 out/
 build/
 .settings/
-/bin/
+bin/
 .directory
+node_modules/
+.idea/
