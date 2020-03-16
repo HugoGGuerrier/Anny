@@ -6,4 +6,4 @@ build/
 bin/
 .directory
 node_modules/
-.idea/
+client/.idea
