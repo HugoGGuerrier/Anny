@@ -24,7 +24,7 @@ import one.anny.main.tools.sessions.SessionModel;
 import one.anny.main.tools.sessions.SessionPool;
 
 /**
- * This servlet is used to initialize the web application. It is use by the administrator.
+ * This servlet is used to initialize the web application. It is used by the administrator.
  * 
  * @author Emilie Siau
  * @author Hugo Guerrier
@@ -51,7 +51,7 @@ public class Configurator extends HttpServlet {
 
 
 	/**
-	 * This methods initialize the application
+	 * This methods initializes the application
 	 */
 	public void init() {
 		// Get the application base path
