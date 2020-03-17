@@ -3,17 +3,6 @@ import logo from '../img/logo.png';
 import '../css/App.css';
 
 class App extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            test: 0
-        }
-    }
-
-    componentDidMount() {
-
-    }
-
     render() {
         return (
             <div className="App">

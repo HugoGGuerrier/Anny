@@ -27,7 +27,7 @@ public class FollowDatabaseManager {
 	 * Construct an instance of follows database manager
 	 */
 	private FollowDatabaseManager() {
-
+		// Do nothing for now
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class FollowDatabaseManager {
 		// Bind the parameters
 		preparedStatement.setString(1, followModel.getFollowedUserId());
 		preparedStatement.setString(2, followModel.getFollowingUserId());
-		preparedStatement.setDate(3,  followModel.getFollowDate());
+		preparedStatement.setDate(3, followModel.getFollowDate());
 
 		// Execute the statement
 		preparedStatement.executeUpdate();

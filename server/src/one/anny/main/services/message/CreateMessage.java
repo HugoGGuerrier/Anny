@@ -73,7 +73,7 @@ public class CreateMessage {
 		}
 		if(message.getMessagePosterId() == null || !this.security.isValidUserId(message.getMessagePosterId())) {
 			valid = false;
-			errorMessage.append(" - Invalid message poster ID : " + message.getMessagePosterId());
+			errorMessage.append(" - Invalid message poster id : " + message.getMessagePosterId());
 		}
 		if(message.getMessageDate() == null) {
 			valid = false;

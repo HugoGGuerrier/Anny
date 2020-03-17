@@ -61,7 +61,7 @@ public class ModifyMessage {
 
 		if(message.getMessageId() == null || !this.security.isValidMessageId(message.getMessageId())) {
 			valid = false;
-			errorMessage.append(" - Invalid message ID : " + message.getMessageId());
+			errorMessage.append(" - Invalid message id : " + message.getMessageId());
 		}
 		if(message.getMessageText() == null || !this.security.isStringNotEmpty(message.getMessageText())) {
 			valid = false;

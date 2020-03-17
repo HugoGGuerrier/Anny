@@ -64,7 +64,6 @@ public class Migrator {
 			+ "boardName VARCHAR(32) NOT NULL, "
 			+ "FOREIGN KEY (boardName) REFERENCES BOARD(boardName) ON DELETE CASCADE ON UPDATE CASCADE"
 			+ "); "
-			
 	};
 
 	/** Downgrade version 1 */

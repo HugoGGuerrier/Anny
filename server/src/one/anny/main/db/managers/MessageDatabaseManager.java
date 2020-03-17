@@ -45,7 +45,7 @@ public class MessageDatabaseManager {
 
 
 	/**
-	 * Construct an new message database manager
+	 * Construct a new message database manager
 	 */
 	private MessageDatabaseManager() {
 		MongoDatabase database = Database.getMongoDBConnection();
@@ -73,6 +73,7 @@ public class MessageDatabaseManager {
 	 * 
 	 * @param messageModel The message to insert
 	 * @throws MongoException If there is an error during the message insertion
+	 * @throws SQLException If there is an error during the message insertion in the MySQL
 	 */
 	public void insertMessage(MessageModel messageModel) throws MongoException, SQLException{
 		// Check if this id already exists
@@ -239,7 +240,6 @@ public class MessageDatabaseManager {
 	 * 
 	 * @param model The message model to get
 	 * @return The wanted message or null if it doesn't exists
-	 * @throws MongoException If there is an error in the message getting
 	 */
 	public List<MessageModel> getMessage(MessageModel model, boolean regexSearch) {
 		// Prepare the and queries

@@ -91,7 +91,7 @@ public class BoardDatabaseManager {
 		Connection connection = Database.getMySQLConnection();
 
 		// Create the SQL updates
-		String update = "UPDATE BOARD SET boardDescription = ?, boardCreatorId = ? WHERE boardName = ?";
+		String update = "UPDATE BOARD SET boardDescription = ? WHERE boardCreatorId = ? AND boardName = ?";
 
 		// Prepare the update
 		PreparedStatement preparedStatement = connection.prepareStatement(update);
@@ -111,12 +111,18 @@ public class BoardDatabaseManager {
 
 		// Create the SQL deletion
 		String deletion = "DELETE FROM BOARD WHERE boardName = ?";
+		if(boardModel.getBoardCreatorId() != null) {
+			deletion += " AND boardCreatorId = ?";
+		}
 
 		// Prepare the deletion
 		PreparedStatement preparedStatement = connection.prepareStatement(deletion);
 
 		// Bind parameters
 		preparedStatement.setString(1, boardModel.getBoardName());
+		if(boardModel.getBoardCreatorId() != null) {
+			preparedStatement.setString(2, boardModel.getBoardCreatorId());
+		}
 
 		// Execute the update
 		preparedStatement.executeUpdate();

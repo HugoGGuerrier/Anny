@@ -65,6 +65,10 @@ public class DeleteBoard {
 			valid = false;
 			message.append(" - Invalid board name : " + board.getBoardName());
 		}
+		if(board.getBoardCreatorId() != null && !this.security.isValidUserId(board.getBoardCreatorId())) {
+			valid = false;
+			message.append(" - Invalid board creator id : " + board.getBoardCreatorId());
+		}
 
 		if(!valid) {
 

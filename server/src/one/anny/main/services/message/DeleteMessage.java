@@ -69,7 +69,11 @@ public class DeleteMessage {
 		
 		if(message.getMessageId() == null || !this.security.isValidMessageId(message.getMessageId())) {
 			valid = false;
-			errorMessage.append(" - Invalid message ID : " + message.getMessageId());
+			errorMessage.append(" - Invalid message id : " + message.getMessageId());
+		}
+		if(message.getMessagePosterId() == null && !this.security.isValidUserId(message.getMessagePosterId())) {
+			valid = false;
+			errorMessage.append(" - Invalid messsage poster id : " + message.getMessageId());
 		}
 		
 		// If there is an error, throw an exception

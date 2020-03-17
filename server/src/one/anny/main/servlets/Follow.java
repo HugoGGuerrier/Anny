@@ -101,7 +101,7 @@ public class Follow extends HttpServlet {
 
 				JSONArray follows = this.searchFollow.searchFollow(filter, false);
 				res.put("result", follows);
-
+				
 			} else {
 
 				// Get the follow parameters
@@ -127,7 +127,7 @@ public class Follow extends HttpServlet {
 
 		} catch (SQLException e) {
 
-			this.logger.log("SQl error during the follow getting", Logger.ERROR);
+			this.logger.log("SQL error during the follow getting", Logger.ERROR);
 			this.logger.log(e, Logger.ERROR);
 			res = this.handler.handleException(e, Handler.SQL_ERROR);
 

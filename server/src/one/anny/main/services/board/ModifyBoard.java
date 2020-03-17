@@ -61,6 +61,10 @@ public class ModifyBoard {
 			valid = false;
 			message.append(" - Invalid board description : " + board.getBoardName());
 		}
+		if(board.getBoardCreatorId() == null || !this.security.isValidUserId(board.getBoardCreatorId())) {
+			valid = false;
+			message.append(" - Invalid board creator id : " + board.getBoardCreatorId());
+		}
 
 		// If there is an error, throw an exception
 		if(!valid) {
