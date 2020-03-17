@@ -14,7 +14,6 @@ import org.junit.Test;
 import one.anny.main.tools.Config;
 import one.anny.main.tools.Security;
 import one.anny.main.tools.StdVar;
-import one.anny.main.tools.exceptions.SessionException;
 import one.anny.main.tools.models.UserModel;
 import one.anny.main.tools.sessions.SessionModel;
 import one.anny.main.tools.sessions.SessionPool;
@@ -41,12 +40,12 @@ public class ToolsTest {
 	private static final UserModel user3 = new UserModel();
 
 
-	// ----- Config methods -----
+	// ----- Configuration methods -----
 
 
 	@BeforeClass
 	public static void setup() {
-		// Load the test config files
+		// Load the test configuration files
 		Path configTestPath = Paths.get(StdVar.TEST_CONFIG_FILE);
 		try {
 			Reader reader = new FileReader(configTestPath.toAbsolutePath().toFile());
