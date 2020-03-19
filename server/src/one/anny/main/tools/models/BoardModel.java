@@ -7,7 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
- * This class represent a board, a board is a general subject to sort messages
+ * This class represent a board, a board is a general subject to sort messages like on 4chan
  * 
  * @author Emilie Siau
  * @author Hugo Guerrier

@@ -9,43 +9,6 @@ import one.anny.main.tools.models.BoardModel;
 
 public class DeleteBoard {
 
-	// ----- Attributes -----
-
-
-	/** The database manager */
-	private BoardDatabaseManager boardDatabaseManager;
-
-	/** Security tool */
-	private Security security;
-
-	/** The service unique instance (singleton) */
-	private static DeleteBoard instance = null;
-
-
-	// ----- Constructors -----
-
-
-	/**
-	 * Construct a new service
-	 */
-	private DeleteBoard() {
-		this.boardDatabaseManager = BoardDatabaseManager.getInstance();
-		this.security = Security.getInstance();
-	}
-
-	/**
-	 * Get the unique service instance
-	 * 
-	 * @return The instance
-	 */
-	public static DeleteBoard getInstance() {
-		if(DeleteBoard.instance ==  null) {
-			DeleteBoard.instance = new DeleteBoard();
-		}
-		return DeleteBoard.instance;
-	}
-
-
 	// ----- Class methods -----
 
 
@@ -56,16 +19,16 @@ public class DeleteBoard {
 	 * @throws BoardException If there were an error during the service
 	 * @throws SQLException If there is an error in the MySQL database
 	 */
-	public void deleteBoard(BoardModel board) throws BoardException, SQLException {
+	public static void deleteBoard(BoardModel board) throws BoardException, SQLException {
 		// Verify the board parameters
 		boolean valid = true;
 		StringBuilder message = new StringBuilder();
 
-		if(board.getBoardName() == null || this.security.isValidBoardName(board.getBoardName())) {
+		if(board.getBoardName() == null || !Security.isValidBoardName(board.getBoardName())) {
 			valid = false;
 			message.append(" - Invalid board name : " + board.getBoardName());
 		}
-		if(board.getBoardCreatorId() != null && !this.security.isValidUserId(board.getBoardCreatorId())) {
+		if(board.getBoardCreatorId() != null && !Security.isValidUserId(board.getBoardCreatorId())) {
 			valid = false;
 			message.append(" - Invalid board creator id : " + board.getBoardCreatorId());
 		}
@@ -77,10 +40,10 @@ public class DeleteBoard {
 		} else {
 
 			// Escape the HTML special characters
-			board.setBoardName(this.security.htmlEncode(board.getBoardName()));
+			board.setBoardName(Security.htmlEncode(board.getBoardName()));
 			
 			// Delete the board from the database
-			this.boardDatabaseManager.deleteBoard(board);
+			BoardDatabaseManager.deleteBoard(board);
 
 		}
 	}

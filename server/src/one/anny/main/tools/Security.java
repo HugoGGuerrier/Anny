@@ -15,36 +15,6 @@ import org.apache.commons.text.StringEscapeUtils;
  */
 public class Security {
 
-	// ----- Attributes -----
-
-
-	/** Unique security instance (singleton) */
-	private static Security instance;
-
-
-	// ----- Constructors -----
-
-
-	/**
-	 * Create a new security instance
-	 */
-	private Security() {
-
-	}
-
-	/**
-	 * Get the security unique instance
-	 * 
-	 * @return The instance
-	 */
-	public static Security getInstance() {
-		if(Security.instance == null) {
-			Security.instance = new Security();
-		}
-		return Security.instance;
-	}
-
-
 	// ----- Class methods -----
 
 
@@ -54,7 +24,7 @@ public class Security {
 	 * @param stringToClean The string to encode
 	 * @return The encoded string
 	 */
-	public String htmlEncode(String stringToEncode) {
+	public static String htmlEncode(String stringToEncode) {
 		String res = StringEscapeUtils.escapeHtml4(stringToEncode);
 		return res;
 	}
@@ -65,7 +35,7 @@ public class Security {
 	 * @param stringToDecode The string to decode
 	 * @return The decoded string
 	 */
-	public String htmlDecode(String stringToDecode) {
+	public static String htmlDecode(String stringToDecode) {
 		String res = StringEscapeUtils.unescapeHtml4(stringToDecode);
 		return res;
 	}
@@ -76,7 +46,7 @@ public class Security {
 	 * @param stringToHash The string to hash
 	 * @return The hashed string
 	 */
-	public String hashString(String stringToHash) {
+	public static String hashString(String stringToHash) {
 		return DigestUtils.sha512Hex(stringToHash);
 	}
 
@@ -85,7 +55,7 @@ public class Security {
 	 * 
 	 * @return The generated CSRF token
 	 */
-	public String generateCSRFToken() {
+	public static String generateCSRFToken() {
 		// Define needed variables
 		String possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		Random random = new Random();
@@ -113,7 +83,7 @@ public class Security {
 	 * @param userDate The date to verify
 	 * @return True if the date is valid
 	 */
-	public boolean isValidDate(String userDate) {
+	public static boolean isValidDate(String userDate) {
 		Pattern pattern = Pattern.compile("^2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[0-1])$");
 		Matcher matcher = pattern.matcher(userDate);
 
@@ -126,7 +96,7 @@ public class Security {
 	 * @param boardDescription The board description
 	 * @return True if the board description is valid
 	 */
-	public boolean isStringNotEmpty(String string) {
+	public static boolean isStringNotEmpty(String string) {
 		Pattern pattern = Pattern.compile("^.+$");
 		Matcher matcher = pattern.matcher(string);
 
@@ -141,7 +111,7 @@ public class Security {
 	 * @param userId The ID to validate
 	 * @return True if the ID is valid
 	 */
-	public boolean isValidUserId(String userId) {
+	public static boolean isValidUserId(String userId) {
 		Pattern pattern = Pattern.compile("^@[a-z0-9_]+$");
 		Matcher matcher = pattern.matcher(userId);
 
@@ -154,7 +124,7 @@ public class Security {
 	 * @param userMail The mail to verify
 	 * @return True if the mail is valid
 	 */
-	public boolean isValidEmail(String userMail) {
+	public static boolean isValidEmail(String userMail) {
 		Pattern pattern = Pattern.compile("^.*@[a-z0-9\\-]+\\.[a-z]+$");
 		Matcher matcher = pattern.matcher(userMail);
 
@@ -167,7 +137,7 @@ public class Security {
 	 * @param hashedPassword The hashed password to verify
 	 * @return True if the password is valid
 	 */
-	public boolean isValidPassword(String hashedPassword) {
+	public static boolean isValidPassword(String hashedPassword) {
 		Pattern pattern = Pattern.compile("^([abcdef]|[0-9]){128}$");
 		Matcher matcher = pattern.matcher(hashedPassword);
 
@@ -181,7 +151,7 @@ public class Security {
 	 * 
 	 * @return True if the board name is correct
 	 */
-	public boolean isValidBoardName(String boardName) {
+	public static boolean isValidBoardName(String boardName) {
 		Pattern pattern = Pattern.compile("^[A-Za-z0-9]+$");
 		Matcher matcher = pattern.matcher(boardName);
 
@@ -196,7 +166,7 @@ public class Security {
 	 * @param messageId The message ID to verify
 	 * @return True if the ID iv valid
 	 */
-	public boolean isValidMessageId(String messageId) {
+	public static boolean isValidMessageId(String messageId) {
 		Pattern pattern = Pattern.compile("^([0-9]\\.)*[0-9]$");
 		Matcher matcher = pattern.matcher(messageId);
 

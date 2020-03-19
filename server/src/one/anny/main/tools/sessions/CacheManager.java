@@ -34,9 +34,6 @@ public class CacheManager implements Runnable {
 	/** The file to write the cache in */
 	private File cacheFile;
 
-	/** The application logger */
-	private Logger logger;
-
 	/** The sessions to write in the cache file */
 	private Queue<SessionModel> sessionsAddBuffer;
 
@@ -63,8 +60,7 @@ public class CacheManager implements Runnable {
 	 */
 	public CacheManager() {
 		this.addedSessions = 0;
-
-		this.logger = Logger.getInstance();
+		
 		this.sessionsAddBuffer = new ConcurrentLinkedQueue<SessionModel>();
 		this.sessionsRemoveBuffer = new ConcurrentLinkedQueue<String>();
 
@@ -78,12 +74,12 @@ public class CacheManager implements Runnable {
 
 			if(this.cacheFile.createNewFile()) {
 				this.resetSessions();
-				this.logger.log("The session cache file were created and initilized", Logger.INFO);
+				Logger.log("The session cache file were created and initilized", Logger.INFO);
 			}
 
 		} catch (IOException e) {
 
-			this.logger.log(e, Logger.ERROR);
+			Logger.log(e, Logger.ERROR);
 
 		}
 	}
@@ -125,7 +121,7 @@ public class CacheManager implements Runnable {
 
 		} catch (IOException e) {
 
-			this.logger.log(e, Logger.ERROR);
+			Logger.log(e, Logger.ERROR);
 
 		} finally {
 
@@ -171,7 +167,7 @@ public class CacheManager implements Runnable {
 
 				} catch (SessionException e) {
 
-					this.logger.log(e, Logger.WARNING);
+					Logger.log(e, Logger.WARNING);
 
 				}
 			} else {
@@ -185,13 +181,13 @@ public class CacheManager implements Runnable {
 
 		} catch (IOException e) {
 
-			this.logger.log("Error during session cache file reading", Logger.ERROR);
-			this.logger.log(e, Logger.ERROR);
+			Logger.log("Error during session cache file reading", Logger.ERROR);
+			Logger.log(e, Logger.ERROR);
 
 		} catch (ParseException e) {
 
-			this.logger.log("Error during the session cache file parsing", Logger.ERROR);
-			this.logger.log(e, Logger.ERROR);
+			Logger.log("Error during the session cache file parsing", Logger.ERROR);
+			Logger.log(e, Logger.ERROR);
 
 		} finally {
 
@@ -227,20 +223,20 @@ public class CacheManager implements Runnable {
 
 				} catch (SessionException e) {
 
-					this.logger.log(e, Logger.WARNING);
+					Logger.log(e, Logger.WARNING);
 
 				}					
 			}
 
 		} catch (IOException e) {
 
-			this.logger.log("Error during session cache file reading", Logger.ERROR);
-			this.logger.log(e, Logger.ERROR);
+			Logger.log("Error during session cache file reading", Logger.ERROR);
+			Logger.log(e, Logger.ERROR);
 
 		} catch (ParseException e) {
 
-			this.logger.log("Error during the session cache file parsing", Logger.ERROR);
-			this.logger.log(e, Logger.ERROR);
+			Logger.log("Error during the session cache file parsing", Logger.ERROR);
+			Logger.log(e, Logger.ERROR);
 
 		} finally {
 			
@@ -297,18 +293,18 @@ public class CacheManager implements Runnable {
 
 			} catch (IOException e) {
 
-				this.logger.log("Error during session cache file writing", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
+				Logger.log("Error during session cache file writing", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
 
 			} catch (ParseException e) {
 
-				this.logger.log("Error during the session cache file parsing", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
+				Logger.log("Error during the session cache file parsing", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
 
 			} catch (InterruptedException e) {
 
-				this.logger.log("Cache writer has been stopped", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
+				Logger.log("Cache writer has been stopped", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
 
 			} finally {
 				

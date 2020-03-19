@@ -42,29 +42,8 @@ public class User extends HttpServlet {
 	/** Serial version number */
 	private static final long serialVersionUID = 928019971282204835L;
 
-	/** The logger */
-	private Logger logger;
-
-	/** The handler */
-	private Handler handler;
-
-	/** Security tool */
-	private Security security;
-
 	/** Session pool */
 	private SessionPool sessionPool;
-
-	/**	Service to create an user */
-	private CreateUser createUser;
-
-	/** Service to delete an user */
-	private DeleteUser deleteUser;
-
-	/** Service to modify an user */
-	private ModifyUser modifyUser;
-
-	/** Service to search users */
-	private SearchUser searchUser;
 
 
 	// ----- Constructors -----
@@ -72,16 +51,7 @@ public class User extends HttpServlet {
 
 	public User() {
 		super();
-
-		// Get instances
-		this.logger = Logger.getInstance();
-		this.handler = Handler.getInstance();
-		this.security = Security.getInstance();
 		this.sessionPool = SessionPool.getInstance();
-		this.createUser = CreateUser.getInstance();
-		this.deleteUser = DeleteUser.getInstance();
-		this.modifyUser = ModifyUser.getInstance();
-		this.searchUser = SearchUser.getInstance();
 	}
 
 
@@ -111,7 +81,7 @@ public class User extends HttpServlet {
 				filter.setUserId(id);
 
 				// Get the user list
-				JSONArray users = this.searchUser.searchUser(filter, false);
+				JSONArray users = SearchUser.searchUser(filter, false);
 				res.put("result", users);
 
 			} else {
@@ -139,16 +109,16 @@ public class User extends HttpServlet {
 				}
 
 				// Try to get the users from the database
-				JSONArray users = this.searchUser.searchUser(filter, isLike);
+				JSONArray users = SearchUser.searchUser(filter, isLike);
 				res.put("result", users);
 
 			}
 
 		} catch (SQLException e) {
 
-			this.logger.log("Error during the user getting", Logger.ERROR);
-			this.logger.log(e, Logger.ERROR);
-			res = this.handler.handleException(e, Handler.SQL_ERROR);
+			Logger.log("Error during the user getting", Logger.ERROR);
+			Logger.log(e, Logger.ERROR);
+			res = Handler.handleException(e, Handler.SQL_ERROR);
 
 		}
 
@@ -164,7 +134,7 @@ public class User extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Create the response object
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Get the current session to verify that it's an admin session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
@@ -184,7 +154,7 @@ public class User extends HttpServlet {
 				Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
 
 				// Hash the password to avoid memory leak
-				password = this.security.hashString(password);
+				password = Security.hashString(password);
 
 				// Create the new user to insert
 				UserModel newUser = new UserModel();
@@ -198,31 +168,31 @@ public class User extends HttpServlet {
 				newUser.setUserAdmin(admin);
 
 				// Try to insert the user in the database
-				this.createUser.createUser(newUser);
+				CreateUser.createUser(newUser);
 
 			} catch (UserException e) {
 
-				this.logger.log("Error during the user insertion", Logger.WARNING);
-				this.logger.log(e, Logger.WARNING);
-				res = this.handler.handleException(e, Handler.WEB_ERROR);
+				Logger.log("Error during the user insertion", Logger.WARNING);
+				Logger.log(e, Logger.WARNING);
+				res = Handler.handleException(e, Handler.WEB_ERROR);
 
 			} catch (SQLException e) {
 
-				this.logger.log("Error during the user insertion", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.SQL_ERROR);
+				Logger.log("Error during the user insertion", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.SQL_ERROR);
 
 			} catch (Exception e) {
 
-				this.logger.log("Java error during the user insertion", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.JAVA_ERROR);
+				Logger.log("Java error during the user insertion", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.JAVA_ERROR);
 
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
 
 		}
 
@@ -238,7 +208,7 @@ public class User extends HttpServlet {
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Create the response object
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Get the current session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
@@ -256,7 +226,7 @@ public class User extends HttpServlet {
 				Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
 
 				// Hash the password to update it
-				password = this.security.hashString(password);
+				password = Security.hashString(password);
 
 				// Create the user to modify it
 				UserModel modifiedUser = new UserModel();
@@ -271,37 +241,37 @@ public class User extends HttpServlet {
 				// Try to insert the user in the database
 				if(id.equals(currentSession.getUserId()) || currentSession.isAdmin()) {
 
-					this.modifyUser.modifyUser(modifiedUser);
+					ModifyUser.modifyUser(modifiedUser);
 
 				} else {
 
-					res = this.handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
+					res = Handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
 
 				}
 
 			} catch (UserException e) {
 
-				this.logger.log("User data error during the user updating", Logger.WARNING);
-				this.logger.log(e, Logger.WARNING);
-				res = this.handler.handleException(e, Handler.WEB_ERROR);
+				Logger.log("User data error during the user updating", Logger.WARNING);
+				Logger.log(e, Logger.WARNING);
+				res = Handler.handleException(e, Handler.WEB_ERROR);
 
 			} catch (SQLException e) {
 
-				this.logger.log("SQL error during the user updating", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.SQL_ERROR);
+				Logger.log("SQL error during the user updating", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.SQL_ERROR);
 
 			} catch (Exception e) {
 
-				this.logger.log("Java error during the user updating", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.JAVA_ERROR);
+				Logger.log("Java error during the user updating", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.JAVA_ERROR);
 
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
 
 		}
 
@@ -317,7 +287,7 @@ public class User extends HttpServlet {
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the response JSON
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Get the session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, false);
@@ -340,52 +310,52 @@ public class User extends HttpServlet {
 					try {
 
 						// Delete the user and destroy the session if the user is not an admin
-						this.deleteUser.deleteUser(filter);
+						DeleteUser.deleteUser(filter);
 						if(!currentSession.isAdmin()) {
 							
 							this.sessionPool.removeSession(currentSession.getSessionId(), resp);
 
 						} else {
 
-							res = this.handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
+							res = Handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
 
 						}
 
 					} catch (UserException e) {
 
-						this.logger.log("Input error during the user deletion", Logger.WARNING);
-						this.logger.log(e, Logger.WARNING);
-						res = this.handler.handleException(e, Handler.WEB_ERROR);
+						Logger.log("Input error during the user deletion", Logger.WARNING);
+						Logger.log(e, Logger.WARNING);
+						res = Handler.handleException(e, Handler.WEB_ERROR);
 
 					} catch (SQLException e) {
 
-						this.logger.log("SQL error during the user deletion", Logger.ERROR);
-						this.logger.log(e, Logger.ERROR);
-						res = this.handler.handleException(e, Handler.SQL_ERROR);
+						Logger.log("SQL error during the user deletion", Logger.ERROR);
+						Logger.log(e, Logger.ERROR);
+						res = Handler.handleException(e, Handler.SQL_ERROR);
 
 					} catch (Exception e) {
 
-						this.logger.log("Java error during the user deletion", Logger.ERROR);
-						this.logger.log(e, Logger.ERROR);
-						res = this.handler.handleException(e, Handler.JAVA_ERROR);
+						Logger.log("Java error during the user deletion", Logger.ERROR);
+						Logger.log(e, Logger.ERROR);
+						res = Handler.handleException(e, Handler.JAVA_ERROR);
 
 					}
 					
 				} else {
 					
-					res = this.handler.handleException(new UserException("Authorization denied"), Handler.WEB_ERROR);
+					res = Handler.handleException(new UserException("Authorization denied"), Handler.WEB_ERROR);
 					
 				}
 
 			} else {
 
-				res = this.handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
+				res = Handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
 
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
 
 		}
 

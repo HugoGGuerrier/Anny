@@ -34,27 +34,9 @@ public class Board extends HttpServlet {
 
 	/** Serial version number */
 	private static final long serialVersionUID = -646457406075452434L;
-
-	/** Logger tool */
-	private Logger logger;
-
-	/** Handler tool */
-	private Handler handler;
-
+	
 	/** The session pool */
 	private SessionPool sessionPool;
-
-	/** Service to create a board */
-	private CreateBoard createBoard;
-
-	/** Board deletion service */
-	private DeleteBoard deleteBoard;
-
-	/** Service to modify a board */
-	private ModifyBoard modifyBoard;
-
-	/** The searching board service */
-	private SearchBoard searchBoard;
 
 
 	// ----- Constructors -----
@@ -62,15 +44,7 @@ public class Board extends HttpServlet {
 
 	public Board() {
 		super();
-
-		// Get instances
-		this.logger = Logger.getInstance();
-		this.handler = Handler.getInstance();
 		this.sessionPool = SessionPool.getInstance();
-		this.createBoard = CreateBoard.getInstance();
-		this.deleteBoard = DeleteBoard.getInstance();
-		this.modifyBoard = ModifyBoard.getInstance();
-		this.searchBoard = SearchBoard.getInstance();
 	}
 
 
@@ -100,7 +74,7 @@ public class Board extends HttpServlet {
 				filter.setBoardName(name);
 
 				// Get the message list
-				JSONArray boards = this.searchBoard.searchBoard(filter, false);
+				JSONArray boards = SearchBoard.searchBoard(filter, false);
 				res.put("result", boards);
 
 			} else {
@@ -118,16 +92,16 @@ public class Board extends HttpServlet {
 				filter.setBoardCreatorId(creatorId);
 
 				// Try to get the boards from the database
-				JSONArray boards = this.searchBoard.searchBoard(filter, isLike);
+				JSONArray boards = SearchBoard.searchBoard(filter, isLike);
 				res.put("result", boards);
 
 			}
 
 		} catch (SQLException e) {
 
-			this.logger.log("Error during the board getting", Logger.ERROR);
-			this.logger.log(e, Logger.ERROR);
-			res = this.handler.handleException(e, Handler.SQL_ERROR);
+			Logger.log("Error during the board getting", Logger.ERROR);
+			Logger.log(e, Logger.ERROR);
+			res = Handler.handleException(e, Handler.SQL_ERROR);
 
 		}
 
@@ -143,7 +117,7 @@ public class Board extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Get the current session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
@@ -164,31 +138,31 @@ public class Board extends HttpServlet {
 				newBoard.setBoardCreatorId(creatorId);
 
 				// Create the new board
-				this.createBoard.createBoard(newBoard);
+				CreateBoard.createBoard(newBoard);
 
 			} catch (BoardException e) {
 
-				this.logger.log("Board data error during the board insertion", Logger.WARNING);
-				this.logger.log(e, Logger.WARNING);
-				res = this.handler.handleException(e, Handler.WEB_ERROR);
+				Logger.log("Board data error during the board insertion", Logger.WARNING);
+				Logger.log(e, Logger.WARNING);
+				res = Handler.handleException(e, Handler.WEB_ERROR);
 
 			} catch (SQLException e) {
 
-				this.logger.log("SQL error during the board insertion", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.SQL_ERROR);
+				Logger.log("SQL error during the board insertion", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.SQL_ERROR);
 
 			} catch (Exception e) {
 
-				this.logger.log("Java error during the board insertion", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.JAVA_ERROR);
+				Logger.log("Java error during the board insertion", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.JAVA_ERROR);
 
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
 
 		}
 
@@ -204,7 +178,7 @@ public class Board extends HttpServlet {
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Get the current session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
@@ -224,31 +198,31 @@ public class Board extends HttpServlet {
 				board.setBoardDescription(description);
 				board.setBoardCreatorId(creatorId);
 
-				this.modifyBoard.modifyBoard(board);
+				ModifyBoard.modifyBoard(board);
 
 			} catch (BoardException e) {
 
-				this.logger.log("Error during the board updating", Logger.WARNING);
-				this.logger.log(e, Logger.WARNING);
-				res = this.handler.handleException(e, Handler.WEB_ERROR);
+				Logger.log("Error during the board updating", Logger.WARNING);
+				Logger.log(e, Logger.WARNING);
+				res = Handler.handleException(e, Handler.WEB_ERROR);
 
 			} catch (SQLException e) {
 
-				this.logger.log("Error during the board updating", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.SQL_ERROR);
+				Logger.log("Error during the board updating", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.SQL_ERROR);
 
 			} catch (NullPointerException e) {
 
-				this.logger.log("Java error during the board updating", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.JAVA_ERROR);
+				Logger.log("Java error during the board updating", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.JAVA_ERROR);
 
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
 
 		}
 
@@ -264,7 +238,7 @@ public class Board extends HttpServlet {
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Get the current session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
@@ -287,31 +261,31 @@ public class Board extends HttpServlet {
 
 				try {
 
-					this.deleteBoard.deleteBoard(filter);
+					DeleteBoard.deleteBoard(filter);
 
 				} catch (BoardException e) {
 
-					this.logger.log("Board data error during the board deletion", Logger.WARNING);
-					this.logger.log(e, Logger.WARNING);
-					res = this.handler.handleException(e, Handler.WEB_ERROR);
+					Logger.log("Board data error during the board deletion", Logger.WARNING);
+					Logger.log(e, Logger.WARNING);
+					res = Handler.handleException(e, Handler.WEB_ERROR);
 
 				} catch (SQLException e) {
 
-					this.logger.log("SQL error during the board deletion", Logger.ERROR);
-					this.logger.log(e, Logger.ERROR);
-					res = this.handler.handleException(e, Handler.SQL_ERROR);
+					Logger.log("SQL error during the board deletion", Logger.ERROR);
+					Logger.log(e, Logger.ERROR);
+					res = Handler.handleException(e, Handler.SQL_ERROR);
 
 				}
 
 			} else {
 
-				res = this.handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
+				res = Handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
 
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
 
 		}
 

@@ -6,42 +6,10 @@ import java.util.List;
 import org.json.simple.JSONArray;
 
 import one.anny.main.db.managers.UserDatabaseManager;
+import one.anny.main.tools.Security;
 import one.anny.main.tools.models.UserModel;
 
 public class SearchUser {
-
-	// ----- Attributes -----
-
-
-	/**	The user database manager unique instance */
-	private UserDatabaseManager userDatabaseManager;
-
-	/** The service unique instance (singleton) */
-	private static SearchUser instance = null;
-
-
-	// ----- Constructors -----
-
-
-	/**
-	 * Construct a new service
-	 */
-	private SearchUser() {
-		this.userDatabaseManager = UserDatabaseManager.getInstance();
-	}
-
-	/**
-	 * Get the service unique instance
-	 * 
-	 * @return The instance
-	 */
-	public static SearchUser getInstance() {
-		if(SearchUser.instance ==  null) {
-			SearchUser.instance = new SearchUser();
-		}
-		return SearchUser.instance;
-	}
-
 
 	// ----- Class methods -----
 
@@ -55,17 +23,28 @@ public class SearchUser {
 	 * @throws SQLException 
 	 */
 	@SuppressWarnings("unchecked")
-	public JSONArray searchUser(UserModel user, boolean isLike) throws SQLException {
-		// Call the user database manager to search users
-		List<UserModel> users = this.userDatabaseManager.getUsers(user, isLike);
+	public static JSONArray searchUser(UserModel user, boolean isLike) throws SQLException {
+		// Escape the HTML special characters
+		if(user.getUserPseudo() != null) {
+			user.setUserPseudo(Security.htmlEncode(user.getUserPseudo()));
+		}
+		if(user.getUserName() != null) {
+			user.setUserName(Security.htmlEncode(user.getUserName()));
+		}
+		if(user.getUserSurname() != null) {
+			user.setUserSurname(Security.htmlEncode(user.getUserSurname()));
+		}
 		
+		// Call the user database manager to search users
+		List<UserModel> users = UserDatabaseManager.getUsers(user, isLike);
+
 		// Place the result inside a JSON array
 		JSONArray res = new JSONArray();
-		
+
 		for(UserModel userRes : users) {
 			res.add(userRes.getJSON());
 		}
-		
+
 		// Return the result
 		return res;
 	}

@@ -41,38 +41,15 @@ public class Follow extends HttpServlet {
 	/** Serial version number */
 	private static final long serialVersionUID = 4169235877331702798L;
 
-	/** The logger */
-	private Logger logger;
-
-	/** The handler */
-	private Handler handler;
-
 	/** The session pool */
 	private SessionPool sessionPool;
-
-	/** Service to create a following link */
-	private CreateFollow createFollow;
-
-	/** Service to delete a following link */
-	private DeleteFollow deleteFollow;
-
-	/** Service to create a following link */
-	private SearchFollow searchFollow;
-
 
 	// ----- Constructors -----
 
 
 	public Follow() {
 		super();
-
-		// Get instances
-		this.logger = Logger.getInstance();
-		this.handler = Handler.getInstance();
 		this.sessionPool = SessionPool.getInstance();
-		this.createFollow = CreateFollow.getInstance();
-		this.deleteFollow = DeleteFollow.getInstance();
-		this.searchFollow = SearchFollow.getInstance();
 	}
 
 
@@ -99,7 +76,7 @@ public class Follow extends HttpServlet {
 				FollowModel filter = new FollowModel();
 				filter.setFollowingUserId(followingId);
 
-				JSONArray follows = this.searchFollow.searchFollow(filter, false);
+				JSONArray follows = SearchFollow.searchFollow(filter, false);
 				res.put("result", follows);
 				
 			} else {
@@ -120,16 +97,16 @@ public class Follow extends HttpServlet {
 					filter.setFollowDate(null);
 				}
 
-				JSONArray follows = this.searchFollow.searchFollow(filter, isLike);
+				JSONArray follows = SearchFollow.searchFollow(filter, isLike);
 				res.put("result", follows);
 
 			}
 
 		} catch (SQLException e) {
 
-			this.logger.log("SQL error during the follow getting", Logger.ERROR);
-			this.logger.log(e, Logger.ERROR);
-			res = this.handler.handleException(e, Handler.SQL_ERROR);
+			Logger.log("SQL error during the follow getting", Logger.ERROR);
+			Logger.log(e, Logger.ERROR);
+			res = Handler.handleException(e, Handler.SQL_ERROR);
 
 		}
 
@@ -145,7 +122,7 @@ public class Follow extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Get the current session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
@@ -166,31 +143,31 @@ public class Follow extends HttpServlet {
 				newFollow.setFollowDate(followDate);
 
 				// Insert the new follow in the database
-				this.createFollow.createFollow(newFollow);
+				CreateFollow.createFollow(newFollow);
 
 			} catch (FollowException e) {
 
-				this.logger.log("Follow data error during the follow insertion", Logger.WARNING);
-				this.logger.log(e, Logger.WARNING);
-				res = this.handler.handleException(e, Handler.WEB_ERROR);
+				Logger.log("Follow data error during the follow insertion", Logger.WARNING);
+				Logger.log(e, Logger.WARNING);
+				res = Handler.handleException(e, Handler.WEB_ERROR);
 
 			} catch (SQLException e) {
 
-				this.logger.log("SQL error during the follow insertion", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.SQL_ERROR);
+				Logger.log("SQL error during the follow insertion", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.SQL_ERROR);
 
 			} catch (Exception e) {
 
-				this.logger.log("Java error during the follow insertion", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.JAVA_ERROR);
+				Logger.log("Java error during the follow insertion", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.JAVA_ERROR);
 				
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
 
 		}
 
@@ -206,7 +183,7 @@ public class Follow extends HttpServlet {
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Get the current session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
@@ -228,31 +205,31 @@ public class Follow extends HttpServlet {
 
 				try {
 
-					this.deleteFollow.deleteFollow(filter);
+					DeleteFollow.deleteFollow(filter);
 
 				} catch (FollowException e) {
 
-					this.logger.log("Follow data error during the follow deletion", Logger.WARNING);
-					this.logger.log(e, Logger.WARNING);
-					res = this.handler.handleException(e, Handler.WEB_ERROR);
+					Logger.log("Follow data error during the follow deletion", Logger.WARNING);
+					Logger.log(e, Logger.WARNING);
+					res = Handler.handleException(e, Handler.WEB_ERROR);
 
 				} catch (SQLException e) {
 
-					this.logger.log("SQL error during the follow deletion", Logger.ERROR);
-					this.logger.log(e, Logger.ERROR);
-					res = this.handler.handleException(e, Handler.WEB_ERROR);
+					Logger.log("SQL error during the follow deletion", Logger.ERROR);
+					Logger.log(e, Logger.ERROR);
+					res = Handler.handleException(e, Handler.WEB_ERROR);
 
 				}
 
 			} else {
 
-				res = this.handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
+				res = Handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
 
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
 
 		}
 

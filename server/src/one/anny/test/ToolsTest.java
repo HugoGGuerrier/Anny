@@ -23,9 +23,6 @@ public class ToolsTest {
 	// ----- Attributes -----
 
 
-	// --- Security
-	private Security security = Security.getInstance();
-
 	private static final String htmlTestString = "<script>alert('test')</script>";
 
 	// --- Sessions
@@ -91,33 +88,33 @@ public class ToolsTest {
 	@Test
 	public void testSecurity() {
 		// Test the HTML encode/decode
-		assertEquals("&lt;script&gt;alert('test')&lt;/script&gt;", this.security.htmlEncode(ToolsTest.htmlTestString));
-		assertEquals(ToolsTest.htmlTestString, this.security.htmlDecode("&lt;script&gt;alert('test')&lt;/script&gt;"));
-		assertEquals("ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff", this.security.hashString("test"));
+		assertEquals("&lt;script&gt;alert('test')&lt;/script&gt;", Security.htmlEncode(ToolsTest.htmlTestString));
+		assertEquals(ToolsTest.htmlTestString, Security.htmlDecode("&lt;script&gt;alert('test')&lt;/script&gt;"));
+		assertEquals("ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff", Security.hashString("test"));
 
-		assertTrue(this.security.isValidDate("2020-04-12"));
-		assertTrue(this.security.isValidDate("2001-05-31"));
-		assertFalse(this.security.isValidDate("2020-13-20"));
-		assertFalse(this.security.isValidDate("1956-02-10"));
-		assertFalse(this.security.isValidDate("2019-05-32"));
+		assertTrue(Security.isValidDate("2020-04-12"));
+		assertTrue(Security.isValidDate("2001-05-31"));
+		assertFalse(Security.isValidDate("2020-13-20"));
+		assertFalse(Security.isValidDate("1956-02-10"));
+		assertFalse(Security.isValidDate("2019-05-32"));
 
-		assertTrue(this.security.isValidUserId("@test"));
-		assertFalse(this.security.isValidUserId("@"));
-		assertFalse(this.security.isValidUserId("test"));
+		assertTrue(Security.isValidUserId("@test"));
+		assertFalse(Security.isValidUserId("@"));
+		assertFalse(Security.isValidUserId("test"));
 
-		assertTrue(this.security.isValidEmail("test@gmail.com"));
-		assertTrue(this.security.isValidEmail("blablabbla@mail.fr"));
-		assertFalse(this.security.isValidEmail("thisisatest.gmail.com"));
+		assertTrue(Security.isValidEmail("test@gmail.com"));
+		assertTrue(Security.isValidEmail("blablabbla@mail.fr"));
+		assertFalse(Security.isValidEmail("thisisatest.gmail.com"));
 
-		assertTrue(this.security.isValidPassword(this.security.hashString("this is a test password")));
-		assertFalse(this.security.isValidPassword("12345abcef"));
+		assertTrue(Security.isValidPassword(Security.hashString("this is a test password")));
+		assertFalse(Security.isValidPassword("12345abcef"));
 
-		assertTrue(this.security.isValidBoardName("testboard"));
-		assertFalse(this.security.isValidBoardName("test_ttt"));
+		assertTrue(Security.isValidBoardName("testboard"));
+		assertFalse(Security.isValidBoardName("test_ttt"));
 
-		assertTrue(this.security.isValidMessageId("1.1.2"));
-		assertTrue(this.security.isValidMessageId("1"));
-		assertFalse(this.security.isValidMessageId("1."));
+		assertTrue(Security.isValidMessageId("1.1.2"));
+		assertTrue(Security.isValidMessageId("1"));
+		assertFalse(Security.isValidMessageId("1."));
 	}
 
 	@Test

@@ -15,7 +15,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 
 import one.anny.main.db.Database;
 import one.anny.main.tools.Config;
@@ -35,34 +34,7 @@ public class MessageDatabaseManager {
 
 
 	/** The Mongo message collection */
-	private MongoCollection<Document> messageCollection;
-
-	/** Unique instance of the message manager */
-	private static MessageDatabaseManager instance = null;
-
-
-	// ----- Constructors ----- 
-
-
-	/**
-	 * Construct a new message database manager
-	 */
-	private MessageDatabaseManager() {
-		MongoDatabase database = Database.getMongoDBConnection();
-		this.messageCollection = database.getCollection(Config.getMongoMessageCollection());
-	}
-
-	/**
-	 * Get the unique instance of the manager
-	 * 
-	 * @return The manager
-	 */
-	public static MessageDatabaseManager getInstance() {
-		if(MessageDatabaseManager.instance == null) {
-			MessageDatabaseManager.instance = new MessageDatabaseManager();
-		}
-		return MessageDatabaseManager.instance;
-	}
+	private static MongoCollection<Document> messageCollection = Database.getMongoDBConnection().getCollection(Config.getMongoMessageCollection());
 
 
 	// ----- Class Methods -----
@@ -75,11 +47,11 @@ public class MessageDatabaseManager {
 	 * @throws MongoException If there is an error during the message insertion
 	 * @throws SQLException If there is an error during the message insertion in the MySQL
 	 */
-	public void insertMessage(MessageModel messageModel) throws MongoException, SQLException{
+	public static void insertMessage(MessageModel messageModel) throws MongoException, SQLException{
 		// Check if this id already exists
 		MessageModel filter = new MessageModel();
 		filter.setMessageId(messageModel.getMessageId());
-		List<MessageModel> test = this.getMessage(filter, false);
+		List<MessageModel> test = MessageDatabaseManager.getMessage(filter, false);
 
 		if(test.size() == 0) {
 
@@ -88,7 +60,7 @@ public class MessageDatabaseManager {
 			Document messageDocument = Document.parse(messageJSON.toJSONString());
 
 			// Insert the new message
-			this.messageCollection.insertOne(messageDocument);
+			MessageDatabaseManager.messageCollection.insertOne(messageDocument);
 
 			// Update the parent answers list or the board
 			String parentId = messageModel.getParentId();
@@ -106,7 +78,7 @@ public class MessageDatabaseManager {
 				pushInAnswers.append("$push", fieldValue);
 
 				// Update the parent
-				this.messageCollection.updateOne(queryParent, pushInAnswers);
+				MessageDatabaseManager.messageCollection.updateOne(queryParent, pushInAnswers);
 
 			} else {
 
@@ -136,7 +108,7 @@ public class MessageDatabaseManager {
 	 * @param messageModel The message to update
 	 * @throws MongoException If there is an error during the message updating
 	 */
-	public void updateMessage(MessageModel messageModel) throws MongoException {
+	public static void updateMessage(MessageModel messageModel) throws MongoException {
 		// Prepare the update filter and set
 		Document updateFilter = new Document();
 		updateFilter.append("messageId", messageModel.getMessageId());
@@ -148,7 +120,7 @@ public class MessageDatabaseManager {
 		updateSet.append("$set", updateElems);
 
 		// Execute the update
-		if(this.messageCollection.updateOne(updateFilter, updateSet).getMatchedCount() != 1) {
+		if(MessageDatabaseManager.messageCollection.updateOne(updateFilter, updateSet).getMatchedCount() != 1) {
 			throw new MongoException("Errod during the message updating : " + messageModel.getMessageId());
 		}
 	}
@@ -160,7 +132,7 @@ public class MessageDatabaseManager {
 	 * @throws MongoException If there is an error during the message deletion
 	 * @throws SQLException If there is an error during the deletion in the BELONGS_TO_BOARD
 	 */
-	public void deleteMessage(MessageModel messageModel) throws MongoException, SQLException {
+	public static void deleteMessage(MessageModel messageModel) throws MongoException, SQLException {
 		// Prepare the delete query
 		Document query = new Document();
 		query.append("messageId", messageModel.getMessageId());
@@ -170,13 +142,13 @@ public class MessageDatabaseManager {
 		
 		// Get the full message model
 		try {
-			messageModel = this.getMessage(messageModel, false).get(0);
+			messageModel = MessageDatabaseManager.getMessage(messageModel, false).get(0);
 		} catch (IndexOutOfBoundsException e) {
 			throw new MongoException("Wrong message id and poster ID : " + messageModel.getMessageId() + " - " + messageModel.getMessagePosterId());
 		}
 
 		// Execute the query
-		if(this.messageCollection.deleteOne(query).getDeletedCount() != 1) {
+		if(MessageDatabaseManager.messageCollection.deleteOne(query).getDeletedCount() != 1) {
 			throw new MongoException("Error in the deletion of the message : " + messageModel.getMessageId());
 		}
 
@@ -185,19 +157,18 @@ public class MessageDatabaseManager {
 			MessageModel filter = new MessageModel();
 			filter.setMessageId(answerId);
 
-			List<MessageModel> answerList = this.getMessage(filter, false);
+			List<MessageModel> answerList = MessageDatabaseManager.getMessage(filter, false);
 			MessageModel answer = answerList.size() > 0 ? answerList.get(0) : null;
 			if(answer != null) {
 				try {
 
-					this.deleteMessage(answer);
+					MessageDatabaseManager.deleteMessage(answer);
 
 				} catch (MongoException e) {
 
 					// Log the error because it's not possible...
-					Logger logger = Logger.getInstance();
-					logger.log("A message you want to delete does not exists or is dereferenced : " + answer.getMessageId(), Logger.WARNING);
-					logger.log(e, Logger.WARNING);
+					Logger.log("A message you want to delete does not exists or is dereferenced : " + answer.getMessageId(), Logger.WARNING);
+					Logger.log(e, Logger.WARNING);
 
 				}
 			}
@@ -216,7 +187,7 @@ public class MessageDatabaseManager {
 			pullQuery.append("$pull", pullElems);
 
 			// Execute the pool
-			this.messageCollection.updateOne(parentFilter, pullQuery);
+			MessageDatabaseManager.messageCollection.updateOne(parentFilter, pullQuery);
 
 		} else {
 
@@ -241,7 +212,7 @@ public class MessageDatabaseManager {
 	 * @param model The message model to get
 	 * @return The wanted message or null if it doesn't exists
 	 */
-	public List<MessageModel> getMessage(MessageModel model, boolean regexSearch) {
+	public static List<MessageModel> getMessage(MessageModel model, boolean regexSearch) {
 		// Prepare the and queries
 		List<Bson> andQueries = new ArrayList<Bson>();
 
@@ -329,7 +300,7 @@ public class MessageDatabaseManager {
 		// Prepare the result list
 		List<MessageModel> res = new ArrayList<MessageModel>();
 
-		for(Document message : this.messageCollection.find(query)) {
+		for(Document message : MessageDatabaseManager.messageCollection.find(query)) {
 			try {
 
 				// Parse all message result
@@ -340,9 +311,8 @@ public class MessageDatabaseManager {
 			} catch (ParseException e) {
 
 				// Log the error because it's not possible...
-				Logger logger = Logger.getInstance();
-				logger.log("Error during a message BSON parsing, this error cannot happend", Logger.ERROR);
-				logger.log(e, Logger.ERROR);
+				Logger.log("Error during a message BSON parsing, this error cannot happend", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
 
 			}
 		}
@@ -357,7 +327,7 @@ public class MessageDatabaseManager {
 	 * @param parent The parent message
 	 * @return The next available message ID
 	 */
-	public String getNextRootMessageId() throws SQLException {
+	public static String getNextRootMessageId() throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 		Statement stmt = connection.createStatement();

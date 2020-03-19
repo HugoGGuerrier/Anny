@@ -12,36 +12,6 @@ import one.anny.main.tools.models.BoardModel;
 
 public class BoardDatabaseManager {
 
-	// ----- Attributes -----
-
-
-	/** Unique instance of the manager (singleton) */
-	private static BoardDatabaseManager instance = null;
-
-
-	// ----- Constructors ----- 
-
-
-	/**
-	 * Construct a new empty board database manager
-	 */
-	private BoardDatabaseManager() {
-
-	}
-
-	/**
-	 * Get the instance of board database manager
-	 * 
-	 * @return The manager
-	 */
-	public static BoardDatabaseManager getInstance() {
-		if(BoardDatabaseManager.instance == null) {
-			BoardDatabaseManager.instance = new BoardDatabaseManager();
-		}
-		return BoardDatabaseManager.instance;
-	}
-
-
 	// ----- Class Methods -----
 
 
@@ -51,7 +21,7 @@ public class BoardDatabaseManager {
 	 * @param boardModel The board to insert
 	 * @throws SQLException If there is an error during the board insertion
 	 */
-	public void insertBoard(BoardModel boardModel) throws SQLException {
+	public static void insertBoard(BoardModel boardModel) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
@@ -86,7 +56,7 @@ public class BoardDatabaseManager {
 	 * @param boardModel The board to update
 	 * @throws SQLException Id there is an error during the board updating
 	 */
-	public void updateBoard(BoardModel boardModel) throws SQLException {
+	public static void updateBoard(BoardModel boardModel) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
@@ -105,7 +75,7 @@ public class BoardDatabaseManager {
 		preparedStatement.executeUpdate();
 	}
 
-	public void deleteBoard(BoardModel boardModel) throws SQLException {
+	public static void deleteBoard(BoardModel boardModel) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
@@ -128,7 +98,7 @@ public class BoardDatabaseManager {
 		preparedStatement.executeUpdate();
 	}
 
-	public List<BoardModel> getBoards(BoardModel model, boolean isLike) throws SQLException {
+	public static List<BoardModel> getBoards(BoardModel model, boolean isLike) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 

@@ -3,6 +3,12 @@ package one.anny.main.tools;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+/**
+ * A simple handler to help generating JSON response for the client
+ * 
+ * @author Emilie Siau
+ * @author Hugo Guerrier
+ */
 public class Handler {
 
 	// ----- Attributes -----
@@ -23,32 +29,6 @@ public class Handler {
 	/** Java error code if there is an error in Java */
 	public static final int JAVA_ERROR = 100000;
 
-	/** Handler's unique instance */
-	private static Handler instance = null;
-
-
-	// ----- Constructors -----
-
-
-	/**
-	 * Create a new empty handler
-	 */
-	private Handler() {
-
-	}
-
-	/**
-	 * Get the unique handler instance
-	 * 
-	 * @return The handler instance
-	 */
-	public static Handler getInstance() {
-		if(Handler.instance == null) {
-			Handler.instance = new Handler();
-		}
-		return Handler.instance;
-	}
-
 
 	// ----- Class methods -----
 
@@ -59,7 +39,7 @@ public class Handler {
 	 * @return The JSON for a success
 	 */
 	@SuppressWarnings("unchecked")
-	public JSONObject getDefaultResponse() {
+	public static JSONObject getDefaultResponse() {
 		JSONObject res = new JSONObject();
 		
 		res.put("result", "SUCCESS");
@@ -75,7 +55,7 @@ public class Handler {
 	 * @return The JSONObject you want to return to debug
 	 */
 	@SuppressWarnings({"unchecked"})
-	public JSONObject handleException(Exception e, int code) {
+	public static JSONObject handleException(Exception e, int code) {
 		JSONObject res = new JSONObject();
 
 		// Set the result if the environment is development or production

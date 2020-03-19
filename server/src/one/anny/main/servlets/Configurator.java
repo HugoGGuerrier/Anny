@@ -54,52 +54,46 @@ public class Configurator extends HttpServlet {
 	 * This methods initialize the application
 	 */
 	public void init() {
-		// Get the application base path
+		// Get the application base path IMPORTANT!
 		ServletContext context = this.getServletContext();
 		String basePath = context.getRealPath("./");
 
-		// Set the application base path
+		// Set the application base path IMPORTANT!
 		Config.setBasePath(basePath);
-
-		// Get the logger
-		Logger logger = Logger.getInstance();
 
 		try {
 
-			// Get the file reader of the configuration file
+			// Get the file reader of the configuration file and initialize the application configuration IMPORTANT!
 			Reader configReader = new FileReader(Paths.get(basePath + StdVar.CONFIG_FILE).toFile());
-
-			// Initialize the application configuration
 			Config.init(configReader);
-
 			configReader.close();
+			
+			// Initialize all application parts IMPORTANT!
+			Logger.init();
 
-			// Log the application configuration loading
-			logger.log("Configuration loaded", Logger.INFO);
-
-			// Migrate the database to the correct version
+			// Migrate the database to the correct version IMPORTANT!
 			Migrator migrator = Migrator.getInstance();
 			if(migrator.migrate(Config.getDatabaseVersion())) {
-				logger.log("Database migrated to version " + Config.getDatabaseVersion(), Logger.INFO);
+				Logger.log("Database migrated to version " + Config.getDatabaseVersion(), Logger.INFO);
 			}
 
 		} catch (IOException e) {
 
-			logger.log("Cannot load the configuration", Logger.ERROR);
-			logger.log(e, Logger.ERROR);
+			System.err.println("IO exception during the application initialization");
+			e.printStackTrace();
 
 		} catch (SQLException e) {
 
-			logger.log("Cannot migrate the database to the app version", Logger.ERROR);
-			logger.log(e, Logger.ERROR);
+			System.err.println("SQL exception during the application initialization");
+			e.printStackTrace();
 
 		}
 
 		// DEBUG SECTION
 		if(Config.getEnv() == StdVar.DEVELOPMENT_ENV) {
 			
-			logger.log("Base path : " + basePath, Logger.INFO);
-			logger.log("\n" + Config.display(), Logger.INFO);
+			Logger.log("Base path : " + basePath, Logger.INFO);
+			Logger.log("\n" + Config.display(), Logger.INFO);
 			
 		}
 	}

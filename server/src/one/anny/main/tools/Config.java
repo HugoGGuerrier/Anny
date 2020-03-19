@@ -8,7 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- * This class contains all application's configuration attributes as version, environment, database, etc...
+ * This class contains all application's configuration attributes as version, environment, database, etc... This is a very important class for all the application
  * 
  * @author Emilie Siau
  * @author Hugo Guerrier
@@ -164,9 +164,6 @@ public class Config {
 	 * @param configReader The configuration file
 	 */
 	public static void init(Reader configReader) {
-		// Get the logger
-		Logger logger = Logger.getInstance();
-
 		// Parse the configuration file
 		JSONParser parser = new JSONParser();
 
@@ -232,13 +229,13 @@ public class Config {
 
 		} catch (ParseException e) {
 
-			logger.log("Error during configuration file parsing", Logger.ERROR);
-			logger.log(e, Logger.ERROR);
+			Logger.log("Error during configuration file parsing", Logger.ERROR);
+			Logger.log(e, Logger.ERROR);
 
 		} catch (IOException e) {
 
-			logger.log("Error during configuration file reading", Logger.ERROR);
-			logger.log(e, Logger.ERROR);
+			Logger.log("Error during configuration file reading", Logger.ERROR);
+			Logger.log(e, Logger.ERROR);
 
 		}
 	}

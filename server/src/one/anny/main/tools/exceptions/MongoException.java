@@ -1,7 +1,7 @@
 package one.anny.main.tools.exceptions;
 
 /**
- * A custom exception for mongo database error
+ * A custom exception for Mongo database error
  * 
  * @author Emilie Siau
  * @author Hugo Guerrier

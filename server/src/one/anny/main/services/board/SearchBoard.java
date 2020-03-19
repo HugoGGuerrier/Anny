@@ -6,34 +6,10 @@ import java.util.List;
 import org.json.simple.JSONArray;
 
 import one.anny.main.db.managers.BoardDatabaseManager;
+import one.anny.main.tools.Security;
 import one.anny.main.tools.models.BoardModel;
 
 public class SearchBoard {
-
-	// ----- Attributes -----
-
-
-	/** Board database manager */
-	BoardDatabaseManager boardDatabaseManager;
-	
-	/** The service unique instance (singleton) */
-	private static SearchBoard instance = null;
-
-
-	// ----- Constructors -----
-
-
-	private SearchBoard() {
-		this.boardDatabaseManager = BoardDatabaseManager.getInstance();
-	}
-
-	public static SearchBoard getInstance() {
-		if(SearchBoard.instance ==  null) {
-			SearchBoard.instance = new SearchBoard();
-		}
-		return SearchBoard.instance;
-	}
-
 
 	// ----- Class methods -----
 
@@ -46,9 +22,17 @@ public class SearchBoard {
 	 * @throws SQLException If there is an error in the MySQL database
 	 */
 	@SuppressWarnings("unchecked")
-	public JSONArray searchBoard(BoardModel board, boolean isLike) throws SQLException {
+	public static JSONArray searchBoard(BoardModel board, boolean isLike) throws SQLException {
+		// Escape the HTML special characters to make the research works
+		if(board.getBoardName() != null) {
+			board.setBoardName(Security.htmlEncode(board.getBoardName()));
+		}
+		if(board.getBoardDescription() != null) {
+			board.setBoardDescription(Security.htmlEncode(board.getBoardDescription()));
+		}
+		
 		// Get the board from the database
-		List<BoardModel> boards = this.boardDatabaseManager.getBoards(board, isLike);
+		List<BoardModel> boards = BoardDatabaseManager.getBoards(board, isLike);
 		
 		// Put the result in a JSON array
 		JSONArray res = new JSONArray();

@@ -94,8 +94,6 @@ public class DatabaseTests {
 
 	@Test
 	public void testUser() {
-		UserDatabaseManager userDatabaseManager = UserDatabaseManager.getInstance();
-
 		// Test insertion
 		UserModel exampleUser = new UserModel();
 		exampleUser.setUserId("@tester_1");
@@ -107,7 +105,7 @@ public class DatabaseTests {
 		exampleUser.setUserDate(new Date(new java.util.Date().getTime()));
 		exampleUser.setUserAdmin(true);
 		try {
-			userDatabaseManager.insertUser(exampleUser);
+			UserDatabaseManager.insertUser(exampleUser);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot insert a new user !");
@@ -116,7 +114,7 @@ public class DatabaseTests {
 		// Test updater
 		exampleUser.setUserName("TestName2");
 		try {
-			userDatabaseManager.updateUser(exampleUser);
+			UserDatabaseManager.updateUser(exampleUser);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot update user !");
@@ -126,7 +124,7 @@ public class DatabaseTests {
 		UserModel userFilter = new UserModel();
 		userFilter.setUserId("@tester_1");
 		try {
-			List<UserModel> users = userDatabaseManager.getUsers(userFilter, false);
+			List<UserModel> users = UserDatabaseManager.getUsers(userFilter, false);
 			assertEquals(1, users.size());
 			assertEquals("Test_pseudo", users.get(0).getUserPseudo());
 			assertEquals("TestName2", users.get(0).getUserName());
@@ -137,8 +135,8 @@ public class DatabaseTests {
 
 		// Test deleter
 		try {
-			userDatabaseManager.deleteUser(exampleUser);
-			List<UserModel> noUser = userDatabaseManager.getUsers(userFilter, false);
+			UserDatabaseManager.deleteUser(exampleUser);
+			List<UserModel> noUser = UserDatabaseManager.getUsers(userFilter, false);
 			assertEquals(0, noUser.size());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -148,9 +146,6 @@ public class DatabaseTests {
 
 	@Test
 	public void testFollow() {
-		FollowDatabaseManager followDatabaseManager = FollowDatabaseManager.getInstance();
-		UserDatabaseManager userDatabaseManager = UserDatabaseManager.getInstance();
-
 		// Insert test users
 		UserModel exampleUser1 = new UserModel();
 		exampleUser1.setUserId("@tester_2");
@@ -183,9 +178,9 @@ public class DatabaseTests {
 		exampleUser3.setUserAdmin(true);
 
 		try {
-			userDatabaseManager.insertUser(exampleUser1);
-			userDatabaseManager.insertUser(exampleUser2);
-			userDatabaseManager.insertUser(exampleUser3);
+			UserDatabaseManager.insertUser(exampleUser1);
+			UserDatabaseManager.insertUser(exampleUser2);
+			UserDatabaseManager.insertUser(exampleUser3);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot insert users for follow tests !");
@@ -207,9 +202,9 @@ public class DatabaseTests {
 		followModel3.setFollowingUserId(exampleUser1.getUserId());
 		followModel3.setFollowDate(new Date(new java.util.Date().getTime()));
 		try {
-			followDatabaseManager.insertFollow(followModel1);
-			followDatabaseManager.insertFollow(followModel2);
-			followDatabaseManager.insertFollow(followModel3);
+			FollowDatabaseManager.insertFollow(followModel1);
+			FollowDatabaseManager.insertFollow(followModel2);
+			FollowDatabaseManager.insertFollow(followModel3);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot insert follows in the database !");
@@ -219,7 +214,7 @@ public class DatabaseTests {
 		FollowModel filter = new FollowModel();
 		filter.setFollowedUserId(exampleUser1.getUserId());
 		try {
-			List<FollowModel> follows = followDatabaseManager.getFollows(filter, false);
+			List<FollowModel> follows = FollowDatabaseManager.getFollows(filter, false);
 			assertEquals(2, follows.size());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -228,8 +223,8 @@ public class DatabaseTests {
 
 		// Test deletion
 		try {
-			followDatabaseManager.deleteFollow(followModel1);
-			List<FollowModel> follows = followDatabaseManager.getFollows(filter, false);
+			FollowDatabaseManager.deleteFollow(followModel1);
+			List<FollowModel> follows = FollowDatabaseManager.getFollows(filter, false);
 			assertEquals(1, follows.size());
 			assertEquals("@tester_4", follows.get(0).getFollowingUserId());
 		} catch (SQLException e) {
@@ -240,9 +235,6 @@ public class DatabaseTests {
 
 	@Test
 	public void testBoard() {
-		BoardDatabaseManager boardDatabaseManager = BoardDatabaseManager.getInstance();
-		UserDatabaseManager userDatabaseManager = UserDatabaseManager.getInstance();
-
 		// Insert a new user to simulate board creation
 		UserModel exampleUser = new UserModel();
 		exampleUser.setUserId("@tester_5");
@@ -254,7 +246,7 @@ public class DatabaseTests {
 		exampleUser.setUserDate(new Date(new java.util.Date().getTime()));
 		exampleUser.setUserAdmin(true);
 		try {
-			userDatabaseManager.insertUser(exampleUser);
+			UserDatabaseManager.insertUser(exampleUser);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot insert a new user for board testing !");
@@ -268,7 +260,7 @@ public class DatabaseTests {
 		newBoard.addMessageId("1");
 		newBoard.addMessageId("3");
 		try {
-			boardDatabaseManager.insertBoard(newBoard);
+			BoardDatabaseManager.insertBoard(newBoard);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot insert a new board !");
@@ -277,7 +269,7 @@ public class DatabaseTests {
 		// Test updating
 		newBoard.setBoardDescription("LOL");
 		try {
-			boardDatabaseManager.updateBoard(newBoard);
+			BoardDatabaseManager.updateBoard(newBoard);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot update the board !");
@@ -288,7 +280,7 @@ public class DatabaseTests {
 		filter.setBoardName("test_board");
 		filter.setBoardCreatorId("@tester_5");
 		try {
-			List<BoardModel> res = boardDatabaseManager.getBoards(filter, false);
+			List<BoardModel> res = BoardDatabaseManager.getBoards(filter, false);
 			assertEquals(1, res.size());
 			assertEquals("LOL", res.get(0).getBoardDescription());
 			assertEquals(2, res.get(0).getBoardMessagesId().size());
@@ -299,8 +291,8 @@ public class DatabaseTests {
 
 		// Test the board deletion
 		try {
-			boardDatabaseManager.deleteBoard(newBoard);
-			List<BoardModel> noBoard = boardDatabaseManager.getBoards(filter, false);
+			BoardDatabaseManager.deleteBoard(newBoard);
+			List<BoardModel> noBoard = BoardDatabaseManager.getBoards(filter, false);
 			assertEquals(0, noBoard.size());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -310,9 +302,6 @@ public class DatabaseTests {
 
 	@Test
 	public void testMessage() {
-		BoardDatabaseManager boardDatabaseManager = BoardDatabaseManager.getInstance();
-		UserDatabaseManager userDatabaseManager = UserDatabaseManager.getInstance();
-
 		// Insert a new user to simulate board creation
 		UserModel exampleUser = new UserModel();
 		exampleUser.setUserId("@tester_6");
@@ -324,7 +313,7 @@ public class DatabaseTests {
 		exampleUser.setUserDate(new Date(new java.util.Date().getTime()));
 		exampleUser.setUserAdmin(true);
 		try {
-			userDatabaseManager.insertUser(exampleUser);
+			UserDatabaseManager.insertUser(exampleUser);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot insert a new user for board testing !");
@@ -336,13 +325,11 @@ public class DatabaseTests {
 		newBoard.setBoardCreatorId("@tester_6");
 		newBoard.setBoardDescription("This is the test board of the test user");
 		try {
-			boardDatabaseManager.insertBoard(newBoard);
+			BoardDatabaseManager.insertBoard(newBoard);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot insert a new board !");
 		}
-
-		MessageDatabaseManager messageDatabaseManager = MessageDatabaseManager.getInstance();
 
 		// Test message insertion
 		MessageModel message = new MessageModel();
@@ -352,9 +339,9 @@ public class DatabaseTests {
 		message.setMessagePosterId("@tester");
 		message.setMessageText("This is a test message");
 		try {
-			assertEquals("1", messageDatabaseManager.getNextRootMessageId());
-			messageDatabaseManager.insertMessage(message);
-			assertEquals("2", messageDatabaseManager.getNextRootMessageId());
+			assertEquals("1", MessageDatabaseManager.getNextRootMessageId());
+			MessageDatabaseManager.insertMessage(message);
+			assertEquals("2", MessageDatabaseManager.getNextRootMessageId());
 		} catch (MongoException e) {
 			e.printStackTrace();
 			fail("Cannot insert a new message !");
@@ -371,7 +358,7 @@ public class DatabaseTests {
 		answer.setMessagePosterId("@tester");
 		answer.setMessageText("This is a test answer");
 		try {
-			messageDatabaseManager.insertMessage(answer);
+			MessageDatabaseManager.insertMessage(answer);
 		} catch (MongoException e) {
 			e.printStackTrace();
 			fail("Cannot insert an answer !");
@@ -383,7 +370,7 @@ public class DatabaseTests {
 		// Test updating
 		answer.setMessageText("LOL");
 		try {
-			messageDatabaseManager.updateMessage(answer);
+			MessageDatabaseManager.updateMessage(answer);
 		} catch (MongoException e) {
 			e.printStackTrace();
 			fail("Cannot update a message");
@@ -392,7 +379,7 @@ public class DatabaseTests {
 		// Test getting
 		MessageModel filter = new MessageModel();
 		filter.setMessageId("1.");
-		List<MessageModel> messages = messageDatabaseManager.getMessage(filter, true);
+		List<MessageModel> messages = MessageDatabaseManager.getMessage(filter, true);
 		assertEquals("1.1", messages.get(0).getMessageId());
 		assertEquals("LOL", messages.get(0).getMessageText());
 		
@@ -408,16 +395,16 @@ public class DatabaseTests {
 		message.addAnwserId("1.1");
 		answer.addAnwserId("1.1.1");
 		try {
-			messageDatabaseManager.insertMessage(answerAnswer);
-			assertEquals(3, messageDatabaseManager.getMessage(new MessageModel(), false).size());
+			MessageDatabaseManager.insertMessage(answerAnswer);
+			assertEquals(3, MessageDatabaseManager.getMessage(new MessageModel(), false).size());
 			
-			BoardModel board = boardDatabaseManager.getBoards(newBoard, false).get(0);
+			BoardModel board = BoardDatabaseManager.getBoards(newBoard, false).get(0);
 			assertEquals(1, board.getBoardMessagesId().size());
 
-			messageDatabaseManager.deleteMessage(message);
-			assertEquals(0, messageDatabaseManager.getMessage(new MessageModel(), false).size());
+			MessageDatabaseManager.deleteMessage(message);
+			assertEquals(0, MessageDatabaseManager.getMessage(new MessageModel(), false).size());
 
-			board = boardDatabaseManager.getBoards(newBoard, false).get(0);
+			board = BoardDatabaseManager.getBoards(newBoard, false).get(0);
 			assertEquals(0, board.getBoardMessagesId().size());
 		} catch (MongoException e) {
 			e.printStackTrace();

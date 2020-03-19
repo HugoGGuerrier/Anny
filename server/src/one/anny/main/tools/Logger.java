@@ -28,52 +28,32 @@ public class Logger {
 	public static final int INFO =  2;
 	
 	/** Error log file */
-	private File errorFile;
+	private static File errorFile;
 	
 	/** Warning log file */
-	private File warningFile;
+	private static File warningFile;
 	
 	/** Info log file */
-	private File infoFile;
-	
-	/** Unique logger instance (singleton) */
-	private static Logger instance = null;
+	private static File infoFile;
 	
 	
-	// ----- Constructors -----
+	// ----- Initializer -----
 	
 	
 	/**
-	 * Create the unique logger instance and create the log file if it doesn't exists
+	 * Initialize the logger at the start of the server
 	 */
-	private Logger() {
-		this.errorFile = Paths.get(Config.getBasePath() + StdVar.ERROR_LOG_FILE).toFile();
-		this.warningFile = Paths.get(Config.getBasePath() + StdVar.WARNING_LOG_FILE).toFile();
-		this.infoFile = Paths.get(Config.getBasePath() + StdVar.INFO_LOG_FILE).toFile();
+	public static void init() throws IOException {
+		// Get the log files
+		Logger.errorFile = Paths.get(Config.getBasePath() + StdVar.ERROR_LOG_FILE).toFile();
+		Logger.warningFile = Paths.get(Config.getBasePath() + StdVar.WARNING_LOG_FILE).toFile();
+		Logger.infoFile = Paths.get(Config.getBasePath() + StdVar.INFO_LOG_FILE).toFile();
 		
-		try {
+		// If log files were not in the directory create them
+		Logger.errorFile.createNewFile();
+		Logger.warningFile.createNewFile();
+		Logger.infoFile.createNewFile();
 			
-			this.errorFile.createNewFile();
-			this.warningFile.createNewFile();
-			this.infoFile.createNewFile();
-			
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-			
-		}
-	}
-	
-	/**
-	 * Get the logger unique instance
-	 * 
-	 * @return
-	 */
-	public static Logger getInstance() {
-		if(Logger.instance == null) {
-			Logger.instance = new Logger();
-		}
-		return Logger.instance;
 	}
 	
 	
@@ -86,7 +66,7 @@ public class Logger {
 	 * @param message The string to write
 	 * @param level The level of the log
 	 */
-	public synchronized void log(String message, int level) {
+	public static synchronized void log(String message, int level) {
 		// Create the needed variables
 		FileWriter writer = null;
 		SimpleDateFormat formater = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -99,17 +79,17 @@ public class Logger {
 			switch (level) {
 			
 			case Logger.ERROR:
-				writer = new FileWriter(this.errorFile, true);
+				writer = new FileWriter(Logger.errorFile, true);
 				toWrite.append("[ERROR - ");
 				break;
 
 			case Logger.WARNING:
-				writer = new FileWriter(this.warningFile, true);
+				writer = new FileWriter(Logger.warningFile, true);
 				toWrite.append("[WARNING - ");
 				break;
 				
 			case Logger.INFO:
-				writer = new FileWriter(this.infoFile, true);
+				writer = new FileWriter(Logger.infoFile, true);
 				toWrite.append("[INFO - ");
 				break;
 				
@@ -144,8 +124,8 @@ public class Logger {
 	 * @param message The integer to write
 	 * @param level The log level
 	 */
-	public void log(int message, int level) {
-		this.log(String.valueOf(message), level);
+	public static void log(int message, int level) {
+		Logger.log(String.valueOf(message), level);
 	}
 	
 	/**
@@ -154,8 +134,8 @@ public class Logger {
 	 * @param message The long to write
 	 * @param level The log level
 	 */
-	public void log(long message, int level) {
-		this.log(String.valueOf(message), level);
+	public static void log(long message, int level) {
+		Logger.log(String.valueOf(message), level);
 	}
 	
 	/**
@@ -164,8 +144,8 @@ public class Logger {
 	 * @param message The float to write in the log file
 	 * @param level The log level
 	 */
-	public void log(float message, int level) {
-		this.log(String.valueOf(message), level);
+	public static void log(float message, int level) {
+		Logger.log(String.valueOf(message), level);
 	}
 	
 	/**
@@ -174,8 +154,8 @@ public class Logger {
 	 * @param message The double to write in the log file
 	 * @param level The log level
 	 */
-	public void log(double message, int level) {
-		this.log(String.valueOf(message), level);
+	public static void log(double message, int level) {
+		Logger.log(String.valueOf(message), level);
 	}
 	
 	/**
@@ -184,8 +164,8 @@ public class Logger {
 	 * @param message The boolean to write in the log file
 	 * @param level The log level
 	 */
-	public void log(boolean message, int level) {
-		this.log(String.valueOf(message), level);
+	public static void log(boolean message, int level) {
+		Logger.log(String.valueOf(message), level);
 	}
 	
 	/**
@@ -194,7 +174,7 @@ public class Logger {
 	 * @param e The Exception to write in the log file
 	 * @param level The log level
 	 */
-	public void log(Exception e, int level) {
+	public static void log(Exception e, int level) {
 		// Create the result string builder
         StringBuilder message = new StringBuilder();
 
@@ -220,7 +200,7 @@ public class Logger {
         }
 
         // Log the error
-        this.log(message.toString(), level);
+        Logger.log(message.toString(), level);
 	}
 
 }

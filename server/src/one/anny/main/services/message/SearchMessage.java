@@ -5,44 +5,12 @@ import java.util.List;
 import org.json.simple.JSONArray;
 
 import one.anny.main.db.managers.MessageDatabaseManager;
+import one.anny.main.tools.Security;
 import one.anny.main.tools.exceptions.MongoException;
 import one.anny.main.tools.models.MessageModel;
 
 public class SearchMessage {
-
-	// ----- Attributes -----
-
-
-	/** Database manager */
-	private MessageDatabaseManager messageDatabaseManager;
 	
-	/** The unique instance of this service (singleton) */
-	private static SearchMessage instance = null;
-
-
-	// ----- Constructors -----
-
-
-	/**
-	 * Construct a new search message service
-	 */
-	private SearchMessage() {
-		this.messageDatabaseManager = MessageDatabaseManager.getInstance();
-	}
-
-	/**
-	 * Get the unique service instance
-	 * 
-	 * @return The instance
-	 */
-	public static SearchMessage getInstance() {
-		if(SearchMessage.instance ==  null) {
-			SearchMessage.instance = new SearchMessage();
-		}
-		return SearchMessage.instance;
-	}
-
-
 	// ----- Class methods -----
 
 
@@ -54,9 +22,17 @@ public class SearchMessage {
 	 * @throws MongoException 
 	 */
 	@SuppressWarnings("unchecked")
-	public JSONArray searchMessage(MessageModel message, boolean isRegex) {
+	public static JSONArray searchMessage(MessageModel message, boolean isRegex) {
+		// Escape the HTML special characters to make research works
+		if(message.getMessageText() != null) {
+			message.setMessageText(Security.htmlEncode(message.getMessageText()));
+		}
+		if(message.getMessageBoardName() != null) {
+			message.setMessageBoardName(Security.htmlEncode(message.getMessageBoardName()));
+		}
+		
 		// Call the database manager to get the messages
-		List<MessageModel> messages = this.messageDatabaseManager.getMessage(message, isRegex);
+		List<MessageModel> messages = MessageDatabaseManager.getMessage(message, isRegex);
 		
 		// Place the result in a JSON array
 		JSONArray res = new JSONArray();

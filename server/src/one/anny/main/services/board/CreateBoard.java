@@ -9,43 +9,6 @@ import one.anny.main.tools.models.BoardModel;
 
 public class CreateBoard {
 
-	// ----- Attributes -----
-
-
-	/**	The user database manager unique instance */
-	private BoardDatabaseManager boardDatabaseManager;
-
-	/** Security tool */
-	private Security security;
-
-	/** The service unique instance (singleton) */
-	private static CreateBoard instance = null;
-
-
-	// ----- Constructors -----
-
-
-	/**
-	 * Construct a new service
-	 */
-	private CreateBoard() {
-		this.boardDatabaseManager = BoardDatabaseManager.getInstance();
-		this.security = Security.getInstance();
-	}
-
-	/**
-	 * Get the service unique instance
-	 * 
-	 * @return The instance
-	 */
-	public static CreateBoard getInstance() {
-		if(CreateBoard.instance ==  null) {
-			CreateBoard.instance = new CreateBoard();
-		}
-		return CreateBoard.instance;
-	}
-
-
 	// ----- Class methods -----
 
 
@@ -56,20 +19,20 @@ public class CreateBoard {
 	 * @throws BoardException If there were an error during the service
 	 * @throws SQLException If there is an error in the MySQL database
 	 */
-	public void createBoard(BoardModel board) throws BoardException, SQLException {
+	public static void createBoard(BoardModel board) throws BoardException, SQLException {
 		// Verify the board parameters
 		boolean valid = true;
 		StringBuilder message = new StringBuilder();
 
-		if(board.getBoardName() == null || !this.security.isValidBoardName(board.getBoardName())) {
+		if(board.getBoardName() == null || !Security.isValidBoardName(board.getBoardName())) {
 			valid = false; 
 			message.append(" - Invalid board name : " + board.getBoardName());
 		}
-		if(board.getBoardCreatorId() == null || !this.security.isValidUserId(board.getBoardCreatorId())) {
+		if(board.getBoardCreatorId() == null || !Security.isValidUserId(board.getBoardCreatorId())) {
 			valid = false;
 			message.append(" - Invalid board creator id : " + board.getBoardCreatorId());
 		}
-		if(board.getBoardDescription() == null || !this.security.isStringNotEmpty(board.getBoardDescription())) {
+		if(board.getBoardDescription() == null || !Security.isStringNotEmpty(board.getBoardDescription())) {
 			valid = false;
 			message.append(" - Invalid board description : " + board.getBoardDescription());
 		}
@@ -82,11 +45,11 @@ public class CreateBoard {
 		} else {
 
 			// Escape the HTML special characters
-			board.setBoardName(this.security.htmlEncode(board.getBoardName()));
-			board.setBoardDescription(this.security.htmlEncode(board.getBoardDescription()));
+			board.setBoardName(Security.htmlEncode(board.getBoardName()));
+			board.setBoardDescription(Security.htmlEncode(board.getBoardDescription()));
 
 			// Call the board database manager to insert a new board
-			this.boardDatabaseManager.insertBoard(board);
+			BoardDatabaseManager.insertBoard(board);
 
 		}
 	}

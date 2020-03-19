@@ -1,7 +1,7 @@
 package one.anny.main.tools.exceptions;
 
 /**
- * This exception is for session exception.
+ * Custom exception to handle session problem
  * 
  * @author Emilie Siau
  * @author Hugo Guerrier

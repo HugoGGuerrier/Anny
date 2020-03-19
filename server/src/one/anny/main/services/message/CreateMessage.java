@@ -11,43 +11,6 @@ import one.anny.main.tools.models.MessageModel;
 
 public class CreateMessage {
 
-	// ----- Attributes -----
-
-	
-	/** The message manager */
-	private MessageDatabaseManager messageDatabaseManager;
-	
-	/** The security tool */
-	private Security security;
-
-	/** The CreateMessage unique instance (singleton) */
-	private static CreateMessage instance = null;
-
-
-	// ----- Constructors -----
-
-
-	/**
-	 * Create the unique create message instance
-	 */
-	private CreateMessage() {
-		this.messageDatabaseManager = MessageDatabaseManager.getInstance();
-		this.security = Security.getInstance();
-	}
-
-	/**
-	 * Get the unique instance
-	 * 
-	 * @return The instance
-	 */
-	public static CreateMessage getInstance() {
-		if(CreateMessage.instance ==  null) {
-			CreateMessage.instance = new CreateMessage();
-		}
-		return CreateMessage.instance;
-	}
-
-
 	// ----- Class methods -----
 
 
@@ -58,20 +21,20 @@ public class CreateMessage {
 	 * @throws MessageException If the message already exists or if there is an database exception
 	 * @throws MongoException If the message cannot be inserted in the database
 	 */
-	public synchronized void createMessage(MessageModel message, String parentMessageId) throws MessageException, MongoException, SQLException {
+	public static synchronized void createMessage(MessageModel message, String parentMessageId) throws MessageException, MongoException, SQLException {
 		// Verify the message parameters
 		boolean valid = true;
 		StringBuilder errorMessage = new StringBuilder();
 		
-		if(message.getMessageText() == null || !this.security.isStringNotEmpty(message.getMessageText())) {
+		if(message.getMessageText() == null || !Security.isStringNotEmpty(message.getMessageText())) {
 			valid = false;
 			errorMessage.append(" - Invalid message text : " + message.getMessageText());
 		}
-		if(message.getMessageBoardName() == null || !this.security.isValidBoardName(message.getMessageBoardName())) {
+		if(message.getMessageBoardName() == null || !Security.isValidBoardName(message.getMessageBoardName())) {
 			valid = false;
 			errorMessage.append(" - Invalid message board name : " + message.getMessageBoardName());
 		}
-		if(message.getMessagePosterId() == null || !this.security.isValidUserId(message.getMessagePosterId())) {
+		if(message.getMessagePosterId() == null || !Security.isValidUserId(message.getMessagePosterId())) {
 			valid = false;
 			errorMessage.append(" - Invalid message poster id : " + message.getMessagePosterId());
 		}
@@ -88,8 +51,8 @@ public class CreateMessage {
 		} else {
 			
 			// Escape the HTML special characters
-			message.setMessageText(this.security.htmlEncode(message.getMessageText()));
-			message.setMessageBoardName(this.security.htmlEncode(message.getMessageBoardName()));
+			message.setMessageText(Security.htmlEncode(message.getMessageText()));
+			message.setMessageBoardName(Security.htmlEncode(message.getMessageBoardName()));
 			
 			// Get message ID dynamically
 			if(parentMessageId != null && !parentMessageId.equals("")) {
@@ -97,7 +60,7 @@ public class CreateMessage {
 				// Get the message parent
 				MessageModel parentFilter = new MessageModel();
 				parentFilter.setMessageId(parentMessageId);				
-				List<MessageModel> parents = this.messageDatabaseManager.getMessage(parentFilter, false);
+				List<MessageModel> parents = MessageDatabaseManager.getMessage(parentFilter, false);
 				if(parents.size() == 1) {
 					
 					MessageModel parent = parents.get(0);
@@ -112,12 +75,12 @@ public class CreateMessage {
 			} else {
 				
 				// Get the next root message ID
-				message.setMessageId(messageDatabaseManager.getNextRootMessageId());
+				message.setMessageId(MessageDatabaseManager.getNextRootMessageId());
 				
 			}
 			
 			// Insert the new message
-			this.messageDatabaseManager.insertMessage(message);
+			MessageDatabaseManager.insertMessage(message);
 			
 		}
 	}

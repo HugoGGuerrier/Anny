@@ -86,9 +86,8 @@ public class Database {
 			} catch (ClassNotFoundException e) {
 				
 				// Log the database error
-				Logger logger = Logger.getInstance();
-				logger.log("JDBC mysql driver is missing", Logger.ERROR);
-				logger.log(e, Logger.ERROR);
+				Logger.log("JDBC mysql driver is missing", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
 				
 				// Throw an error to avoid null pointer
 				throw new SQLException("Cannot get a mysql connection");

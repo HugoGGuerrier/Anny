@@ -9,35 +9,6 @@ import one.anny.main.tools.models.BoardModel;
 
 public class ModifyBoard {
 
-	// ----- Attributes -----
-
-
-	/** Database manager */
-	private BoardDatabaseManager boardDatabaseManager;
-	
-	/** Security tool */
-	private Security security;
-	
-	/** Unique service instance */
-	private static ModifyBoard instance = null;
-
-
-	// ----- Constructors -----
-
-
-	private ModifyBoard() {
-		this.boardDatabaseManager = BoardDatabaseManager.getInstance();
-		this.security = Security.getInstance();
-	}
-
-	public static ModifyBoard getInstance() {
-		if(ModifyBoard.instance ==  null) {
-			ModifyBoard.instance = new ModifyBoard();
-		}
-		return ModifyBoard.instance;
-	}
-
-
 	// ----- Class methods -----
 
 
@@ -48,20 +19,20 @@ public class ModifyBoard {
 	 * @throws BoardException If there were an error during the service
 	 * @throws SQLException If there is an error in the Mysql database
 	 */
-	public void modifyBoard(BoardModel board) throws BoardException, SQLException {
+	public static void modifyBoard(BoardModel board) throws BoardException, SQLException {
 		// Verify the board parameters
 		boolean valid = true;
 		StringBuilder message = new StringBuilder();
 		
-		if(board.getBoardName() == null || !this.security.isValidBoardName(board.getBoardName())) {
+		if(board.getBoardName() == null || !Security.isValidBoardName(board.getBoardName())) {
 			valid = false;
 			message.append(" - Invalid board name : " + board.getBoardName());
 		}
-		if(board.getBoardDescription() == null || !this.security.isStringNotEmpty(board.getBoardDescription())) {
+		if(board.getBoardDescription() == null || !Security.isStringNotEmpty(board.getBoardDescription())) {
 			valid = false;
 			message.append(" - Invalid board description : " + board.getBoardName());
 		}
-		if(board.getBoardCreatorId() == null || !this.security.isValidUserId(board.getBoardCreatorId())) {
+		if(board.getBoardCreatorId() == null || !Security.isValidUserId(board.getBoardCreatorId())) {
 			valid = false;
 			message.append(" - Invalid board creator id : " + board.getBoardCreatorId());
 		}
@@ -74,11 +45,11 @@ public class ModifyBoard {
 		} else {
 
 			// Escape the HTML special characters
-			board.setBoardName(this.security.htmlEncode(board.getBoardName()));
-			board.setBoardDescription(this.security.htmlEncode(board.getBoardDescription()));
+			board.setBoardName(Security.htmlEncode(board.getBoardName()));
+			board.setBoardDescription(Security.htmlEncode(board.getBoardDescription()));
 			
 			// Modify the board
-			this.boardDatabaseManager.updateBoard(board);
+			BoardDatabaseManager.updateBoard(board);
 
 		}
 	}

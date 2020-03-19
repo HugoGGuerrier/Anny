@@ -35,23 +35,11 @@ public class Login extends HttpServlet {
 	// ----- Attributes -----
 
 
-	/** Logger */
-	private Logger logger;
-
-	/** The handler */
-	private Handler handler;
-
-	/** Security tool */
-	private Security security;
+	/** Serial version number */
+	private static final long serialVersionUID = -8116808647814082234L;
 
 	/** The session pool */
 	private SessionPool sessionPool;
-
-	/** The search user */
-	private UserDatabaseManager userDatabaseManager;
-
-	/** Serial version number */
-	private static final long serialVersionUID = -8116808647814082234L;
 
 
 	// ----- Constructors -----
@@ -59,13 +47,7 @@ public class Login extends HttpServlet {
 
 	public Login() {
 		super();
-
-		// Get instances
-		this.logger = Logger.getInstance();
-		this.handler = Handler.getInstance();
-		this.security = Security.getInstance();
 		this.sessionPool = SessionPool.getInstance();
-		this.userDatabaseManager = UserDatabaseManager.getInstance();
 	}
 
 
@@ -78,7 +60,7 @@ public class Login extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Try to get the session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, false);
@@ -91,7 +73,7 @@ public class Login extends HttpServlet {
 			String userPassword = req.getParameter("userPassword");
 
 			// Hash the password to avoid memory leak
-			userPassword = this.security.hashString(userPassword);
+			userPassword = Security.hashString(userPassword);
 
 			// Prepare the user filter
 			UserModel userFilter = new UserModel();
@@ -100,7 +82,7 @@ public class Login extends HttpServlet {
 
 			try {
 
-				List<UserModel> users = this.userDatabaseManager.getUsers(userFilter, false);
+				List<UserModel> users = UserDatabaseManager.getUsers(userFilter, false);
 
 				if(users.size() == 1) {
 
@@ -124,22 +106,22 @@ public class Login extends HttpServlet {
 
 				} else {
 
-					this.logger.log("Error during user identification", Logger.WARNING);
-					res = this.handler.handleException(new UserException("Invalid user id or password"), Handler.WEB_ERROR);
+					Logger.log("Error during user identification", Logger.WARNING);
+					res = Handler.handleException(new UserException("Invalid user id or password"), Handler.WEB_ERROR);
 
 				}
 
 			} catch (SQLException e) {
 
-				this.logger.log("Error during the user getting", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.SQL_ERROR);
+				Logger.log("Error during the user getting", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.SQL_ERROR);
 
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("Session already exists"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("Session already exists"), Handler.WEB_ERROR);
 
 		}
 
@@ -155,7 +137,7 @@ public class Login extends HttpServlet {
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 		
 		// Get the session ID
 		String sessionId = this.sessionPool.getSessionIdFromRequest(req);
@@ -167,7 +149,7 @@ public class Login extends HttpServlet {
 			
 		} else {
 			
-			res = this.handler.handleException(new SessionException("Session does not exists"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("Session does not exists"), Handler.WEB_ERROR);
 			
 		}
 

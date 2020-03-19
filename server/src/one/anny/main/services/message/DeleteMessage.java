@@ -16,43 +16,6 @@ import one.anny.main.tools.models.MessageModel;
  */
 public class DeleteMessage {
 
-	// ----- Attributes -----
-
-
-	/** Database manager */
-	private MessageDatabaseManager messageDatabaseManager;
-	
-	/** Security tool */
-	private Security security;
-	
-	/** The DeleteMessage unique instance (singleton) */
-	private static DeleteMessage instance = null;
-
-
-	// ----- Constructors -----
-
-
-	/**
-	 * Create the DeleteMessage unique instance
-	 */
-	private DeleteMessage() {
-		this.messageDatabaseManager = MessageDatabaseManager.getInstance();
-		this.security = Security.getInstance();
-	}
-
-	/**
-	 * Get the DeleteMessage unique instance
-	 * 
-	 * @return The instance
-	 */
-	public static DeleteMessage getInstance() {
-		if(DeleteMessage.instance ==  null) {
-			DeleteMessage.instance = new DeleteMessage();
-		}
-		return DeleteMessage.instance;
-	}
-
-
 	// ----- Class methods -----
 
 
@@ -62,16 +25,16 @@ public class DeleteMessage {
 	 * @param message The message model to delete
 	 * @throws MessageException If the message can't be deleted
 	 */
-	public void deleteMessage(MessageModel message) throws MessageException, MongoException, SQLException {
+	public static void deleteMessage(MessageModel message) throws MessageException, MongoException, SQLException {
 		// Verify the message
 		boolean valid = true;
 		StringBuilder errorMessage = new StringBuilder();
 		
-		if(message.getMessageId() == null || !this.security.isValidMessageId(message.getMessageId())) {
+		if(message.getMessageId() == null || !Security.isValidMessageId(message.getMessageId())) {
 			valid = false;
 			errorMessage.append(" - Invalid message id : " + message.getMessageId());
 		}
-		if(message.getMessagePosterId() == null && !this.security.isValidUserId(message.getMessagePosterId())) {
+		if(message.getMessagePosterId() == null && !Security.isValidUserId(message.getMessagePosterId())) {
 			valid = false;
 			errorMessage.append(" - Invalid messsage poster id : " + message.getMessageId());
 		}
@@ -84,7 +47,7 @@ public class DeleteMessage {
 		} else {
 			
 			// Delete the message from the database
-			this.messageDatabaseManager.deleteMessage(message);
+			MessageDatabaseManager.deleteMessage(message);
 			
 		}
 	}

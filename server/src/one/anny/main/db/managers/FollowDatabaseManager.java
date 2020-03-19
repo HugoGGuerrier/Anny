@@ -13,36 +13,6 @@ import one.anny.main.tools.models.FollowModel;
 
 public class FollowDatabaseManager {
 
-	// ----- Attributes -----
-
-
-	/** Unique instance of the manager (singleton) */
-	private static FollowDatabaseManager instance = null;
-
-
-	// ----- Constructors ----- 
-
-
-	/**
-	 * Construct an instance of follows database manager
-	 */
-	private FollowDatabaseManager() {
-		// Do nothing for now
-	}
-
-	/**
-	 * Get the unique instance of the follows database manager
-	 * 
-	 * @return The unique instance of the manager
-	 */
-	public static FollowDatabaseManager getInstance() {
-		if(FollowDatabaseManager.instance == null) {
-			FollowDatabaseManager.instance = new FollowDatabaseManager();
-		}
-		return FollowDatabaseManager.instance;
-	}
-
-
 	// ----- Class Methods -----
 
 
@@ -52,7 +22,7 @@ public class FollowDatabaseManager {
 	 * @param followModel The follow you want to insert
 	 * @throws SQLException If there is an error during the insertion
 	 */
-	public void insertFollow(FollowModel followModel) throws SQLException {
+	public static void insertFollow(FollowModel followModel) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
@@ -77,7 +47,7 @@ public class FollowDatabaseManager {
 	 * @param followModel The follow you want to delete
 	 * @throws SQLException If there is an error during the deletion
 	 */
-	public void deleteFollow(FollowModel followModel) throws SQLException {
+	public static void deleteFollow(FollowModel followModel) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
@@ -103,7 +73,7 @@ public class FollowDatabaseManager {
 	 * @return The list of follow
 	 * @throws SQLException If there is an error during the follows fetching
 	 */
-	public List<FollowModel> getFollows(FollowModel model, boolean isLike) throws SQLException {
+	public static List<FollowModel> getFollows(FollowModel model, boolean isLike) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 

@@ -34,8 +34,6 @@ public class SessionPool {
 
 	/**
 	 * Construct a new SessionPool with the wanted max sessions
-	 * 
-	 * @param maxSessions
 	 */
 	private SessionPool() {
 		this.manager = new CacheManager();
@@ -124,7 +122,7 @@ public class SessionPool {
 	}
 
 	/**
-	 * Put a session in the sessio cache
+	 * Put a session in the session cache
 	 * 
 	 * @param session The session to update
 	 */
@@ -133,10 +131,10 @@ public class SessionPool {
 	}
 
 	/**
-	 * Put a new sessio in the cache and in the response
+	 * Put a new session in the cache and in the response
 	 * 
-	 * @param session The session tu put
-	 * @param resp The response to put the sesison in
+	 * @param session The session to put
+	 * @param resp The HTTP response to put the session in
 	 */
 	public void putSession(SessionModel session, HttpServletResponse resp) {
 		this.putSession(session);
@@ -158,8 +156,8 @@ public class SessionPool {
 	/**
 	 * Remove a session from the cache and from the client
 	 * 
-	 * @param sessionId The session ID
-	 * @param resp The response to the client
+	 * @param sessionId The session I
+	 * @param resp The HTTP response to remove it from the client cache
 	 */
 	public void removeSession(String sessionId, HttpServletResponse resp) {
 		this.removeSession(sessionId);
@@ -199,7 +197,7 @@ public class SessionPool {
 	/**
 	 * Get the session ID from the HTTP request
 	 * 
-	 * @param req The request
+	 * @param req The HTTP request
 	 * @return The session ID or null if it does not exists
 	 */
 	public String getSessionIdFromRequest(HttpServletRequest req) {

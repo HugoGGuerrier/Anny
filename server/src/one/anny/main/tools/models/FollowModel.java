@@ -5,7 +5,7 @@ import java.sql.Date;
 import org.json.simple.JSONObject;
 
 /**
- * Class that represents a follow on the application
+ * Wrapper class that represents a follow on the application
  * 
  * @author Emilie Siau
  * @author Hugo Guerrier

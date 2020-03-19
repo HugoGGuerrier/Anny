@@ -22,9 +22,6 @@ public class Migrator {
 	/** The current database version stored in the table DB_VERSION */
 	private int currentDatabaseVersion;
 
-	/** The logger */
-	private Logger logger;
-
 	/** Unique migrator instance (singleton) */
 	private static Migrator instance = null;
 
@@ -83,9 +80,6 @@ public class Migrator {
 	 * @throws SQLException If the class cannot open MySQL connection
 	 */
 	private Migrator() throws SQLException {
-		// Get the application logger
-		this.logger = Logger.getInstance();
-
 		// Get the database connection
 		Connection connection = Database.getMySQLConnection();
 		Statement stmt = connection.createStatement();
@@ -107,7 +101,7 @@ public class Migrator {
 			stmt.executeUpdate("CREATE TABLE DB_INFO(name VARCHAR(16) NOT NULL PRIMARY KEY, version INT NOT NULL)");
 			stmt.executeUpdate("INSERT INTO DB_INFO (name, version) VALUES('" + Config.getMysqlDatabase() + "', 0)");
 			
-			this.logger.log("Database info intialized", Logger.INFO);
+			Logger.log("Database info intialized", Logger.INFO);
 
 		}
 	}

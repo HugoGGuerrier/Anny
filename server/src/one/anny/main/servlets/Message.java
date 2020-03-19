@@ -43,27 +43,9 @@ public class Message extends HttpServlet {
 
 	/** The serial version number */
 	private static final long serialVersionUID = -3129064805234167755L;
-
-	/** The logger */
-	private Logger logger;
-
-	/** The handler */
-	private Handler handler;
-
+	
 	/** Session pool */
 	private SessionPool sessionPool;
-
-	/** Message creation service */
-	private CreateMessage createMessage;
-
-	/** Message deletion service */
-	private DeleteMessage deleteMessage;
-
-	/** Message modifying service */
-	private ModifyMessage modifyMessage;
-
-	/** Message searching service */
-	private SearchMessage searchMessage;
 
 
 	// ----- Constructors -----
@@ -71,15 +53,7 @@ public class Message extends HttpServlet {
 
 	public Message() {
 		super();
-
-		// Get instances
-		this.logger = Logger.getInstance();
-		this.handler = Handler.getInstance();
 		this.sessionPool = SessionPool.getInstance();
-		this.createMessage = CreateMessage.getInstance();
-		this.deleteMessage = DeleteMessage.getInstance();
-		this.modifyMessage = ModifyMessage.getInstance();
-		this.searchMessage = SearchMessage.getInstance();
 	}
 
 
@@ -107,7 +81,7 @@ public class Message extends HttpServlet {
 			filter.setMessageId(id);
 
 			// Get the message list
-			JSONArray messages = this.searchMessage.searchMessage(filter, false);
+			JSONArray messages = SearchMessage.searchMessage(filter, false);
 			res.put("result", messages);
 
 		} else {
@@ -133,7 +107,7 @@ public class Message extends HttpServlet {
 			}
 
 			// Try to get the messages from the database
-			JSONArray messages = this.searchMessage.searchMessage(filter, isLike);
+			JSONArray messages = SearchMessage.searchMessage(filter, isLike);
 			res.put("result", messages);
 
 		}
@@ -150,7 +124,7 @@ public class Message extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Get the current session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
@@ -174,37 +148,37 @@ public class Message extends HttpServlet {
 				newMessage.setMessageDate(date);
 
 				// Create the new message
-				this.createMessage.createMessage(newMessage, parentId);
+				CreateMessage.createMessage(newMessage, parentId);
 
 			} catch (MessageException e) {
 
-				this.logger.log("Message data error during the message insertion", Logger.WARNING);
-				this.logger.log(e, Logger.WARNING);
-				res = this.handler.handleException(e, Handler.WEB_ERROR);
+				Logger.log("Message data error during the message insertion", Logger.WARNING);
+				Logger.log(e, Logger.WARNING);
+				res = Handler.handleException(e, Handler.WEB_ERROR);
 
 			} catch (MongoException e) {
 
-				this.logger.log("MongoDB error during the message insertion", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.MONGO_ERROR);
+				Logger.log("MongoDB error during the message insertion", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.MONGO_ERROR);
 
 			} catch (SQLException e) {
 
-				this.logger.log("SQL error during the message insertion", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.SQL_ERROR);
+				Logger.log("SQL error during the message insertion", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.SQL_ERROR);
 
 			} catch (NullPointerException e) {
 
-				this.logger.log("Java error during the message insertion", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.JAVA_ERROR);
+				Logger.log("Java error during the message insertion", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.JAVA_ERROR);
 
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
 
 		}
 
@@ -219,7 +193,7 @@ public class Message extends HttpServlet {
 	 */
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Get the current session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
@@ -239,31 +213,31 @@ public class Message extends HttpServlet {
 				message.setMessageText(text);
 				message.setMessagePosterId(posterId);
 
-				this.modifyMessage.modifyMessage(message);
+				ModifyMessage.modifyMessage(message);
 
 			} catch (MessageException e) {
 
-				this.logger.log("Message data error during the message updating", Logger.WARNING);
-				this.logger.log(e, Logger.WARNING);
-				res = this.handler.handleException(e, Handler.WEB_ERROR);
+				Logger.log("Message data error during the message updating", Logger.WARNING);
+				Logger.log(e, Logger.WARNING);
+				res = Handler.handleException(e, Handler.WEB_ERROR);
 
 			} catch (MongoException e) {
 
-				this.logger.log("MongoDB error during the message updating", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.MONGO_ERROR);
+				Logger.log("MongoDB error during the message updating", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.MONGO_ERROR);
 
 			} catch (NullPointerException e) {
 				
-				this.logger.log("Java error during the message updating", Logger.ERROR);
-				this.logger.log(e, Logger.ERROR);
-				res = this.handler.handleException(e, Handler.JAVA_ERROR);
+				Logger.log("Java error during the message updating", Logger.ERROR);
+				Logger.log(e, Logger.ERROR);
+				res = Handler.handleException(e, Handler.JAVA_ERROR);
 				
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
 
 		}
 
@@ -278,7 +252,7 @@ public class Message extends HttpServlet {
 	 */
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Get the current session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
@@ -299,37 +273,37 @@ public class Message extends HttpServlet {
 
 				try {
 
-					this.deleteMessage.deleteMessage(filter);
+					DeleteMessage.deleteMessage(filter);
 
 				} catch (MessageException e) {
 
-					this.logger.log("Message data error during the message deletion", Logger.WARNING);
-					this.logger.log(e, Logger.WARNING);
-					res = this.handler.handleException(e, Handler.WEB_ERROR);
+					Logger.log("Message data error during the message deletion", Logger.WARNING);
+					Logger.log(e, Logger.WARNING);
+					res = Handler.handleException(e, Handler.WEB_ERROR);
 
 				} catch (MongoException e) {
 
-					this.logger.log("MongoDB error during the message deletion", Logger.ERROR);
-					this.logger.log(e, Logger.ERROR);
-					res = this.handler.handleException(e, Handler.MONGO_ERROR);
+					Logger.log("MongoDB error during the message deletion", Logger.ERROR);
+					Logger.log(e, Logger.ERROR);
+					res = Handler.handleException(e, Handler.MONGO_ERROR);
 
 				} catch (SQLException e) {
 
-					this.logger.log("SQL error during the message deletion", Logger.ERROR);
-					this.logger.log(e, Logger.ERROR);
-					res = this.handler.handleException(e, Handler.SQL_ERROR);
+					Logger.log("SQL error during the message deletion", Logger.ERROR);
+					Logger.log(e, Logger.ERROR);
+					res = Handler.handleException(e, Handler.SQL_ERROR);
 
 				}
 
 			} else {
 
-				res = this.handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
+				res = Handler.handleException(new UserException("Invalid request"), Handler.WEB_ERROR);
 
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
 
 		}
 

@@ -37,23 +37,11 @@ public class Register extends HttpServlet {
 	// ----- Attributes -----
 
 
-	/** The logger */
-	private Logger logger;
-
-	/** The handler tool */
-	private Handler handler;
-
-	/** Security tool */
-	private Security security;
-
-	/** The session pool */
-	private SessionPool sessionPool;
-
-	/** The user creation service */
-	private CreateUser createUser;
-
 	/** Serial version number */
 	private static final long serialVersionUID = 6127736970206786786L;
+	
+	/** The session pool */
+	private SessionPool sessionPool;
 
 
 	// ----- Constructors -----
@@ -61,13 +49,7 @@ public class Register extends HttpServlet {
 
 	public Register() {
 		super();
-
-		// Get instances
-		this.logger = Logger.getInstance();
-		this.handler = Handler.getInstance();
-		this.security = Security.getInstance();
 		this.sessionPool = SessionPool.getInstance();
-		this.createUser = CreateUser.getInstance();
 	}
 
 
@@ -80,7 +62,7 @@ public class Register extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Try to get the session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
@@ -88,7 +70,7 @@ public class Register extends HttpServlet {
 		if(currentSession == null) {
 
 			// Generate a CSRF token
-			String token = this.security.generateCSRFToken();
+			String token = Security.generateCSRFToken();
 
 			// Create an anonymous session
 			String sessionId = this.sessionPool.generateSessionId();
@@ -105,7 +87,7 @@ public class Register extends HttpServlet {
 		} else {
 
 			// If the user is already logged in
-			res = this.handler.handleException(new SessionException("Cannot register with an existing session"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("Cannot register with an existing session"), Handler.WEB_ERROR);
 
 		}
 
@@ -123,7 +105,7 @@ public class Register extends HttpServlet {
 		// TODO LATER : Une vérification par mail de l'utilisateur pour l'obliger à confirmer son mail
 
 		// Prepare the JSON result
-		JSONObject res = this.handler.getDefaultResponse();
+		JSONObject res = Handler.getDefaultResponse();
 
 		// Get the current session
 		SessionModel currentSession = this.sessionPool.getSession(req, resp, false);
@@ -156,7 +138,7 @@ public class Register extends HttpServlet {
 					Boolean admin = false;
 
 					// Hash the password to avoid memory leak
-					password = this.security.hashString(password);
+					password = Security.hashString(password);
 
 					// Create the new user to insert
 					UserModel newUser = new UserModel();
@@ -170,7 +152,7 @@ public class Register extends HttpServlet {
 					newUser.setUserAdmin(admin);
 
 					// Try to insert the user in the database
-					this.createUser.createUser(newUser);
+					CreateUser.createUser(newUser);
 					
 					// Set the session to the registered user
 					currentSession.setUserId(id);
@@ -185,34 +167,34 @@ public class Register extends HttpServlet {
 
 				} catch (UserException e) {
 
-					this.logger.log("User data error during the user registration", Logger.WARNING);
-					this.logger.log(e, Logger.WARNING);
-					res = this.handler.handleException(e, Handler.WEB_ERROR);
+					Logger.log("User data error during the user registration", Logger.WARNING);
+					Logger.log(e, Logger.WARNING);
+					res = Handler.handleException(e, Handler.WEB_ERROR);
 
 				} catch (SQLException e) {
 
-					this.logger.log("SQL error during the user registration", Logger.ERROR);
-					this.logger.log(e, Logger.ERROR);
-					res = this.handler.handleException(e, Handler.SQL_ERROR);
+					Logger.log("SQL error during the user registration", Logger.ERROR);
+					Logger.log(e, Logger.ERROR);
+					res = Handler.handleException(e, Handler.SQL_ERROR);
 
 				} catch (Exception e) {
 
-					this.logger.log("Java error during the user registration", Logger.ERROR);
-					this.logger.log(e, Logger.ERROR);
-					res = this.handler.handleException(e, Handler.JAVA_ERROR);
+					Logger.log("Java error during the user registration", Logger.ERROR);
+					Logger.log(e, Logger.ERROR);
+					res = Handler.handleException(e, Handler.JAVA_ERROR);
 					
 				}
 
 			} else {
 
-				this.logger.log("User try to register with an invalid CSRF token - IP = " + req.getRemoteAddr(), Logger.WARNING);
-				res = this.handler.handleException(new SessionException("Invalid CSRF token"), Handler.WEB_ERROR);
+				Logger.log("User try to register with an invalid CSRF token - IP = " + req.getRemoteAddr(), Logger.WARNING);
+				res = Handler.handleException(new SessionException("Invalid CSRF token"), Handler.WEB_ERROR);
 
 			}
 
 		} else {
 
-			res = this.handler.handleException(new SessionException("Invalid session"), Handler.WEB_ERROR);
+			res = Handler.handleException(new SessionException("Invalid session"), Handler.WEB_ERROR);
 
 		}
 

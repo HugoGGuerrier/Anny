@@ -19,36 +19,6 @@ import one.anny.main.tools.models.UserModel;
  */
 public class UserDatabaseManager {
 
-	// ----- Attributes -----
-
-
-	/** Unique instance of the user database manager */
-	private static UserDatabaseManager instance = null;
-
-
-	// ----- Constructors ----- 
-
-
-	/**
-	 * Construct an instance for user database manager
-	 */
-	private UserDatabaseManager() {
-
-	}
-
-	/**
-	 * Get the unique instance of user database manager
-	 * 
-	 * @return The database manager
-	 */
-	public static UserDatabaseManager getInstance() {
-		if (UserDatabaseManager.instance == null) {
-			UserDatabaseManager.instance = new UserDatabaseManager();
-		}
-		return UserDatabaseManager.instance;
-	}
-
-
 	// ----- Class Methods -----
 
 
@@ -58,7 +28,7 @@ public class UserDatabaseManager {
 	 * @param userModel The user you want to insert
 	 * @throws SQLException if there is an exception during the user insertion
 	 */
-	public void insertUser(UserModel userModel) throws SQLException {
+	public static void insertUser(UserModel userModel) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
@@ -88,7 +58,7 @@ public class UserDatabaseManager {
 	 * @param userModel The user you want to update
 	 * @throws SQLException If there is an error during the updating
 	 */
-	public void updateUser(UserModel userModel) throws SQLException {
+	public static void updateUser(UserModel userModel) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
@@ -117,7 +87,7 @@ public class UserDatabaseManager {
 	 * @param userModel The user you want to delete
 	 * @throws SQLException If there is an error during the user deletion
 	 */
-	public void deleteUser(UserModel userModel) throws SQLException {
+	public static void deleteUser(UserModel userModel) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
@@ -142,7 +112,7 @@ public class UserDatabaseManager {
 	 * @return The list of users
 	 * @throws SQLException If there is an error during the query
 	 */
-	public List<UserModel> getUsers(UserModel model, boolean isLike) throws SQLException {
+	public static List<UserModel> getUsers(UserModel model, boolean isLike) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 

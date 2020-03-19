@@ -9,44 +9,6 @@ import one.anny.main.tools.models.FollowModel;
 
 public class CreateFollow {
 
-	// ----- Attributes -----
-
-
-	/**	The user database manager unique instance */
-	private FollowDatabaseManager followDatabaseManager;
-	
-	/** Security tool */
-	private Security security;
-	
-	/** The service unique instance (singleton) */
-	private static CreateFollow instance = null;
-
-
-	// ----- Constructors -----
-
-	
-	/**
-	 * Construct a new service
-	 */
-	private CreateFollow() {
-		this.followDatabaseManager = FollowDatabaseManager.getInstance();
-		this.security = Security.getInstance();
-	}
-
-	
-	/**
-	 * Get the service unique instance
-	 * 
-	 * @return The instance
-	 */
-	public static CreateFollow getInstance() {
-		if(CreateFollow.instance ==  null) {
-			CreateFollow.instance = new CreateFollow();
-		}
-		return CreateFollow.instance;
-	}
-
-
 	// ----- Class methods -----
 
 
@@ -57,16 +19,16 @@ public class CreateFollow {
 	 * @throws FollowException If there were an error during the service
 	 * @throws SQLException 
 	 */
-	public void createFollow(FollowModel follow) throws FollowException, SQLException {
+	public static void createFollow(FollowModel follow) throws FollowException, SQLException {
 		// Verify the follow parameters
 		boolean valid = true;
 		StringBuilder message = new StringBuilder();
 		
-		if(follow.getFollowedUserId() == null || !this.security.isValidUserId(follow.getFollowedUserId())) {
+		if(follow.getFollowedUserId() == null || !Security.isValidUserId(follow.getFollowedUserId())) {
 			valid = false;
 			message.append(" - Invalid followed user id : " + follow.getFollowedUserId());
 		}
-		if(follow.getFollowingUserId() == null || !this.security.isValidUserId(follow.getFollowingUserId()) ) {
+		if(follow.getFollowingUserId() == null || !Security.isValidUserId(follow.getFollowingUserId()) ) {
 			valid = false;
 			message.append(" - Invalid following user id : " + follow.getFollowingUserId());;
 		}
@@ -83,7 +45,7 @@ public class CreateFollow {
 		} else {
 			
 			// Call the follow database manager to insert a new following link
-			this.followDatabaseManager.insertFollow(follow);
+			FollowDatabaseManager.insertFollow(follow);
 			
 		}
 	}
