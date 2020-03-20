@@ -15,6 +15,7 @@
 },
 "mongoConfig": {
 	"mongoDatabase": "DB_ANNY_TEST",
-	"mongoMessageCollection": "messages"
+	"mongoMessageCollection": "messages",
+	"messageSelectionLimitSize": 30
 }
 }

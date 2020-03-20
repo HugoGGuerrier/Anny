@@ -13,10 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import one.anny.main.services.user.CreateUser;
-import one.anny.main.services.user.DeleteUser;
-import one.anny.main.services.user.ModifyUser;
-import one.anny.main.services.user.SearchUser;
+import one.anny.main.services.UserServices;
 import one.anny.main.tools.Handler;
 import one.anny.main.tools.Logger;
 import one.anny.main.tools.Security;
@@ -66,6 +63,9 @@ public class User extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the response JSON
 		JSONObject res = new JSONObject();
+		
+		// Get the current session
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
 
 		try {
 
@@ -81,7 +81,7 @@ public class User extends HttpServlet {
 				filter.setUserId(id);
 
 				// Get the user list
-				JSONArray users = SearchUser.searchUser(filter, false);
+				JSONArray users = UserServices.searchUser(filter, false, currentSession == null ? false : currentSession.isAdmin());
 				res.put("result", users);
 
 			} else {
@@ -109,7 +109,7 @@ public class User extends HttpServlet {
 				}
 
 				// Try to get the users from the database
-				JSONArray users = SearchUser.searchUser(filter, isLike);
+				JSONArray users = UserServices.searchUser(filter, isLike, currentSession == null ? false : currentSession.isAdmin());
 				res.put("result", users);
 
 			}
@@ -168,7 +168,7 @@ public class User extends HttpServlet {
 				newUser.setUserAdmin(admin);
 
 				// Try to insert the user in the database
-				CreateUser.createUser(newUser);
+				UserServices.createUser(newUser);
 
 			} catch (UserException e) {
 
@@ -241,7 +241,7 @@ public class User extends HttpServlet {
 				// Try to insert the user in the database
 				if(id.equals(currentSession.getUserId()) || currentSession.isAdmin()) {
 
-					ModifyUser.modifyUser(modifiedUser);
+					UserServices.modifyUser(modifiedUser);
 
 				} else {
 
@@ -310,7 +310,7 @@ public class User extends HttpServlet {
 					try {
 
 						// Delete the user and destroy the session if the user is not an admin
-						DeleteUser.deleteUser(filter);
+						UserServices.deleteUser(filter);
 						if(!currentSession.isAdmin()) {
 							
 							this.sessionPool.removeSession(currentSession.getSessionId(), resp);

@@ -71,6 +71,9 @@ public class Config {
 	
 	/** MongoDB message collection name */
 	private static String mongoMessageCollection;
+	
+	/** The number of message that can be returned by a request */
+	private static int messageSelectionLimitSize;
 
 
 	// ----- Getters -----
@@ -144,6 +147,10 @@ public class Config {
 	
 	public static String getMongoMessageCollection() {
 		return Config.mongoMessageCollection;
+	}
+	
+	public static int getMessageSelectionLimitSize() {
+		return Config.messageSelectionLimitSize;
 	}
 
 
@@ -223,6 +230,9 @@ public class Config {
 			
 			String mongoMessageCollection = (String) mongoConfig.get("mongoMessageCollection");
 			Config.mongoMessageCollection = mongoMessageCollection;
+			
+			Integer messageLimit = ((Long) mongoConfig.get("messageSelectionLimitSize")).intValue();
+			Config.messageSelectionLimitSize = messageLimit;
 
 			// Set the initialize indicator to true
 			Config.initialize = true;
@@ -264,6 +274,7 @@ public class Config {
 		
 		res.append("  mongoDatabase: " + Config.mongoDatabase + "\n");
 		res.append("  mongoMessageCollection: " + Config.mongoMessageCollection + "\n");
+		res.append("  messageSelectionLimitSize: " + Config.messageSelectionLimitSize + "\n");
 
 		res.append("}");
 

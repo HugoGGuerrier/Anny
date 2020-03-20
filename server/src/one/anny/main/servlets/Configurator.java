@@ -89,7 +89,7 @@ public class Configurator extends HttpServlet {
 
 		}
 
-		// DEBUG SECTION
+		// DEBUG SECTION		
 		if(Config.getEnv() == StdVar.DEVELOPMENT_ENV) {
 			
 			Logger.log("Base path : " + basePath, Logger.INFO);

@@ -13,9 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import one.anny.main.services.follow.CreateFollow;
-import one.anny.main.services.follow.DeleteFollow;
-import one.anny.main.services.follow.SearchFollow;
+import one.anny.main.services.FollowServices;
 import one.anny.main.tools.Handler;
 import one.anny.main.tools.Logger;
 import one.anny.main.tools.StdVar;
@@ -76,7 +74,7 @@ public class Follow extends HttpServlet {
 				FollowModel filter = new FollowModel();
 				filter.setFollowingUserId(followingId);
 
-				JSONArray follows = SearchFollow.searchFollow(filter, false);
+				JSONArray follows = FollowServices.searchFollow(filter, false);
 				res.put("result", follows);
 				
 			} else {
@@ -97,7 +95,7 @@ public class Follow extends HttpServlet {
 					filter.setFollowDate(null);
 				}
 
-				JSONArray follows = SearchFollow.searchFollow(filter, isLike);
+				JSONArray follows = FollowServices.searchFollow(filter, isLike);
 				res.put("result", follows);
 
 			}
@@ -143,7 +141,7 @@ public class Follow extends HttpServlet {
 				newFollow.setFollowDate(followDate);
 
 				// Insert the new follow in the database
-				CreateFollow.createFollow(newFollow);
+				FollowServices.createFollow(newFollow);
 
 			} catch (FollowException e) {
 
@@ -205,7 +203,7 @@ public class Follow extends HttpServlet {
 
 				try {
 
-					DeleteFollow.deleteFollow(filter);
+					FollowServices.deleteFollow(filter);
 
 				} catch (FollowException e) {
 

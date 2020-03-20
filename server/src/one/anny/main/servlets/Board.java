@@ -12,10 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import one.anny.main.services.board.CreateBoard;
-import one.anny.main.services.board.DeleteBoard;
-import one.anny.main.services.board.ModifyBoard;
-import one.anny.main.services.board.SearchBoard;
+import one.anny.main.services.BoardServices;
 import one.anny.main.tools.Handler;
 import one.anny.main.tools.Logger;
 import one.anny.main.tools.StdVar;
@@ -74,7 +71,7 @@ public class Board extends HttpServlet {
 				filter.setBoardName(name);
 
 				// Get the message list
-				JSONArray boards = SearchBoard.searchBoard(filter, false);
+				JSONArray boards = BoardServices.searchBoard(filter, false);
 				res.put("result", boards);
 
 			} else {
@@ -92,7 +89,7 @@ public class Board extends HttpServlet {
 				filter.setBoardCreatorId(creatorId);
 
 				// Try to get the boards from the database
-				JSONArray boards = SearchBoard.searchBoard(filter, isLike);
+				JSONArray boards = BoardServices.searchBoard(filter, isLike);
 				res.put("result", boards);
 
 			}
@@ -138,7 +135,7 @@ public class Board extends HttpServlet {
 				newBoard.setBoardCreatorId(creatorId);
 
 				// Create the new board
-				CreateBoard.createBoard(newBoard);
+				BoardServices.createBoard(newBoard);
 
 			} catch (BoardException e) {
 
@@ -198,7 +195,7 @@ public class Board extends HttpServlet {
 				board.setBoardDescription(description);
 				board.setBoardCreatorId(creatorId);
 
-				ModifyBoard.modifyBoard(board);
+				BoardServices.modifyBoard(board);
 
 			} catch (BoardException e) {
 
@@ -261,7 +258,7 @@ public class Board extends HttpServlet {
 
 				try {
 
-					DeleteBoard.deleteBoard(filter);
+					BoardServices.deleteBoard(filter);
 
 				} catch (BoardException e) {
 

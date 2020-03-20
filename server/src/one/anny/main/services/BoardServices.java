@@ -1,0 +1,175 @@
+package one.anny.main.services;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import org.json.simple.JSONArray;
+
+import one.anny.main.db.managers.BoardDatabaseManager;
+import one.anny.main.tools.Security;
+import one.anny.main.tools.exceptions.BoardException;
+import one.anny.main.tools.models.BoardModel;
+
+/**
+ * A class that contains all services to board
+ * 
+ * @author Emilie Siau
+ * @author Hugo Guerrier
+ */
+public class BoardServices {
+	
+	// ----- Services methods -----
+	
+	
+	/**
+	 * Try to insert the board in the database
+	 * 
+	 * @param board The board to create in database
+	 * @throws BoardException If there were an error during the service
+	 * @throws SQLException If there is an error in the MySQL database
+	 */
+	public static void createBoard(BoardModel board) throws BoardException, SQLException {
+		// Verify the board parameters
+		boolean valid = true;
+		StringBuilder message = new StringBuilder();
+
+		if(board.getBoardName() == null || !Security.isValidBoardName(board.getBoardName())) {
+			valid = false; 
+			message.append(" - Invalid board name : " + board.getBoardName());
+		}
+		if(board.getBoardCreatorId() == null || !Security.isValidUserId(board.getBoardCreatorId())) {
+			valid = false;
+			message.append(" - Invalid board creator id : " + board.getBoardCreatorId());
+		}
+		if(board.getBoardDescription() == null || !Security.isStringNotEmpty(board.getBoardDescription())) {
+			valid = false;
+			message.append(" - Invalid board description : " + board.getBoardDescription());
+		}
+
+
+		if(!valid) {
+
+			throw new BoardException(message.toString());
+
+		} else {
+
+			// Escape the HTML special characters
+			board.setBoardName(Security.htmlEncode(board.getBoardName()));
+			board.setBoardDescription(Security.htmlEncode(board.getBoardDescription()));
+
+			// Call the board database manager to insert a new board
+			BoardDatabaseManager.insertBoard(board);
+
+		}
+	}
+	
+	/**
+	 * Try to remove a board from the database
+	 * 
+	 * @param board The board to remove
+	 * @throws BoardException If there were an error during the service
+	 * @throws SQLException If there is an error in the MySQL database
+	 */
+	public static void deleteBoard(BoardModel board) throws BoardException, SQLException {
+		// Verify the board parameters
+		boolean valid = true;
+		StringBuilder message = new StringBuilder();
+
+		if(board.getBoardName() == null || !Security.isValidBoardName(board.getBoardName())) {
+			valid = false;
+			message.append(" - Invalid board name : " + board.getBoardName());
+		}
+		if(board.getBoardCreatorId() != null && !Security.isValidUserId(board.getBoardCreatorId())) {
+			valid = false;
+			message.append(" - Invalid board creator id : " + board.getBoardCreatorId());
+		}
+
+		if(!valid) {
+
+			throw new BoardException(message.toString());
+
+		} else {
+
+			// Escape the HTML special characters
+			board.setBoardName(Security.htmlEncode(board.getBoardName()));
+			
+			// Delete the board from the database
+			BoardDatabaseManager.deleteBoard(board);
+
+		}
+	}
+	
+	/**
+	 * Try to modify a board
+	 * 
+	 * @param board The board to update in database
+	 * @throws BoardException If there were an error during the service
+	 * @throws SQLException If there is an error in the Mysql database
+	 */
+	public static void modifyBoard(BoardModel board) throws BoardException, SQLException {
+		// Verify the board parameters
+		boolean valid = true;
+		StringBuilder message = new StringBuilder();
+		
+		if(board.getBoardName() == null || !Security.isValidBoardName(board.getBoardName())) {
+			valid = false;
+			message.append(" - Invalid board name : " + board.getBoardName());
+		}
+		if(board.getBoardDescription() == null || !Security.isStringNotEmpty(board.getBoardDescription())) {
+			valid = false;
+			message.append(" - Invalid board description : " + board.getBoardName());
+		}
+		if(board.getBoardCreatorId() == null || !Security.isValidUserId(board.getBoardCreatorId())) {
+			valid = false;
+			message.append(" - Invalid board creator id : " + board.getBoardCreatorId());
+		}
+
+		// If there is an error, throw an exception
+		if(!valid) {
+
+			throw new BoardException(message.toString());
+
+		} else {
+
+			// Escape the HTML special characters
+			board.setBoardName(Security.htmlEncode(board.getBoardName()));
+			board.setBoardDescription(Security.htmlEncode(board.getBoardDescription()));
+			
+			// Modify the board
+			BoardDatabaseManager.updateBoard(board);
+
+		}
+	}
+	
+	/**
+	 * Get board with the specified model
+	 * 
+	 * @param board The board model
+	 * @return A list of the board corresponding to the model
+	 * @throws SQLException If there is an error in the MySQL database
+	 */
+	@SuppressWarnings("unchecked")
+	public static JSONArray searchBoard(BoardModel board, boolean isLike) throws SQLException {
+		// Escape the HTML special characters to make the research works
+		if(board.getBoardName() != null) {
+			board.setBoardName(Security.htmlEncode(board.getBoardName()));
+		}
+		if(board.getBoardDescription() != null) {
+			board.setBoardDescription(Security.htmlEncode(board.getBoardDescription()));
+		}
+		
+		// Get the board from the database
+		List<BoardModel> boards = BoardDatabaseManager.getBoards(board, isLike);
+		
+		// Put the result in a JSON array
+		JSONArray res = new JSONArray();
+		
+		for (BoardModel boardModel : boards) {
+			res.add(boardModel.getJSON());
+		}
+		
+		// Return the result
+		return res;
+	}
+
+}

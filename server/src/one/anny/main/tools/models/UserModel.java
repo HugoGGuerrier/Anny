@@ -103,13 +103,16 @@ public class UserModel {
 	 * @return The user JSON
 	 */
 	@SuppressWarnings("unchecked")
-	public JSONObject getJSON() {
+	public JSONObject getJSON(boolean adminRequest) {
 		// Place the user information in a JSON
 		JSONObject res = new JSONObject();
 		
 		res.put("userId", this.userId);
 		res.put("userPseudo", this.userPseudo);
 		res.put("userDate", this.userDate.toString());
+		if(adminRequest) {
+			res.put("userAdmin", this.userAdmin);
+		}
 		
 		// Return the result
 		return res;

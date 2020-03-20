@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
-import one.anny.main.services.user.CreateUser;
+import one.anny.main.services.UserServices;
 import one.anny.main.tools.Config;
 import one.anny.main.tools.Handler;
 import one.anny.main.tools.Logger;
@@ -152,7 +152,7 @@ public class Register extends HttpServlet {
 					newUser.setUserAdmin(admin);
 
 					// Try to insert the user in the database
-					CreateUser.createUser(newUser);
+					UserServices.createUser(newUser);
 					
 					// Set the session to the registered user
 					currentSession.setUserId(id);

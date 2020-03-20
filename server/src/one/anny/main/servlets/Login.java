@@ -2,7 +2,6 @@ package one.anny.main.servlets;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,9 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import one.anny.main.db.managers.UserDatabaseManager;
+import one.anny.main.services.UserServices;
 import one.anny.main.tools.Handler;
 import one.anny.main.tools.Logger;
 import one.anny.main.tools.Security;
@@ -82,13 +82,17 @@ public class Login extends HttpServlet {
 
 			try {
 
-				List<UserModel> users = UserDatabaseManager.getUsers(userFilter, false);
+				JSONArray users = UserServices.searchUser(userFilter, false, true);
 
 				if(users.size() == 1) {
 
-					// Create or update the session in the cache and put it to the client
-					UserModel user = users.get(0);
+					// Get the user from the JSON result
+					JSONObject userJson = (JSONObject) users.get(0);
+					UserModel user = new UserModel();
+					user.setUserAdmin((Boolean) userJson.get("userAdmin"));
+					user.setUserId((String) userJson.get("userId"));
 					
+					// Create or update the session in the cache and put it to the client
 					if(currentSession == null) {
 						
 						String sessionId = this.sessionPool.generateSessionId();

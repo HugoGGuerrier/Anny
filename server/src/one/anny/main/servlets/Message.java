@@ -13,10 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import one.anny.main.services.message.CreateMessage;
-import one.anny.main.services.message.DeleteMessage;
-import one.anny.main.services.message.ModifyMessage;
-import one.anny.main.services.message.SearchMessage;
+import one.anny.main.services.MessageServices;
 import one.anny.main.tools.Handler;
 import one.anny.main.tools.Logger;
 import one.anny.main.tools.StdVar;
@@ -81,7 +78,7 @@ public class Message extends HttpServlet {
 			filter.setMessageId(id);
 
 			// Get the message list
-			JSONArray messages = SearchMessage.searchMessage(filter, false);
+			JSONArray messages = MessageServices.searchMessage(filter, false);
 			res.put("result", messages);
 
 		} else {
@@ -107,7 +104,7 @@ public class Message extends HttpServlet {
 			}
 
 			// Try to get the messages from the database
-			JSONArray messages = SearchMessage.searchMessage(filter, isLike);
+			JSONArray messages = MessageServices.searchMessage(filter, isLike);
 			res.put("result", messages);
 
 		}
@@ -148,7 +145,7 @@ public class Message extends HttpServlet {
 				newMessage.setMessageDate(date);
 
 				// Create the new message
-				CreateMessage.createMessage(newMessage, parentId);
+				MessageServices.createMessage(newMessage, parentId);
 
 			} catch (MessageException e) {
 
@@ -213,7 +210,7 @@ public class Message extends HttpServlet {
 				message.setMessageText(text);
 				message.setMessagePosterId(posterId);
 
-				ModifyMessage.modifyMessage(message);
+				MessageServices.modifyMessage(message);
 
 			} catch (MessageException e) {
 
@@ -273,7 +270,7 @@ public class Message extends HttpServlet {
 
 				try {
 
-					DeleteMessage.deleteMessage(filter);
+					MessageServices.deleteMessage(filter);
 
 				} catch (MessageException e) {
 
