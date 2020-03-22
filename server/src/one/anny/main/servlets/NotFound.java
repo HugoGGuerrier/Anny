@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Servlet implementation class NotFound
+ * 
+ * @author Emilie Siau
+ * @author Hugo Guerrier
  */
 @WebServlet("/404")
 public class NotFound extends HttpServlet {
@@ -16,6 +19,7 @@ public class NotFound extends HttpServlet {
 	// ----- Attributes -----
 
 
+	/** Serial version number */
 	private static final long serialVersionUID = -5682588955795150952L;
 	
 	

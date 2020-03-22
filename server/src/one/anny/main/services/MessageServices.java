@@ -67,7 +67,7 @@ public class MessageServices {
 				// Get the message parent
 				MessageModel parentFilter = new MessageModel();
 				parentFilter.setMessageId(parentMessageId);				
-				List<MessageModel> parents = MessageDatabaseManager.getMessage(parentFilter, false);
+				List<MessageModel> parents = MessageDatabaseManager.getMessage(parentFilter, false, true, 0);
 				if(parents.size() == 1) {
 					
 					MessageModel parent = parents.get(0);
@@ -174,7 +174,7 @@ public class MessageServices {
 	 * @throws MongoException 
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONArray searchMessage(MessageModel message, boolean isRegex) {
+	public static JSONArray searchMessage(MessageModel message, boolean isRegex, int messageOffset) {
 		// Escape the HTML special characters to make research works
 		if(message.getMessageText() != null) {
 			message.setMessageText(Security.htmlEncode(message.getMessageText()));
@@ -184,7 +184,7 @@ public class MessageServices {
 		}
 		
 		// Call the database manager to get the messages
-		List<MessageModel> messages = MessageDatabaseManager.getMessage(message, isRegex);
+		List<MessageModel> messages = MessageDatabaseManager.getMessage(message, isRegex, true, messageOffset);
 		
 		// Place the result in a JSON array
 		JSONArray res = new JSONArray();

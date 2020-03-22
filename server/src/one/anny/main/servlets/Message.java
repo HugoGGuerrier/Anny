@@ -78,7 +78,7 @@ public class Message extends HttpServlet {
 			filter.setMessageId(id);
 
 			// Get the message list
-			JSONArray messages = MessageServices.searchMessage(filter, false);
+			JSONArray messages = MessageServices.searchMessage(filter, false, 0);
 			res.put("result", messages);
 
 		} else {
@@ -90,6 +90,14 @@ public class Message extends HttpServlet {
 			String posterId = req.getParameter("messagePosterId");
 			String date = req.getParameter("messageDate");
 			Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
+			
+			// Get the offset to return the message
+			Integer offset;
+			try {
+				offset = Integer.parseInt(req.getParameter("offset"));
+			} catch (NumberFormatException e) {
+				offset = 0;
+			}
 
 			// Prepare the filter
 			MessageModel filter = new MessageModel();
@@ -104,7 +112,7 @@ public class Message extends HttpServlet {
 			}
 
 			// Try to get the messages from the database
-			JSONArray messages = MessageServices.searchMessage(filter, isLike);
+			JSONArray messages = MessageServices.searchMessage(filter, isLike, offset);
 			res.put("result", messages);
 
 		}

@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 
 import one.anny.main.db.Database;
@@ -51,7 +52,7 @@ public class MessageDatabaseManager {
 		// Check if this id already exists
 		MessageModel filter = new MessageModel();
 		filter.setMessageId(messageModel.getMessageId());
-		List<MessageModel> test = MessageDatabaseManager.getMessage(filter, false);
+		List<MessageModel> test = MessageDatabaseManager.getMessage(filter, false, false, 0);
 
 		if(test.size() == 0) {
 
@@ -142,7 +143,7 @@ public class MessageDatabaseManager {
 		
 		// Get the full message model
 		try {
-			messageModel = MessageDatabaseManager.getMessage(messageModel, false).get(0);
+			messageModel = MessageDatabaseManager.getMessage(messageModel, false, false, 0).get(0);
 		} catch (IndexOutOfBoundsException e) {
 			throw new MongoException("Wrong message id and poster ID : " + messageModel.getMessageId() + " - " + messageModel.getMessagePosterId());
 		}
@@ -157,7 +158,7 @@ public class MessageDatabaseManager {
 			MessageModel filter = new MessageModel();
 			filter.setMessageId(answerId);
 
-			List<MessageModel> answerList = MessageDatabaseManager.getMessage(filter, false);
+			List<MessageModel> answerList = MessageDatabaseManager.getMessage(filter, false, false, 0);
 			MessageModel answer = answerList.size() > 0 ? answerList.get(0) : null;
 			if(answer != null) {
 				try {
@@ -212,7 +213,7 @@ public class MessageDatabaseManager {
 	 * @param model The message model to get
 	 * @return The wanted message or null if it doesn't exists
 	 */
-	public static List<MessageModel> getMessage(MessageModel model, boolean regexSearch) {
+	public static List<MessageModel> getMessage(MessageModel model, boolean regexSearch, boolean limitSize, int offset) {
 		// Prepare the and queries
 		List<Bson> andQueries = new ArrayList<Bson>();
 
@@ -299,8 +300,17 @@ public class MessageDatabaseManager {
 
 		// Prepare the result list
 		List<MessageModel> res = new ArrayList<MessageModel>();
+		
+		FindIterable<Document> messageFindIterable;
+		
+		// Get the message with the limit size or not
+		if(limitSize) {
+			messageFindIterable = MessageDatabaseManager.messageCollection.find(query).skip(offset);
+		} else {
+			messageFindIterable = MessageDatabaseManager.messageCollection.find(query).limit(Config.getMessageSelectionLimitSize()).skip(offset);
+		}
 
-		for(Document message : MessageDatabaseManager.messageCollection.find(query)) {
+		for(Document message : messageFindIterable) {
 			try {
 
 				// Parse all message result

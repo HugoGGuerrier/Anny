@@ -5,9 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import one.anny.main.db.Database;
+import one.anny.main.db.filters.BoardFilter;
 import one.anny.main.tools.models.BoardModel;
 
 public class BoardDatabaseManager {
@@ -98,76 +100,83 @@ public class BoardDatabaseManager {
 		preparedStatement.executeUpdate();
 	}
 
-	public static List<BoardModel> getBoards(BoardModel model, boolean isLike) throws SQLException {
+	public static List<BoardModel> getBoards(BoardFilter filter, boolean isLike) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
 		// Prepare the selection query
-		StringBuilder boardQuery = new StringBuilder("SELECT * FROM BOARD WHERE 1=1");
+		StringBuilder query = new StringBuilder("SELECT * FROM BOARD WHERE true");
 
 		// Create the wanted SQL
-		if(isLike) {
-
-			if(model.getBoardName() != null) {
-				boardQuery.append(" AND boardName LIKE ?");
+		
+		// Add all wanted board name
+		if(filter.getBoardNameSet().size() > 0) {
+			query.append(" AND (");
+			
+			Iterator<String> iterator = filter.getBoardNameSet().iterator();
+			while(iterator.hasNext()) {
+				iterator.next();
+				query.append(" boardName " + (isLike ? "LIKE" : "=") + " ?");
+				if(iterator.hasNext()) {
+					query.append(" OR");
+				}
 			}
-			if(model.getBoardDescription() != null) {
-				boardQuery.append(" AND boardDescription LIKE ?");
+			
+			query.append(" )");
+		}
+		
+		// Add all wanted board description
+		if(filter.getBoardDescriptionSet().size() > 0) {
+			query.append(" AND (");
+			
+			Iterator<String> iterator = filter.getBoardDescriptionSet().iterator();
+			while(iterator.hasNext()) {
+				iterator.next();
+				query.append(" boardDescription " + (isLike ? "LIKE" : "=") + " ?");
+				if(iterator.hasNext()) {
+					query.append(" OR");
+				}
 			}
-			if(model.getBoardCreatorId() != null) {
-				boardQuery.append(" AND boardCreatorId LIKE ?");
+			
+			query.append(" )");
+		}
+		
+		// Add all searched board creator id
+		if(filter.getBoardCreatorIdSet().size() > 0) {
+			query.append(" AND (");
+			
+			Iterator<String> iterator = filter.getBoardCreatorIdSet().iterator();
+			while(iterator.hasNext()) {
+				iterator.next();
+				query.append(" boardCreatorId " + (isLike ? "LIKE" : "=") + " ?");
+				if(iterator.hasNext()) {
+					query.append(" OR");
+				}
 			}
-
-		} else {
-
-			if(model.getBoardName() != null) {
-				boardQuery.append(" AND boardName = ?");
-			}
-			if(model.getBoardDescription() != null) {
-				boardQuery.append(" AND boardDescription = ?");
-			}
-			if(model.getBoardCreatorId() != null) {
-				boardQuery.append(" AND boardCreatorId = ?");
-			}
-
+			
+			query.append(" )");
 		}
 
 		// Prepare the statement
-		PreparedStatement boardPreparedStatement = connection.prepareStatement(boardQuery.toString());
+		PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
 		int boardNextArgPointer = 1;
 
 		// Bind the parameters
-		if(isLike) {
-
-			if(model.getBoardName() != null) {
-				boardPreparedStatement.setString(boardNextArgPointer++, "%" + model.getBoardName() + "%");
-			}
-			if(model.getBoardDescription() != null) {
-				boardPreparedStatement.setString(boardNextArgPointer++, "%" + model.getBoardDescription() + "%");
-			}
-			if(model.getBoardCreatorId() != null) {
-				boardPreparedStatement.setString(boardNextArgPointer++, "%" + model.getBoardCreatorId() + "%");
-			}
-
-		} else {
-
-			if(model.getBoardName() != null) {
-				boardPreparedStatement.setString(boardNextArgPointer++, model.getBoardName());
-			}
-			if(model.getBoardDescription() != null) {
-				boardPreparedStatement.setString(boardNextArgPointer++, model.getBoardDescription());
-			}
-			if(model.getBoardCreatorId() != null) {
-				boardPreparedStatement.setString(boardNextArgPointer++, model.getBoardCreatorId());
-			}
-
+		for(String name : filter.getBoardNameSet()) {
+			preparedStatement.setString(boardNextArgPointer++, name);
+		}
+		for(String description : filter.getBoardDescriptionSet()) {
+			preparedStatement.setString(boardNextArgPointer++, description);
+		}
+		for(String creatorId : filter.getBoardCreatorIdSet()) {
+			preparedStatement.setString(boardNextArgPointer++, creatorId);
 		}
 
 		// Prepare the result of boards
 		List<BoardModel> res = new ArrayList<BoardModel>();
 
 		// Get the boards from the database
-		ResultSet boardResultSet = boardPreparedStatement.executeQuery();
+		ResultSet boardResultSet = preparedStatement.executeQuery();
 
 		while(boardResultSet.next()) {
 			String name = boardResultSet.getString("boardName");

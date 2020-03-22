@@ -1,10 +1,13 @@
 package one.anny.main.services;
 
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 
+import one.anny.main.db.filters.UserFilter;
 import one.anny.main.db.managers.UserDatabaseManager;
 import one.anny.main.tools.Security;
 import one.anny.main.tools.exceptions.UserException;
@@ -177,20 +180,34 @@ public class UserServices {
 	 * @throws SQLException 
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONArray searchUser(UserModel user, boolean isLike, boolean adminRequest) throws SQLException {
+	public static JSONArray searchUser(UserFilter filter, boolean isLike, boolean adminRequest) throws SQLException {
 		// Escape the HTML special characters
-		if(user.getUserPseudo() != null) {
-			user.setUserPseudo(Security.htmlEncode(user.getUserPseudo()));
+		if(filter.getUserPseudoSet().size() > 0) {
+			Set<String> escapedPseudoSet = new HashSet<String>();
+			for(String pseudo : filter.getUserPseudoSet()) {
+				escapedPseudoSet.add(Security.htmlEncode(pseudo));
+			}
+			filter.setUserPseudoSet(escapedPseudoSet);
 		}
-		if(user.getUserName() != null) {
-			user.setUserName(Security.htmlEncode(user.getUserName()));
+		
+		if(filter.getUserNameSet().size() > 0) {
+			Set<String> escapedNameSet = new HashSet<String>();
+			for(String name : filter.getUserNameSet()) {
+				escapedNameSet.add(Security.htmlEncode(name));
+			}
+			filter.setUserNameSet(escapedNameSet);
 		}
-		if(user.getUserSurname() != null) {
-			user.setUserSurname(Security.htmlEncode(user.getUserSurname()));
+		
+		if(filter.getUserSurnameSet().size() > 1) {
+			Set<String> escapedSurnameSet = new HashSet<String>();
+			for(String surname : filter.getUserSurnameSet()) {
+				escapedSurnameSet.add(Security.htmlEncode(surname));
+			}
+			filter.setUserSurnameSet(escapedSurnameSet);
 		}
 		
 		// Call the user database manager to search users
-		List<UserModel> users = UserDatabaseManager.getUsers(user, isLike);
+		List<UserModel> users = UserDatabaseManager.getUsers(filter, isLike);
 
 		// Place the result inside a JSON array
 		JSONArray res = new JSONArray();

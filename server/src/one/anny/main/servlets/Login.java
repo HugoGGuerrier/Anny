@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import one.anny.main.db.filters.UserFilter;
 import one.anny.main.services.UserServices;
 import one.anny.main.tools.Handler;
 import one.anny.main.tools.Logger;
@@ -54,6 +55,29 @@ public class Login extends HttpServlet {
 	// ----- HTTP methods -----
 
 
+	/** 
+	 * Get if the user is currently login
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// Prepare the JSON result
+		JSONObject res = Handler.getDefaultResponse();
+		
+		// Get the current session
+		SessionModel currentSession = this.sessionPool.getSession(req, resp, true);
+		
+		// Test if the session exists and is not anonymous
+		if(currentSession == null || currentSession.isAnonymous()) {
+			res.put("result", "NOT_LOGGED");
+		}
+
+		// Send the result
+		resp.setCharacterEncoding(StdVar.APP_ENCODING);
+		resp.setContentType(StdVar.JSON_CONTENT_TYPE);
+		resp.getWriter().append(res.toJSONString());
+	}
+
 	/**
 	 * Create a new session with a login and password
 	 */
@@ -76,9 +100,9 @@ public class Login extends HttpServlet {
 			userPassword = Security.hashString(userPassword);
 
 			// Prepare the user filter
-			UserModel userFilter = new UserModel();
-			userFilter.setUserId(userId);
-			userFilter.setUserPassword(userPassword);
+			UserFilter userFilter = new UserFilter();
+			userFilter.addUserId(userId);
+			userFilter.addUserPassword(userPassword);
 
 			try {
 
@@ -91,21 +115,21 @@ public class Login extends HttpServlet {
 					UserModel user = new UserModel();
 					user.setUserAdmin((Boolean) userJson.get("userAdmin"));
 					user.setUserId((String) userJson.get("userId"));
-					
+
 					// Create or update the session in the cache and put it to the client
 					if(currentSession == null) {
-						
+
 						String sessionId = this.sessionPool.generateSessionId();
 						SessionModel newSession = new SessionModel(sessionId, user);
 						newSession.setAdmin(user.isUserAdmin());
 						this.sessionPool.putSession(newSession, resp);
-						
+
 					} else {
-						
+
 						currentSession.setUserId(user.getUserId());
 						currentSession.setAdmin(user.isUserAdmin());
 						this.sessionPool.putSession(currentSession);
-						
+
 					}
 
 				} else {
@@ -142,19 +166,19 @@ public class Login extends HttpServlet {
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
 		JSONObject res = Handler.getDefaultResponse();
-		
+
 		// Get the session ID
 		String sessionId = this.sessionPool.getSessionIdFromRequest(req);
-		
+
 		if(sessionId != null) {
-			
+
 			// Remove the session from the cache and client
 			this.sessionPool.removeSession(sessionId, resp);
-			
+
 		} else {
-			
+
 			res = Handler.handleException(new SessionException("Session does not exists"), Handler.WEB_ERROR);
-			
+
 		}
 
 		// Send the result

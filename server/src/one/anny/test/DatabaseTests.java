@@ -22,6 +22,7 @@ import com.mongodb.client.MongoCollection;
 
 import one.anny.main.db.Database;
 import one.anny.main.db.Migrator;
+import one.anny.main.db.filters.UserFilter;
 import one.anny.main.db.managers.BoardDatabaseManager;
 import one.anny.main.db.managers.FollowDatabaseManager;
 import one.anny.main.db.managers.MessageDatabaseManager;
@@ -121,8 +122,8 @@ public class DatabaseTests {
 		}
 
 		// Test getter
-		UserModel userFilter = new UserModel();
-		userFilter.setUserId("@tester_1");
+		UserFilter userFilter = new UserFilter();
+		userFilter.addUserId("@tester_1");
 		try {
 			List<UserModel> users = UserDatabaseManager.getUsers(userFilter, false);
 			assertEquals(1, users.size());
@@ -379,7 +380,7 @@ public class DatabaseTests {
 		// Test getting
 		MessageModel filter = new MessageModel();
 		filter.setMessageId("1.");
-		List<MessageModel> messages = MessageDatabaseManager.getMessage(filter, true);
+		List<MessageModel> messages = MessageDatabaseManager.getMessage(filter, true, true, 0);
 		assertEquals("1.1", messages.get(0).getMessageId());
 		assertEquals("LOL", messages.get(0).getMessageText());
 		
@@ -396,13 +397,13 @@ public class DatabaseTests {
 		answer.addAnwserId("1.1.1");
 		try {
 			MessageDatabaseManager.insertMessage(answerAnswer);
-			assertEquals(3, MessageDatabaseManager.getMessage(new MessageModel(), false).size());
+			assertEquals(3, MessageDatabaseManager.getMessage(new MessageModel(), false, true, 0).size());
 			
 			BoardModel board = BoardDatabaseManager.getBoards(newBoard, false).get(0);
 			assertEquals(1, board.getBoardMessagesId().size());
 
 			MessageDatabaseManager.deleteMessage(message);
-			assertEquals(0, MessageDatabaseManager.getMessage(new MessageModel(), false).size());
+			assertEquals(0, MessageDatabaseManager.getMessage(new MessageModel(), false, true, 0).size());
 
 			board = BoardDatabaseManager.getBoards(newBoard, false).get(0);
 			assertEquals(0, board.getBoardMessagesId().size());

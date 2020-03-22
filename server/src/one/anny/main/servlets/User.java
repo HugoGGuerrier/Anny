@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import one.anny.main.db.filters.UserFilter;
 import one.anny.main.services.UserServices;
 import one.anny.main.tools.Handler;
 import one.anny.main.tools.Logger;
@@ -77,8 +78,8 @@ public class User extends HttpServlet {
 				String id = splitedUrl[3];
 
 				// Create the filter to get the user
-				UserModel filter = new UserModel();
-				filter.setUserId(id);
+				UserFilter filter = new UserFilter();
+				filter.addUserId(id);
 
 				// Get the user list
 				JSONArray users = UserServices.searchUser(filter, false, currentSession == null ? false : currentSession.isAdmin());
@@ -87,25 +88,40 @@ public class User extends HttpServlet {
 			} else {
 
 				// Get the user parameters
-				String id = req.getParameter("userId");
-				String pseudo = req.getParameter("userPseudo");
-				String name = req.getParameter("userName");
-				String surname = req.getParameter("userSurname");
-				String email = req.getParameter("userEmail");
-				String date = req.getParameter("userDate");
+				String[] ids = req.getParameterValues("userId") != null ? req.getParameterValues("userId") :  new String[0];
+				String[] pseudos = req.getParameterValues("userPseudo") != null ? req.getParameterValues("userPseudo") :  new String[0];
+				String[] names = req.getParameterValues("userName") != null ? req.getParameterValues("userName") :  new String[0];
+				String[] surnames = req.getParameterValues("userSurname") != null ? req.getParameterValues("userSurname") :  new String[0];
+				String[] emails = req.getParameterValues("userEmail") != null ? req.getParameterValues("userEmail") :  new String[0];
+				String[] dates = req.getParameterValues("userDate") != null ? req.getParameterValues("userDate") :  new String[0];
+				
 				Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
 
 				// Prepare the user search filter
-				UserModel filter = new UserModel();
-				filter.setUserId(id);
-				filter.setUserPseudo(pseudo);
-				filter.setUserName(name);
-				filter.setUserSurname(surname);
-				filter.setUserEmail(email);
-				try {
-					filter.setUserDate(Date.valueOf(date));
-				} catch (IllegalArgumentException e) {
-					filter.setUserDate(null);
+				UserFilter filter = new UserFilter();
+				
+				for(String id : ids) {
+					filter.addUserId(id);
+				}
+				for(String pseudo : pseudos) {
+					filter.addUserPseudo(pseudo);
+				}
+				for(String name : names) {
+					filter.addUserName(name);
+				}
+				for(String surname : surnames) {
+					filter.addUserSurname(surname);
+				}
+				for(String email : emails) {
+					filter.addUserEmail(email);
+				}
+				for(String date : dates) {
+					try {
+						Date dateToAdd = Date.valueOf(date);
+						filter.addUserDate(dateToAdd);
+					} catch (IllegalArgumentException e) {
+						// Do nothing just ignore
+					}
 				}
 
 				// Try to get the users from the database

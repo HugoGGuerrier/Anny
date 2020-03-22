@@ -6,9 +6,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import one.anny.main.db.Database;
+import one.anny.main.db.filters.UserFilter;
 import one.anny.main.tools.models.UserModel;
 
 /**
@@ -112,130 +114,174 @@ public class UserDatabaseManager {
 	 * @return The list of users
 	 * @throws SQLException If there is an error during the query
 	 */
-	public static List<UserModel> getUsers(UserModel model, boolean isLike) throws SQLException {
+	public static List<UserModel> getUsers(UserFilter filter, boolean isLike) throws SQLException {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 
 		// Prepare the selection query
-		StringBuilder query = new StringBuilder("SELECT * FROM USER WHERE 1=1");
+		StringBuilder query = new StringBuilder("SELECT * FROM USER WHERE true");
 
 		// Create the wanted SQL query
-		if (isLike) {
 
-			if (model.getUserId() != null) {
-				query.append(" AND userId LIKE ?");
-			}
-			if (model.getUserPseudo() != null) {
-				query.append(" AND userPseudo LIKE ?");
-			}
-			if (model.getUserName() != null) {
-				query.append(" AND userName LIKE ?");
-			}
-			if (model.getUserSurname() != null) {
-				query.append(" AND userSurname LIKE ?");
-			}
-			if (model.getUserEmail() != null) {
-				query.append(" AND userEmail LIKE ?");
-			}
-			if (model.getUserPassword() != null) {
-				query.append(" AND userPassword LIKE ?");
-			}
-			if (model.getUserDate() != null) {
-				query.append(" AND userDate = ?");
-			}
-			if (model.isUserAdmin() != null) {
-				query.append(" AND userAdmin = ?");
+		// Add all the wanted id
+		if(filter.getUserIdSet().size() > 0) {
+			query.append(" AND (");
+
+			Iterator<String> iterator = filter.getUserIdSet().iterator();
+			while(iterator.hasNext()) {
+				iterator.next();
+				query.append(" userId " + (isLike ? "LIKE" : "=") + " ?");
+				if(iterator.hasNext()) {
+					query.append(" OR");
+				}
 			}
 
-		} else {
+			query.append(" )");
+		}
 
-			if (model.getUserId() != null) {
-				query.append(" AND userId = ?");
-			}
-			if (model.getUserPseudo() != null) {
-				query.append(" AND userPseudo = ?");
-			}
-			if (model.getUserName() != null) {
-				query.append(" AND userName = ?");
-			}
-			if (model.getUserSurname() != null) {
-				query.append(" AND userSurname = ?");
-			}
-			if (model.getUserEmail() != null) {
-				query.append(" AND userEmail = ?");
-			}
-			if (model.getUserPassword() != null) {
-				query.append(" AND userPassword = ?");
-			}
-			if (model.getUserDate() != null) {
-				query.append(" AND userDate = ?");
-			}
-			if (model.isUserAdmin() != null) {
-				query.append(" AND userAdmin = ?");
+		// Add all the wanted pseudo
+		if(filter.getUserPseudoSet().size() > 0) {
+			query.append(" AND (");
+
+			Iterator<String> iterator = filter.getUserPseudoSet().iterator();
+			while(iterator.hasNext()) {
+				iterator.next();
+				query.append(" userPseudo " + (isLike ? "LIKE" : "=") + " ?");
+				if(iterator.hasNext()) {
+					query.append(" OR");
+				}
 			}
 
+			query.append(" )");
+		}
+
+		// Add all the wanted name
+		if(filter.getUserNameSet().size() > 0) {
+			query.append(" AND (");
+
+			Iterator<String> iterator = filter.getUserNameSet().iterator();
+			while(iterator.hasNext()) {
+				iterator.next();
+				query.append(" userName " + (isLike ? "LIKE" : "=") + " ?");
+				if(iterator.hasNext()) {
+					query.append(" OR");
+				}
+			}
+
+			query.append(" )");
+		}
+
+		// Add all the wanted surname
+		if(filter.getUserSurnameSet().size() > 0) {
+			query.append(" AND (");
+
+			Iterator<String> iterator = filter.getUserSurnameSet().iterator();
+			while(iterator.hasNext()) {
+				iterator.next();
+				query.append(" userSurname " + (isLike ? "LIKE" : "=") + " ?");
+				if(iterator.hasNext()) {
+					query.append(" OR");
+				}
+			}
+
+			query.append(" )");
+		}
+
+		// Add all the wanted email
+		if(filter.getUserEmailSet().size() > 0) {
+			query.append(" AND (");
+
+			Iterator<String> iterator = filter.getUserEmailSet().iterator();
+			while(iterator.hasNext()) {
+				iterator.next();
+				query.append(" userEmail " + (isLike ? "LIKE" : "=") + " ?");
+				if(iterator.hasNext()) {
+					query.append(" OR");
+				}
+			}
+
+			query.append(" )");
+		}
+
+		// Add all the wanted password
+		if(filter.getUserPasswordSet().size() > 0) {
+			query.append(" AND (");
+
+			Iterator<String> iterator = filter.getUserPasswordSet().iterator();
+			while(iterator.hasNext()) {
+				iterator.next();
+				query.append(" userPassword = ?");
+				if(iterator.hasNext()) {
+					query.append(" OR");
+				}
+			}
+
+			query.append(" )");
+		}
+
+		// Add all the wanted date
+		if(filter.getUserDateSet().size() > 0) {
+			query.append(" AND (");
+
+			Iterator<Date> iterator = filter.getUserDateSet().iterator();
+			while(iterator.hasNext()) {
+				iterator.next();
+				query.append(" userDate = ?");
+				if(iterator.hasNext()) {
+					query.append(" OR");
+				}
+			}
+
+			query.append(" )");
+		}
+		
+		// Set the admin filter
+		if(filter.isUserAdmin() != null) {
+			query.append(" AND userAdmin = ?");
+		}
+		
+		// Write the order statement
+		if(filter.getOrderColumn() != null) {
+			query.append(" ORDER BY " + filter.getOrderColumn() + (filter.isOrderReversed() ? " DESC" : " ASC"));
 		}
 
 		// Prepare the statement
 		PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
 		int nextArgPointer = 1;
 
-		// Bind the wanted parameters
-		if (isLike) {
-
-			if (model.getUserId() != null) {
-				preparedStatement.setString(nextArgPointer++, "%" + model.getUserId() + "%");
-			}
-			if (model.getUserPseudo() != null) {
-				preparedStatement.setString(nextArgPointer++, "%" + model.getUserPseudo() + "%");
-			}
-			if (model.getUserName() != null) {
-				preparedStatement.setString(nextArgPointer++, "%" + model.getUserName() + "%");
-			}
-			if (model.getUserSurname() != null) {
-				preparedStatement.setString(nextArgPointer++, "%" + model.getUserSurname() + "%");
-			}
-			if (model.getUserEmail() != null) {
-				preparedStatement.setString(nextArgPointer++, "%" + model.getUserEmail() + "%");
-			}
-			if (model.getUserPassword() != null) {
-				preparedStatement.setString(nextArgPointer++, "%" + model.getUserPassword() + "%");
-			}
-			if (model.getUserDate() != null) {
-				preparedStatement.setDate(nextArgPointer++, model.getUserDate());
-			}
-			if (model.isUserAdmin() != null) {
-				preparedStatement.setInt(nextArgPointer, (model.isUserAdmin() ? 1 : 0));
-			}
-
-		} else {
-
-			if (model.getUserId() != null) {
-				preparedStatement.setString(nextArgPointer++, model.getUserId());
-			}
-			if (model.getUserPseudo() != null) {
-				preparedStatement.setString(nextArgPointer++, model.getUserPseudo());
-			}
-			if (model.getUserName() != null) {
-				preparedStatement.setString(nextArgPointer++, model.getUserName());
-			}
-			if (model.getUserSurname() != null) {
-				preparedStatement.setString(nextArgPointer++, model.getUserSurname());
-			}
-			if (model.getUserEmail() != null) {
-				preparedStatement.setString(nextArgPointer++, model.getUserEmail());
-			}
-			if (model.getUserPassword() != null) {
-				preparedStatement.setString(nextArgPointer++, model.getUserPassword());
-			}
-			if (model.getUserDate() != null) {
-				preparedStatement.setDate(nextArgPointer++, model.getUserDate());
-			}
-			if (model.isUserAdmin() != null) {
-				preparedStatement.setInt(nextArgPointer, (model.isUserAdmin() ? 1 : 0));
-			}
-
+		for(String id : filter.getUserIdSet()) {
+			preparedStatement.setString(nextArgPointer++, id);
 		}
+		
+		for(String pseudo : filter.getUserPseudoSet()) {
+			preparedStatement.setString(nextArgPointer++, pseudo);
+		}
+		
+		for(String name : filter.getUserNameSet()) {
+			preparedStatement.setString(nextArgPointer++, name);
+		}
+		
+		for(String surname : filter.getUserSurnameSet()) {
+			preparedStatement.setString(nextArgPointer++, surname);
+		}
+		
+		for(String email : filter.getUserEmailSet()) {
+			preparedStatement.setString(nextArgPointer++, email);
+		}
+		
+		for(String password : filter.getUserPasswordSet()) {
+			preparedStatement.setString(nextArgPointer++, password);
+		}
+		
+		for(Date date : filter.getUserDateSet()) {
+			preparedStatement.setDate(nextArgPointer++, date);
+		}
+		
+		if(filter.isUserAdmin() != null) {
+			preparedStatement.setBoolean(nextArgPointer++, filter.isUserAdmin());
+		}
+		
+		System.out.println(preparedStatement.toString());
 
 		// Prepare the result list
 		List<UserModel> res = new ArrayList<UserModel>();
@@ -252,7 +298,7 @@ public class UserDatabaseManager {
 			String password = resultSet.getString("userPassword");
 			Date date = resultSet.getDate("userDate");
 			Boolean admin = resultSet.getBoolean("userAdmin");
-			
+
 			UserModel newUser = new UserModel();
 			newUser.setUserId(id);
 			newUser.setUserPseudo(pseudo);
