@@ -1,6 +1,7 @@
 package one.anny.main.db.managers;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,6 +19,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 
 import one.anny.main.db.Database;
+import one.anny.main.db.filters.MessageFilter;
 import one.anny.main.tools.Config;
 import one.anny.main.tools.Logger;
 import one.anny.main.tools.exceptions.MongoException;
@@ -50,9 +52,9 @@ public class MessageDatabaseManager {
 	 */
 	public static void insertMessage(MessageModel messageModel) throws MongoException, SQLException{
 		// Check if this id already exists
-		MessageModel filter = new MessageModel();
-		filter.setMessageId(messageModel.getMessageId());
-		List<MessageModel> test = MessageDatabaseManager.getMessage(filter, false, false, 0);
+		MessageFilter filter = new MessageFilter();
+		filter.addMessageId(messageModel.getMessageId());
+		List<MessageModel> test = MessageDatabaseManager.getMessage(filter, false, false);
 
 		if(test.size() == 0) {
 
@@ -140,12 +142,16 @@ public class MessageDatabaseManager {
 		if(messageModel.getMessagePosterId() != null) {
 			query.append("messagePosterId", messageModel.getMessagePosterId());
 		}
-		
+
 		// Get the full message model
 		try {
-			messageModel = MessageDatabaseManager.getMessage(messageModel, false, false, 0).get(0);
+			MessageFilter filter = new MessageFilter();
+			filter.addMessageId(messageModel.getMessageId());
+			filter.addMessagePosterId(messageModel.getMessagePosterId());
+			
+			messageModel = MessageDatabaseManager.getMessage(filter, false, false).get(0);
 		} catch (IndexOutOfBoundsException e) {
-			throw new MongoException("Wrong message id and poster ID : " + messageModel.getMessageId() + " - " + messageModel.getMessagePosterId());
+			throw new MongoException("Wrong message id or poster id : " + messageModel.getMessageId() + " - " + messageModel.getMessagePosterId());
 		}
 
 		// Execute the query
@@ -155,10 +161,10 @@ public class MessageDatabaseManager {
 
 		// Delete all the answers recursively
 		for(String answerId : messageModel.getMessageAnswersId()) {
-			MessageModel filter = new MessageModel();
-			filter.setMessageId(answerId);
+			MessageFilter filter = new MessageFilter();
+			filter.addMessageId(answerId);
 
-			List<MessageModel> answerList = MessageDatabaseManager.getMessage(filter, false, false, 0);
+			List<MessageModel> answerList = MessageDatabaseManager.getMessage(filter, false, false);
 			MessageModel answer = answerList.size() > 0 ? answerList.get(0) : null;
 			if(answer != null) {
 				try {
@@ -213,86 +219,132 @@ public class MessageDatabaseManager {
 	 * @param model The message model to get
 	 * @return The wanted message or null if it doesn't exists
 	 */
-	public static List<MessageModel> getMessage(MessageModel model, boolean regexSearch, boolean limitSize, int offset) {
+	public static List<MessageModel> getMessage(MessageFilter filter, boolean regexSearch, boolean limitSize) {
 		// Prepare the and queries
 		List<Bson> andQueries = new ArrayList<Bson>();
 
-		if(regexSearch) {
+		// Prepare the selection query
 
-			if(model.getMessageId() != null) {
-				Document regex = new Document();
-				regex.append("$regex", model.getMessageId());
-				regex.append("$options", "i");
+		// Message id
+		if(filter.getMessageIdSet().size() > 0) {
+			Document orQuery = new Document();
+			List<Bson> orQueries = new ArrayList<Bson>();
+
+			// Add all message id possibility
+			for(String id : filter.getMessageIdSet()) {
 				Document query = new Document();
-				query.append("messageId", regex);
-				andQueries.add(query);
-			}
-			if(model.getMessageText() != null) {
-				Document regex = new Document();
-				regex.append("$regex", model.getMessageText());
-				regex.append("$options", "i");
-				Document query = new Document();
-				query.append("messageText", regex);
-				andQueries.add(query);
-			}
-			if(model.getMessageBoardName() != null) {
-				Document regex = new Document();
-				regex.append("$regex", model.getMessageBoardName());
-				regex.append("$options", "i");
-				Document query = new Document();
-				query.append("messageBoardName", regex);
-				andQueries.add(query);
-			}
-			if(model.getMessagePosterId() != null) {
-				Document regex = new Document();
-				regex.append("$regex", model.getMessagePosterId());
-				regex.append("$options", "i");
-				Document query = new Document();
-				query.append("messagePosterId", regex);
-				andQueries.add(query);
-			}
-			if(model.getMessageDate() != null) {
-				Document regex = new Document();
-				regex.append("$regex", String.valueOf(model.getMessageDate().getTime()));
-				regex.append("$options", "i");
-				Document query = new Document();
-				query.append("messageDate", regex);
-				andQueries.add(query);
+				if(regexSearch) {
+					Document regex = new Document();
+					regex.append("$regex", id);
+					regex.append("$options", "i");
+					query.append("messageId", regex);
+				} else {
+					query.append("messageId", id);
+				}
+				orQueries.add(query);
 			}
 
-		} else {
+			orQuery.append("$or", orQueries);
+			andQueries.add(orQuery);
+		}
 
-			if(model.getMessageId() != null) {
+		// Message text
+		if(filter.getMessageTextSet().size() > 0) {
+			Document orQuery = new Document();
+			List<Bson> orQueries = new ArrayList<Bson>();
+
+			// Add all message text possibility
+			for(String text : filter.getMessageTextSet()) {
 				Document query = new Document();
-				query.append("messageId", model.getMessageId());
-				andQueries.add(query);
-			}
-			if(model.getMessageText() != null) {
-				Document query = new Document();
-				query.append("messageText", model.getMessageText());
-				andQueries.add(query);
-			}
-			if(model.getMessageBoardName() != null) {
-				Document query = new Document();
-				query.append("messageBoardName", model.getMessageBoardName());
-				andQueries.add(query);
-			}
-			if(model.getMessagePosterId() != null) {
-				Document query = new Document();
-				query.append("messagePosterId", model.getMessagePosterId());
-				andQueries.add(query);
-			}
-			if(model.getMessageDate() != null) {
-				Document query = new Document();
-				query.append("messageDate", String.valueOf(model.getMessageDate().getTime()));
-				andQueries.add(query);
+				if(regexSearch) {
+					Document regex = new Document();
+					regex.append("$regex", text);
+					regex.append("$options", "i");
+					query.append("messageText", regex);
+				} else {
+					query.append("messageText", text);
+				}
+				orQueries.add(query);
 			}
 
+			orQuery.append("$or", orQueries);
+			andQueries.add(orQuery);
+		}
+
+		// Message board name
+		if(filter.getMessageBoardNameSet().size() > 0) {
+			Document orQuery = new Document();
+			List<Bson> orQueries = new ArrayList<Bson>();
+
+			// Add all message text possibility
+			for(String boardName : filter.getMessageBoardNameSet()) {
+				Document query = new Document();
+				if(regexSearch) {
+					Document regex = new Document();
+					regex.append("$regex", boardName);
+					regex.append("$options", "i");
+					query.append("messageBoardName", regex);
+				} else {
+					query.append("messageBoardName", boardName);
+				}
+				orQueries.add(query);
+			}
+
+			orQuery.append("$or", orQueries);
+			andQueries.add(orQuery);
+		}
+
+		// Message poster id
+		if(filter.getMessagePosterIdSet().size() > 0) {
+			Document orQuery = new Document();
+			List<Bson> orQueries = new ArrayList<Bson>();
+
+			// Add all message text possibility
+			for(String posterId : filter.getMessagePosterIdSet()) {
+				Document query = new Document();
+				if(regexSearch) {
+					Document regex = new Document();
+					regex.append("$regex", posterId);
+					regex.append("$options", "i");
+					query.append("messagePosterId", regex);
+				} else {
+					query.append("messagePosterId", posterId);
+				}
+				orQueries.add(query);
+			}
+
+			orQuery.append("$or", orQueries);
+			andQueries.add(orQuery);
+		}
+
+		// Message date
+		if(filter.getMessageDateSet().size() > 0) {
+			Document orQuery = new Document();
+			List<Bson> orQueries = new ArrayList<Bson>();
+
+			// Add all message text possibility
+			for(Date date : filter.getMessageDateSet()) {
+				Document query = new Document();
+				query.append("messageDate", date.getTime());
+				orQueries.add(query);
+			}
+
+			orQuery.append("$or", orQueries);
+			andQueries.add(orQuery);
 		}
 		
+		// Set the max message date value
+		if(filter.getMaxDate() != null) {
+			Document maxDateQuery = new Document();
+			Document lesserQuery = new Document();
+			lesserQuery.append("$lt", filter.getMaxDate().getTime());
+			maxDateQuery.append("messageDate", lesserQuery);
+			andQueries.add(maxDateQuery);
+		}
+
 		// Prepare the find query
 		Document query = new Document();
-		
+
 		// Put the result in the query
 		if(andQueries.size() > 0) {
 			query.append("$and", andQueries);
@@ -300,14 +352,20 @@ public class MessageDatabaseManager {
 
 		// Prepare the result list
 		List<MessageModel> res = new ArrayList<MessageModel>();
-		
-		FindIterable<Document> messageFindIterable;
-		
-		// Get the message with the limit size or not
+
+		// Get the find iterator from the database
+		FindIterable<Document> messageFindIterable = MessageDatabaseManager.messageCollection.find(query);
+
+		// Order the messages if the request need it
+		if(filter.getOrderColumn() != null) {
+			Document sortDocument = new Document();
+			sortDocument.append(filter.getOrderColumn(), (filter.isOrderReversed() ? -1 : 1));
+			messageFindIterable = messageFindIterable.sort(sortDocument);
+		}
+
+		// Limit the size if the order wants to
 		if(limitSize) {
-			messageFindIterable = MessageDatabaseManager.messageCollection.find(query).skip(offset);
-		} else {
-			messageFindIterable = MessageDatabaseManager.messageCollection.find(query).limit(Config.getMessageSelectionLimitSize()).skip(offset);
+			messageFindIterable = messageFindIterable.limit(Config.getMessageSelectionLimitSize());
 		}
 
 		for(Document message : messageFindIterable) {
@@ -341,10 +399,10 @@ public class MessageDatabaseManager {
 		// Get the MySQL connection
 		Connection connection = Database.getMySQLConnection();
 		Statement stmt = connection.createStatement();
-		
+
 		// Prepare the request
 		String query = "SELECT MAX(CAST(messageId AS UNSIGNED)) as maxId FROM BELONGS_TO_BOARD";
-		
+
 		// Get the result
 		ResultSet resultset = stmt.executeQuery(query);
 		int maxValue = 1;
@@ -354,7 +412,7 @@ public class MessageDatabaseManager {
 				maxValue = value + 1;
 			}
 		}
-		
+
 		// Return the result
 		return String.valueOf(maxValue);
 	}

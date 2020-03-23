@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import one.anny.main.db.filters.MessageFilter;
 import one.anny.main.services.MessageServices;
 import one.anny.main.tools.Handler;
 import one.anny.main.tools.Logger;
@@ -74,45 +75,58 @@ public class Message extends HttpServlet {
 			String id = splitedUrl[3];
 
 			// Create the filter to get the message
-			MessageModel filter = new MessageModel();
-			filter.setMessageId(id);
+			MessageFilter filter = new MessageFilter();
+			filter.addMessageId(id);
 
 			// Get the message list
-			JSONArray messages = MessageServices.searchMessage(filter, false, 0);
+			JSONArray messages = MessageServices.searchMessage(filter, false);
 			res.put("result", messages);
 
 		} else {
 
 			// Get the message request parameter
-			String id = req.getParameter("messageId");
-			String text = req.getParameter("messageText");
-			String boardName = req.getParameter("messageBoardName");
-			String posterId = req.getParameter("messagePosterId");
-			String date = req.getParameter("messageDate");
-			Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
+			String[] ids = req.getParameterValues("messageId") != null ? req.getParameterValues("messageId") : new String[0];
+			String[] texts = req.getParameterValues("messageText") != null ? req.getParameterValues("messageText") : new String[0];
+			String[] boardNames = req.getParameterValues("messageBoardName") != null ? req.getParameterValues("messageBoardName") : new String[0];
+			String[] posterIds = req.getParameterValues("messagePosterId") != null ? req.getParameterValues("messagePosterId") : new String[0];
+			String[] dates = req.getParameterValues("messageDate") != null ? req.getParameterValues("messageDate") : new String[0];
 			
-			// Get the offset to return the message
-			Integer offset;
-			try {
-				offset = Integer.parseInt(req.getParameter("offset"));
-			} catch (NumberFormatException e) {
-				offset = 0;
-			}
+			Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
+			String orderColumn = req.getParameter("orderColumn");
+			String maxDateString = req.getParameter("maxDate");
 
 			// Prepare the filter
-			MessageModel filter = new MessageModel();
-			filter.setMessageId(id);
-			filter.setMessageText(text);
-			filter.setMessageBoardName(boardName);
-			filter.setMessagePosterId(posterId);
+			MessageFilter filter = new MessageFilter();
+			for(String id : ids) {
+				filter.addMessageId(id);
+			}
+			for(String text : texts) {
+				filter.addMessageText(text);
+			}
+			for(String boardName : boardNames) {
+				filter.addMessageBoardName(boardName);
+			}
+			for(String posterId : posterIds) {
+				filter.addMessagePosterId(posterId);
+			}
+			for(String date : dates) {
+				try {
+					filter.addMessageDate(new Date(Long.parseLong(date)));
+				} catch (IllegalArgumentException e) {
+					// Do nothing...
+				}
+			}
+			
+			// Set order column and max date
+			filter.setOrderColumn(orderColumn);
 			try {
-				filter.setMessageDate(new Date(Long.parseLong(date)));
-			} catch (IllegalArgumentException e) {
-				filter.setMessageDate(null);
+				filter.setMaxDate(new Date(Long.parseLong(maxDateString)));
+			} catch (NumberFormatException e) {
+				// Do nothing...
 			}
 
 			// Try to get the messages from the database
-			JSONArray messages = MessageServices.searchMessage(filter, isLike, offset);
+			JSONArray messages = MessageServices.searchMessage(filter, isLike);
 			res.put("result", messages);
 
 		}

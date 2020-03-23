@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import one.anny.main.db.filters.FollowFilter;
 import one.anny.main.services.FollowServices;
 import one.anny.main.tools.Handler;
 import one.anny.main.tools.Logger;
@@ -71,8 +72,8 @@ public class Follow extends HttpServlet {
 
 				String followingId = splitedUrl[3];
 
-				FollowModel filter = new FollowModel();
-				filter.setFollowingUserId(followingId);
+				FollowFilter filter = new FollowFilter();
+				filter.addFollowingUserId(followingId);
 
 				JSONArray follows = FollowServices.searchFollow(filter, false);
 				res.put("result", follows);
@@ -80,20 +81,31 @@ public class Follow extends HttpServlet {
 			} else {
 
 				// Get the follow parameters
-				String followedId = req.getParameter("followedUserId");
-				String followingId = req.getParameter("followingUserId");
-				String followDate = req.getParameter("followDate");
+				String[] followedIds = req.getParameterValues("followedUserId") != null ? req.getParameterValues("followedUserId") : new String[0];
+				String[] followingIds = req.getParameterValues("followingUserId") != null ? req.getParameterValues("followingUserId") : new String[0];
+				String[] followDates = req.getParameterValues("followDate") != null ? req.getParameterValues("followDate") : new String[0];
+				
 				Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
+				String orderColumn = req.getParameter("orderColumn");
 
 				// Create the follow filter
-				FollowModel filter = new FollowModel();
-				filter.setFollowedUserId(followedId);
-				filter.setFollowingUserId(followingId);
-				try {
-					filter.setFollowDate(Date.valueOf(followDate));
-				} catch (IllegalArgumentException e) {
-					filter.setFollowDate(null);
+				FollowFilter filter = new FollowFilter();
+				for(String followedId : followedIds) {
+					filter.addFollowedUserId(followedId);
 				}
+				for(String followingId : followingIds) {
+					filter.addFollowingUserId(followingId);
+				}
+				for(String date : followDates) {
+					try {
+						filter.addFollowDate(Date.valueOf(date));
+					} catch (IllegalArgumentException e) {
+						// Do nothing...
+					}
+				}
+				
+				// Set the order column
+				filter.setOrderColumn(orderColumn);
 
 				JSONArray follows = FollowServices.searchFollow(filter, isLike);
 				res.put("result", follows);

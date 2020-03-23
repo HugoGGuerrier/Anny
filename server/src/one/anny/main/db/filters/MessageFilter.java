@@ -15,17 +15,23 @@ public class MessageFilter extends AbstractFilter {
 	// ----- Attributes -----
 	
 	
+	/** The wanted message id */
 	private Set<String> messageIdSet;
 	
+	/** All wanted message text */
 	private Set<String> messageTextSet;
 	
+	/** The message board name to look for */
 	private Set<String> messageBoardNameSet;
 	
+	/** All possible poster id */
 	private Set<String> messagePosterIdSet;
 	
+	/** The date of message */
 	private Set<Date> messageDateSet;
 	
-	private Set<String> messageAnswerIdSet;
+	/** The date to search message after this date */
+	private Date maxDate;
 	
 	
 	// ----- Constructor -----
@@ -40,7 +46,7 @@ public class MessageFilter extends AbstractFilter {
 		this.messageBoardNameSet = new HashSet<String>();
 		this.messagePosterIdSet = new HashSet<String>();
 		this.messageDateSet = new HashSet<Date>();
-		this.messageAnswerIdSet = new HashSet<String>();
+		this.maxDate = null;
 	}
 	
 	
@@ -67,8 +73,8 @@ public class MessageFilter extends AbstractFilter {
 		return this.messageDateSet;
 	}
 	
-	public Set<String> getMessageAnswerIdSet() {
-		return this.messageAnswerIdSet;
+	public Date getMaxDate() {
+		return this.maxDate;
 	}
 	
 	
@@ -125,14 +131,10 @@ public class MessageFilter extends AbstractFilter {
 		this.messageDateSet.add(messageDate);
 	}
 	
-	// --- Message answer id
+	// --- Max date
 	
-	public void setMessageAnswerIdSet(Set<String> messageAnswerIdSet) {
-		this.messageAnswerIdSet = messageAnswerIdSet;
-	}
-	
-	public void addMessageAnswerId(String messageAnswerId) {
-		this.messageAnswerIdSet.add(messageAnswerId);
+	public void setMaxDate(Date maxDate) {
+		this.maxDate = maxDate;
 	}
 
 }

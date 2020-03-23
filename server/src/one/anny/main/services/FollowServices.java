@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.json.simple.JSONArray;
 
+import one.anny.main.db.filters.FollowFilter;
 import one.anny.main.db.managers.FollowDatabaseManager;
 import one.anny.main.tools.Security;
 import one.anny.main.tools.exceptions.FollowException;
@@ -100,9 +101,9 @@ public class FollowServices {
 	 * @throws SQLException 
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONArray searchFollow(FollowModel follow, boolean isLike) throws SQLException {
+	public static JSONArray searchFollow(FollowFilter filter, boolean isLike) throws SQLException {
 		// Call the follow database manager to search following links
-		List<FollowModel> follows = FollowDatabaseManager.getFollows(follow, isLike);
+		List<FollowModel> follows = FollowDatabaseManager.getFollows(filter, isLike);
 		
 		// Put all follows in a JSONArray
 		JSONArray res = new JSONArray();

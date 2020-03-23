@@ -1,10 +1,13 @@
 package one.anny.main.services;
 
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 
+import one.anny.main.db.filters.MessageFilter;
 import one.anny.main.db.managers.MessageDatabaseManager;
 import one.anny.main.tools.Security;
 import one.anny.main.tools.exceptions.MessageException;
@@ -65,9 +68,9 @@ public class MessageServices {
 			if(parentMessageId != null && !parentMessageId.equals("")) {
 				
 				// Get the message parent
-				MessageModel parentFilter = new MessageModel();
-				parentFilter.setMessageId(parentMessageId);				
-				List<MessageModel> parents = MessageDatabaseManager.getMessage(parentFilter, false, true, 0);
+				MessageFilter parentFilter = new MessageFilter();
+				parentFilter.addMessageId(parentMessageId);
+				List<MessageModel> parents = MessageDatabaseManager.getMessage(parentFilter, false, true);
 				if(parents.size() == 1) {
 					
 					MessageModel parent = parents.get(0);
@@ -174,17 +177,26 @@ public class MessageServices {
 	 * @throws MongoException 
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONArray searchMessage(MessageModel message, boolean isRegex, int messageOffset) {
+	public static JSONArray searchMessage(MessageFilter filter, boolean isRegex) {
 		// Escape the HTML special characters to make research works
-		if(message.getMessageText() != null) {
-			message.setMessageText(Security.htmlEncode(message.getMessageText()));
+		if(filter.getMessageTextSet().size() > 0) {
+			Set<String> escapedTextSet = new HashSet<String>();
+			for(String text : filter.getMessageTextSet()) {
+				escapedTextSet.add(Security.htmlEncode(text));
+			}
+			filter.setMessageTextSet(escapedTextSet);
 		}
-		if(message.getMessageBoardName() != null) {
-			message.setMessageBoardName(Security.htmlEncode(message.getMessageBoardName()));
+		
+		if(filter.getMessageBoardNameSet().size() > 0) {
+			Set<String> escapedBoardNameSet = new HashSet<String>();
+			for(String boardName : filter.getMessageBoardNameSet()) {
+				escapedBoardNameSet.add(Security.htmlEncode(boardName));
+			}
+			filter.setMessageBoardNameSet(escapedBoardNameSet);
 		}
 		
 		// Call the database manager to get the messages
-		List<MessageModel> messages = MessageDatabaseManager.getMessage(message, isRegex, true, messageOffset);
+		List<MessageModel> messages = MessageDatabaseManager.getMessage(filter, isRegex, true);
 		
 		// Place the result in a JSON array
 		JSONArray res = new JSONArray();

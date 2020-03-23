@@ -22,6 +22,9 @@ import com.mongodb.client.MongoCollection;
 
 import one.anny.main.db.Database;
 import one.anny.main.db.Migrator;
+import one.anny.main.db.filters.BoardFilter;
+import one.anny.main.db.filters.FollowFilter;
+import one.anny.main.db.filters.MessageFilter;
 import one.anny.main.db.filters.UserFilter;
 import one.anny.main.db.managers.BoardDatabaseManager;
 import one.anny.main.db.managers.FollowDatabaseManager;
@@ -212,8 +215,8 @@ public class DatabaseTests {
 		}
 
 		// Test getting
-		FollowModel filter = new FollowModel();
-		filter.setFollowedUserId(exampleUser1.getUserId());
+		FollowFilter filter = new FollowFilter();
+		filter.addFollowedUserId(exampleUser1.getUserId());
 		try {
 			List<FollowModel> follows = FollowDatabaseManager.getFollows(filter, false);
 			assertEquals(2, follows.size());
@@ -277,9 +280,9 @@ public class DatabaseTests {
 		}
 
 		// Test the board get for one
-		BoardModel filter = new BoardModel();
-		filter.setBoardName("test_board");
-		filter.setBoardCreatorId("@tester_5");
+		BoardFilter filter = new BoardFilter();
+		filter.addBoardName("test_board");
+		filter.addBoardCreatorId("@tester_5");
 		try {
 			List<BoardModel> res = BoardDatabaseManager.getBoards(filter, false);
 			assertEquals(1, res.size());
@@ -378,9 +381,9 @@ public class DatabaseTests {
 		}
 
 		// Test getting
-		MessageModel filter = new MessageModel();
-		filter.setMessageId("1.");
-		List<MessageModel> messages = MessageDatabaseManager.getMessage(filter, true, true, 0);
+		MessageFilter filter = new MessageFilter();
+		filter.addMessageId("1.");
+		List<MessageModel> messages = MessageDatabaseManager.getMessage(filter, true, true);
 		assertEquals("1.1", messages.get(0).getMessageId());
 		assertEquals("LOL", messages.get(0).getMessageText());
 		
@@ -393,19 +396,22 @@ public class DatabaseTests {
 		answerAnswer.setMessagePosterId(exampleUser.getUserId());
 		answerAnswer.setMessageDate(new Date(new java.util.Date().getTime()));
 		
+		BoardFilter newBoardFilter = new BoardFilter();
+		newBoardFilter.addBoardName(newBoard.getBoardName());
+		
 		message.addAnwserId("1.1");
 		answer.addAnwserId("1.1.1");
 		try {
 			MessageDatabaseManager.insertMessage(answerAnswer);
-			assertEquals(3, MessageDatabaseManager.getMessage(new MessageModel(), false, true, 0).size());
+			assertEquals(3, MessageDatabaseManager.getMessage(new MessageFilter(), false, true).size());
 			
-			BoardModel board = BoardDatabaseManager.getBoards(newBoard, false).get(0);
+			BoardModel board = BoardDatabaseManager.getBoards(newBoardFilter, false).get(0);
 			assertEquals(1, board.getBoardMessagesId().size());
 
 			MessageDatabaseManager.deleteMessage(message);
-			assertEquals(0, MessageDatabaseManager.getMessage(new MessageModel(), false, true, 0).size());
+			assertEquals(0, MessageDatabaseManager.getMessage(new MessageFilter(), false, true).size());
 
-			board = BoardDatabaseManager.getBoards(newBoard, false).get(0);
+			board = BoardDatabaseManager.getBoards(newBoardFilter, false).get(0);
 			assertEquals(0, board.getBoardMessagesId().size());
 		} catch (MongoException e) {
 			e.printStackTrace();

@@ -45,12 +45,12 @@ public class MessageModel {
 	 * 
 	 * @param messageJSON The message JSON
 	 */
-	public MessageModel(JSONObject messageJSON) {
+	public MessageModel(JSONObject messageJSON) {		
 		this.messageId = (String) messageJSON.get("messageId");
 		this.messageText = (String) messageJSON.get("messageText");
 		this.messageBoardName = (String) messageJSON.get("messageBoardName");
 		this.messagePosterId = (String) messageJSON.get("messagePosterId");
-		this.messageDate = new Date(Long.parseLong((String) messageJSON.get("messageDate")));
+		this.messageDate = new Date(Long.parseLong((String) ((JSONObject) messageJSON.get("messageDate")).get("$numberLong")));
 		this.messageAnswersId = new ArrayList<String>();
 		
 		// Get all the answers ID
@@ -154,7 +154,7 @@ public class MessageModel {
 		res.put("messageText", this.messageText);
 		res.put("messageBoardName", this.messageBoardName);
 		res.put("messagePosterId", this.messagePosterId);
-		res.put("messageDate", String.valueOf(this.messageDate.getTime()));
+		res.put("messageDate", this.messageDate.getTime());
 		
 		// Add the answers ID
 		JSONArray answers = new JSONArray();

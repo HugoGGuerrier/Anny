@@ -96,6 +96,7 @@ public class User extends HttpServlet {
 				String[] dates = req.getParameterValues("userDate") != null ? req.getParameterValues("userDate") :  new String[0];
 				
 				Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
+				String orderColumn = req.getParameter("orderColumn");
 
 				// Prepare the user search filter
 				UserFilter filter = new UserFilter();
@@ -117,12 +118,14 @@ public class User extends HttpServlet {
 				}
 				for(String date : dates) {
 					try {
-						Date dateToAdd = Date.valueOf(date);
-						filter.addUserDate(dateToAdd);
+						filter.addUserDate(Date.valueOf(date));
 					} catch (IllegalArgumentException e) {
-						// Do nothing just ignore
+						// Do nothing...
 					}
 				}
+				
+				// Set the order column
+				filter.setOrderColumn(orderColumn);
 
 				// Try to get the users from the database
 				JSONArray users = UserServices.searchUser(filter, isLike, currentSession == null ? false : currentSession.isAdmin());

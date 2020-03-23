@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import one.anny.main.db.filters.BoardFilter;
 import one.anny.main.services.BoardServices;
 import one.anny.main.tools.Handler;
 import one.anny.main.tools.Logger;
@@ -67,8 +68,8 @@ public class Board extends HttpServlet {
 				String name = splitedUrl[3];
 
 				// Create the filter to get the board
-				BoardModel filter = new BoardModel();
-				filter.setBoardName(name);
+				BoardFilter filter = new BoardFilter();
+				filter.addBoardName(name);
 
 				// Get the message list
 				JSONArray boards = BoardServices.searchBoard(filter, false);
@@ -77,16 +78,27 @@ public class Board extends HttpServlet {
 			} else {
 
 				// Get the message request parameter
-				String name = req.getParameter("boardName");
-				String description = req.getParameter("boardDescription");
-				String creatorId = req.getParameter("boardCreatorId");
+				String[] names = req.getParameterValues("boardName") != null ? req.getParameterValues("boardName") : new String[0];
+				String[] descriptions = req.getParameterValues("boardDescription") != null ? req.getParameterValues("boardDescription") : new String[0];
+				String[] creatorIds = req.getParameterValues("boardCreatorId") != null ? req.getParameterValues("boardCreatorId") : new String[0];
+				
 				Boolean isLike = Boolean.parseBoolean(req.getParameter("isLike"));
+				String orderColumn = req.getParameter("orderColumn");
 
 				// Prepare the filter
-				BoardModel filter = new BoardModel();
-				filter.setBoardName(name);
-				filter.setBoardDescription(description);
-				filter.setBoardCreatorId(creatorId);
+				BoardFilter filter = new BoardFilter();
+				for(String name : names) {
+					filter.addBoardName(name);
+				}
+				for(String description : descriptions) {
+					filter.addBoardDescription(description);
+				}
+				for(String creatorId : creatorIds) {
+					filter.addBoardCreatorId(creatorId);
+				}
+				
+				// Set the order column
+				filter.setOrderColumn(orderColumn);
 
 				// Try to get the boards from the database
 				JSONArray boards = BoardServices.searchBoard(filter, isLike);

@@ -83,11 +83,11 @@ public class FollowDatabaseManager {
 		StringBuilder query = new StringBuilder("SELECT * FROM FOLLOW WHERE true");
 
 		// Create the wanted SQL
-		
+
 		// Add all wanted followed user id
 		if(filter.getFollowedUserIdSet().size() > 0) {
 			query.append(" AND (");
-			
+
 			Iterator<String> iterator = filter.getFollowedUserIdSet().iterator();
 			while(iterator.hasNext()) {
 				iterator.next();
@@ -96,14 +96,14 @@ public class FollowDatabaseManager {
 					query.append(" OR");
 				}
 			}
-			
+
 			query.append(" )");
 		}
-		
+
 		// Add all following user id to look for
 		if(filter.getFollowingUserIdSet().size() > 0) {
 			query.append(" AND (");
-			
+
 			Iterator<String> iterator = filter.getFollowingUserIdSet().iterator();
 			while(iterator.hasNext()) {
 				iterator.next();
@@ -112,14 +112,14 @@ public class FollowDatabaseManager {
 					query.append(" OR");
 				}
 			}
-			
+
 			query.append(" )");
 		}
-		
+
 		// Add all follow date to search
 		if(filter.getFollowDateSet().size() > 0) {
 			query.append(" AND (");
-			
+
 			Iterator<Date> iterator = filter.getFollowDateSet().iterator();
 			while(iterator.hasNext()) {
 				iterator.next();
@@ -128,8 +128,13 @@ public class FollowDatabaseManager {
 					query.append(" OR");
 				}
 			}
-			
+
 			query.append(" )");
+		}
+
+		// Write the order statement
+		if(filter.getOrderColumn() != null) {
+			query.append(" ORDER BY " + filter.getOrderColumn() + (filter.isOrderReversed() ? " DESC" : " ASC"));
 		}
 
 		// Prepare the statement

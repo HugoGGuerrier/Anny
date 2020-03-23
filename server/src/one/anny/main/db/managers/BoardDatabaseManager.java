@@ -108,11 +108,11 @@ public class BoardDatabaseManager {
 		StringBuilder query = new StringBuilder("SELECT * FROM BOARD WHERE true");
 
 		// Create the wanted SQL
-		
+
 		// Add all wanted board name
 		if(filter.getBoardNameSet().size() > 0) {
 			query.append(" AND (");
-			
+
 			Iterator<String> iterator = filter.getBoardNameSet().iterator();
 			while(iterator.hasNext()) {
 				iterator.next();
@@ -121,14 +121,14 @@ public class BoardDatabaseManager {
 					query.append(" OR");
 				}
 			}
-			
+
 			query.append(" )");
 		}
-		
+
 		// Add all wanted board description
 		if(filter.getBoardDescriptionSet().size() > 0) {
 			query.append(" AND (");
-			
+
 			Iterator<String> iterator = filter.getBoardDescriptionSet().iterator();
 			while(iterator.hasNext()) {
 				iterator.next();
@@ -137,14 +137,14 @@ public class BoardDatabaseManager {
 					query.append(" OR");
 				}
 			}
-			
+
 			query.append(" )");
 		}
-		
+
 		// Add all searched board creator id
 		if(filter.getBoardCreatorIdSet().size() > 0) {
 			query.append(" AND (");
-			
+
 			Iterator<String> iterator = filter.getBoardCreatorIdSet().iterator();
 			while(iterator.hasNext()) {
 				iterator.next();
@@ -153,8 +153,13 @@ public class BoardDatabaseManager {
 					query.append(" OR");
 				}
 			}
-			
+
 			query.append(" )");
+		}
+
+		// Write the order statement
+		if(filter.getOrderColumn() != null) {
+			query.append(" ORDER BY " + filter.getOrderColumn() + (filter.isOrderReversed() ? " DESC" : " ASC"));
 		}
 
 		// Prepare the statement

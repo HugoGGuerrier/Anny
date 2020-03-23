@@ -1,10 +1,13 @@
 package one.anny.main.services;
 
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 
+import one.anny.main.db.filters.BoardFilter;
 import one.anny.main.db.managers.BoardDatabaseManager;
 import one.anny.main.tools.Security;
 import one.anny.main.tools.exceptions.BoardException;
@@ -149,17 +152,26 @@ public class BoardServices {
 	 * @throws SQLException If there is an error in the MySQL database
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONArray searchBoard(BoardModel board, boolean isLike) throws SQLException {
+	public static JSONArray searchBoard(BoardFilter filter, boolean isLike) throws SQLException {
 		// Escape the HTML special characters to make the research works
-		if(board.getBoardName() != null) {
-			board.setBoardName(Security.htmlEncode(board.getBoardName()));
+		if(filter.getBoardNameSet().size() > 0) {
+			Set<String> escapedNameSet = new HashSet<String>();
+			for(String name : filter.getBoardNameSet()) {
+				escapedNameSet.add(Security.htmlEncode(name));
+			}
+			filter.setBoardNameSet(escapedNameSet);
 		}
-		if(board.getBoardDescription() != null) {
-			board.setBoardDescription(Security.htmlEncode(board.getBoardDescription()));
+		
+		if(filter.getBoardDescriptionSet().size() > 0) {
+			Set<String> escapedDescriptionSet = new HashSet<String>();
+			for(String description : filter.getBoardDescriptionSet()) {
+				escapedDescriptionSet.add(Security.htmlEncode(description));
+			}
+			filter.setBoardDescriptionSet(escapedDescriptionSet);
 		}
 		
 		// Get the board from the database
-		List<BoardModel> boards = BoardDatabaseManager.getBoards(board, isLike);
+		List<BoardModel> boards = BoardDatabaseManager.getBoards(filter, isLike);
 		
 		// Put the result in a JSON array
 		JSONArray res = new JSONArray();
