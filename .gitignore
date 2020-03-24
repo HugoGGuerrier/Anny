@@ -7,3 +7,4 @@ bin/
 .directory
 node_modules/
 client/.idea
+npm-debug.log

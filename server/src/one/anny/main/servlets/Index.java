@@ -1,6 +1,10 @@
 package one.anny.main.servlets;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -8,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import one.anny.main.tools.Config;
+import one.anny.main.tools.StdVar;
 
 /**
  * This is the index servlet, the default web page.
@@ -33,10 +38,22 @@ public class Index extends HttpServlet {
 	 * The get method of the index route
 	 */
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO : Envoyer le code de l'application cliente
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// Read the index HTML file
+		FileReader fileReader = new FileReader(Paths.get(Config.getBasePath() + StdVar.INDEX_HTML).toFile());
+		BufferedReader bufferedReader = new BufferedReader(fileReader);
+		StringBuilder extractedHtml = new StringBuilder();
 		
-		response.getWriter().append("Welcome on Anny ^^ , current version is ").append(Config.getVersion());
+		String line = "";
+		while(line != null) {
+			extractedHtml.append(line);
+			line = bufferedReader.readLine();
+		}
+		
+		// Split the index HTML file
+		String[] splitedHtml = extractedHtml.toString().split("<head>");
+		
+		System.out.println(splitedHtml);
 	}
 
 }

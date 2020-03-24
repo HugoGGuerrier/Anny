@@ -1,0 +1,53 @@
+<project name="Anny" default="build.webapp" basedir=".">
+    <description>
+        This is the script to compile the anny web app into a WAR archive
+    </description>
+
+    <property name="java.sources" value="${basedir}/server/src/one/anny/main/" />
+    <property name="java.libraries" value="${basedir}/server/WebContent/WEB-INF/lib/" />
+    <property name="react.home" value="${basedir}/client/" />
+    <property name="react.default.dir" value="${basedir}/client/build/" />
+    <property name="build.tmpdir" value="${basedir}/anny_build/tmp/" />
+    <property name="java.output" value="${build.tmpdir}/java_bin/" />
+    <property name="react.output" value="${build.tmpdir}/react_bin/" />
+
+
+    <target name="build.init" description="Initialize the build environement">
+        <mkdir dir="${build.tmpdir}" />
+        <mkdir dir="${java.output}" />
+        <mkdir dir="${react.output}" />
+    </target>
+
+    <target name="java.compile" description="Compile the Java sources" depends="build.init">
+        <echo message="Compiling the server Java sources..." />
+
+        <javac destdir="${java.output}" srcdir="${java.sources}">
+            <classpath>
+                <fileset dir="${java.libraries}" includes="*.jar" />
+            </classpath>
+        </javac>
+
+        <echo message="Server compilation success !" />
+    </target>
+
+    <target name="react.compile" description="Compile the react application" depends="build.init">
+        <echo message="Compiling the client React application..." />
+
+        <exec executable="npm">
+            <arg value="run" />
+            <arg value="build" />
+            <arg value="--prefix" />
+            <arg value="${react.home}" />
+        </exec>
+
+        <move todir="${react.output}">
+            <fileset dir="${react.default.dir}" includes="*" />
+        </move>
+
+        <echo message="Client compilation success !" />
+    </target>
+
+    <target name="build.webapp" description="Create the war archive for the web project" depends="java.compile, react.compile">
+    </target>
+
+</project>
