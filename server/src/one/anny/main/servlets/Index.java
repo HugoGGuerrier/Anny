@@ -53,7 +53,8 @@ public class Index extends HttpServlet {
 		// Split the index HTML file
 		String[] splitedHtml = extractedHtml.toString().split("<head>");
 		
-		System.out.println(splitedHtml);
+		// Create the configuration var
+		
 	}
 
 }
