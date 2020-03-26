@@ -8,3 +8,4 @@ bin/
 node_modules/
 client/.idea
 npm-debug.log
+anny_build/

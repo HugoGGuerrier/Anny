@@ -16,7 +16,6 @@
 
     <property name="ant.build.javac.source" value="1.8" />
     <property name="ant.build.javac.target" value="1.8"/>
-    <property name="ant.build.javac.bootclasspathref" value="${basedir}/anny_build/lib/rt.jar"/>
 
     <tstamp>
         <format property="DATETIME" pattern="yyyy_MM_dd"/>
@@ -84,6 +83,9 @@
         </copy>
 
         <war destfile="${basedir}/anny_build/${DATETIME}/anny.war" basedir="${build.finaldir}/" />
+
+        <delete dir="${build.tmpdir}" />
+        <delete dir="${build.finaldir}" />
 
         <echo message="WAR file created !" />
     </target>
