@@ -1,10 +1,6 @@
+import Config from "./Config";
+
 class Ajax {
-
-    // ----- Attributes -----
-
-
-    static basePath = "http://localhost:8080/anny/";
-
 
     // ----- Class methods -----
 
@@ -22,7 +18,7 @@ class Ajax {
         let connection = new XMLHttpRequest();
 
         // Create all the HTTP request params
-        let url = Ajax.basePath + point;
+        let url = Config.apiUrl + point;
         let body = null;
 
         // Format the data to the correct format

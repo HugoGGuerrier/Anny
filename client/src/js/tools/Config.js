@@ -3,19 +3,21 @@ class Config {
     // ----- Attributes -----
 
 
-    // ----- Class methods -----
+    static env = 0;
+    static apiUrl;
+
+
+    // ----- Class method -----
 
 
     static initConfig() {
-        if(typeof baseConfig !== 'undefined') {
+        if(Config.env === 0) {
 
-            // Set the app config
-            console.log("DEFINED !");
+            Config.apiUrl = "http://localhost:8080/anny/";
 
         } else {
 
-            // Define the dev config
-            console.log("UNDEFINED !");
+            Config.apiUrl = window.location.protocol + "//" + window.location.host + "/" + process.env.PUBLIC_URL + "/";
 
         }
     }

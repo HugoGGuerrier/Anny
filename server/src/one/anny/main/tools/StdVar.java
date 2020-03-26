@@ -27,5 +27,6 @@ public class StdVar {
 	
 	// --- Content types
 	public static final String JSON_CONTENT_TYPE = "application/json";
+	public static final String HTML_CONTENT_TYPE = "text/html";
 
 }

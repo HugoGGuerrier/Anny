@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+	<display-name>Anny - The annon social network</display-name>
+
+	<welcome-file-list>
+		<welcome-file>index</welcome-file>
+	</welcome-file-list>
+
+	<servlet>
+		<servlet-name>Configurator</servlet-name>
+		<servlet-class>one.anny.main.servlets.Configurator</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet>
+		<servlet-name>404</servlet-name>
+		<jsp-file>/errors/404.html</jsp-file>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>404</servlet-name>
+		<url-pattern>/404</url-pattern>
+	</servlet-mapping>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/404</location>
+	</error-page>
+
+	<filter>
+		<filter-name>CorsFilter</filter-name>
+		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+		<init-param>
+			<param-name>cors.allowed.origins</param-name>
+			<param-value>*</param-value>
+		</init-param>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>CorsFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+</web-app>

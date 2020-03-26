@@ -3,17 +3,28 @@
         This is the script to compile the anny web app into a WAR archive
     </description>
 
-    <property name="java.sources" value="${basedir}/server/src/one/anny/main/" />
-    <property name="java.libraries" value="${basedir}/server/WebContent/WEB-INF/lib/" />
-    <property name="react.home" value="${basedir}/client/" />
-    <property name="react.default.dir" value="${basedir}/client/build/" />
-    <property name="build.tmpdir" value="${basedir}/anny_build/tmp/" />
-    <property name="java.output" value="${build.tmpdir}/java_bin/" />
-    <property name="react.output" value="${build.tmpdir}/react_bin/" />
+    <property name="build.tmpdir" value="${basedir}/anny_build/tmp" />
+    <property name="build.finaldir" value="${basedir}/anny_build/final" />
 
+    <property name="java.sources" value="${basedir}/server/src/one/anny/main" />
+    <property name="java.libraries" value="${basedir}/server/WebContent/WEB-INF/lib" />
+    <property name="java.output" value="${build.tmpdir}/java_bin" />
+
+    <property name="react.home" value="${basedir}/client" />
+    <property name="react.default.dir" value="${basedir}/client/build" />
+    <property name="react.output" value="${build.tmpdir}/react_bin" />
+
+    <property name="ant.build.javac.source" value="1.8" />
+    <property name="ant.build.javac.target" value="1.8"/>
+    <property name="ant.build.javac.bootclasspathref" value="${basedir}/anny_build/lib/rt.jar"/>
+
+    <tstamp>
+        <format property="DATETIME" pattern="yyyy_MM_dd"/>
+    </tstamp>
 
     <target name="build.init" description="Initialize the build environement">
         <mkdir dir="${build.tmpdir}" />
+        <mkdir dir="${build.finaldir}" />
         <mkdir dir="${java.output}" />
         <mkdir dir="${react.output}" />
     </target>
@@ -21,9 +32,9 @@
     <target name="java.compile" description="Compile the Java sources" depends="build.init">
         <echo message="Compiling the server Java sources..." />
 
-        <javac destdir="${java.output}" srcdir="${java.sources}">
+        <javac destdir="${java.output}/" srcdir="${java.sources}/">
             <classpath>
-                <fileset dir="${java.libraries}" includes="*.jar" />
+                <fileset dir="${java.libraries}/" includes="*.jar" />
             </classpath>
         </javac>
 
@@ -41,13 +52,40 @@
         </exec>
 
         <move todir="${react.output}">
-            <fileset dir="${react.default.dir}" includes="*" />
+            <fileset dir="${react.default.dir}" includes="**" />
         </move>
 
         <echo message="Client compilation success !" />
     </target>
 
-    <target name="build.webapp" description="Create the war archive for the web project" depends="java.compile, react.compile">
+    <target name="build.webapp" description="Create the war archive for the web project" depends="java.compile,react.compile">
+        <echo message="Creating the web application archive..." />
+
+        <mkdir dir="${build.finaldir}/cache/" />
+        <mkdir dir="${build.finaldir}/log/" />
+
+        <copy file="${basedir}/server/WebContent/config.json" todir="${build.finaldir}" />
+
+        <copy todir="${build.finaldir}/errors/">
+            <fileset dir="${basedir}/server/WebContent/errors/" includes="**" />
+        </copy>
+        <copy todir="${build.finaldir}/META-INF/">
+            <fileset dir="${basedir}/server/WebContent/META-INF/" includes="**" />
+        </copy>
+        <copy todir="${build.finaldir}/WEB-INF/">
+            <fileset dir="${basedir}/server/WebContent/WEB-INF/" includes="**" />
+        </copy>
+
+        <copy todir="${build.finaldir}/WEB-INF/classes/">
+            <fileset dir="${java.output}/" includes="**" />
+        </copy>
+        <copy todir="${build.finaldir}/">
+            <fileset dir="${react.output}/" includes="**" />
+        </copy>
+
+        <war destfile="${basedir}/anny_build/${DATETIME}/anny.war" basedir="${build.finaldir}/" />
+
+        <echo message="WAR file created !" />
     </target>
 
 </project>

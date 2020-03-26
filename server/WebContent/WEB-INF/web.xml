@@ -17,7 +17,7 @@
 
 	<servlet>
 		<servlet-name>404</servlet-name>
-		<jsp-file>/404.html</jsp-file>
+		<jsp-file>/errors/404.html</jsp-file>
 	</servlet>
 
 	<servlet-mapping>
