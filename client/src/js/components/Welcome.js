@@ -1,6 +1,7 @@
 // --- Code import
 import React from 'react';
 import Ajax from "../tools/Ajax";
+import Home from "./Home";
 import Error from "./Error";
 
 // --- Resources import
@@ -8,7 +9,7 @@ import logo from '../../img/logo.png';
 import '../../css/Welcome.css';
 
 /**
- * This class is the first screen of the application it will test if the user is logged in and offer him to register
+ * This class is the component where the user choose between login and register
  */
 class Welcome extends React.Component {
 
@@ -16,9 +17,9 @@ class Welcome extends React.Component {
 
 
     /**
-     * Default constructor
+     * Construct a new component and send a request to the server
      *
-     * @param props The component props
+     * @param props
      */
     constructor(props) {
         super(props);
@@ -61,41 +62,20 @@ class Welcome extends React.Component {
     // ----- Render method -----
 
 
-    /**
-     * Method to render the component
-     *
-     * @returns {*} The JSX render
-     */
     render() {
         if(this.state.loggedIn !== null) {
 
             if(this.state.loggedIn) {
 
-                // Redirect to the home component
+                // Send the user to the home
                 return (
-                    <div className="App">
-                        <div className="App-header">
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <h2>Welcome to Anny (Not developed yet...)</h2>
-                        </div>
-                        <p className="App-intro">
-                            You'll have to wait fot the developer to work on it...
-                        </p>
-                    </div>
+                    <Home />
                 );
 
             } else {
 
                 return (
-                    <div className="App">
-                        <div className="App-header">
-                            <img src={logo} className="App-logo" alt="logo" />
-                            <h2>Welcome to Anny (Not developed yet...)</h2>
-                        </div>
-                        <p className="App-intro">
-                            You'll have to wait fot the developer to work on it...
-                        </p>
-                    </div>
+                    <p>Welcome page</p>
                 );
 
             }
