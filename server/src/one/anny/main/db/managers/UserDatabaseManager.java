@@ -35,7 +35,7 @@ public class UserDatabaseManager {
 		Connection connection = Database.getMySQLConnection();
 
 		// Create the SQL insertion
-		String insertion = "INSERT INTO USER (userId, userPseudo, userName, userSurname, userEmail, userPassword, userDate, userAdmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String insertion = "INSERT INTO USER (userId, userPseudo, userEmail, userPassword, userDate, userAdmin) VALUES (?, ?, ?, ?, ?, ?)";
 
 		// Prepare the statement
 		PreparedStatement preparedStatement = connection.prepareStatement(insertion);
@@ -43,12 +43,10 @@ public class UserDatabaseManager {
 		// Bind the parameters
 		preparedStatement.setString(1, userModel.getUserId());
 		preparedStatement.setString(2, userModel.getUserPseudo());
-		preparedStatement.setString(3, userModel.getUserName());
-		preparedStatement.setString(4, userModel.getUserSurname());
-		preparedStatement.setString(5, userModel.getUserEmail());
-		preparedStatement.setString(6, userModel.getUserPassword());
-		preparedStatement.setDate(7, userModel.getUserDate());
-		preparedStatement.setBoolean(8, userModel.isUserAdmin());
+		preparedStatement.setString(3, userModel.getUserEmail());
+		preparedStatement.setString(4, userModel.getUserPassword());
+		preparedStatement.setDate(5, userModel.getUserDate());
+		preparedStatement.setBoolean(6, userModel.isUserAdmin());
 
 		// Execute the statement
 		preparedStatement.executeUpdate();
@@ -65,19 +63,17 @@ public class UserDatabaseManager {
 		Connection connection = Database.getMySQLConnection();
 
 		// Create the SQL insertion (no date because you can't update the inscription date)
-		String update = "UPDATE USER SET userPseudo = ?, userName = ?, userSurname = ?, userEmail = ?, userPassword = ?, userAdmin = ? WHERE userId = ?";
+		String update = "UPDATE USER SET userPseudo = ?, userEmail = ?, userPassword = ?, userAdmin = ? WHERE userId = ?";
 
 		// Prepare the statement
 		PreparedStatement preparedStatement = connection.prepareStatement(update);
 
 		// Bind the parameters
 		preparedStatement.setString(1, userModel.getUserPseudo());
-		preparedStatement.setString(2, userModel.getUserName());
-		preparedStatement.setString(3, userModel.getUserSurname());
-		preparedStatement.setString(4, userModel.getUserEmail());
-		preparedStatement.setString(5, userModel.getUserPassword());
-		preparedStatement.setInt(6, userModel.isUserAdmin() ? 1 : 0);
-		preparedStatement.setString(7, userModel.getUserId());
+		preparedStatement.setString(2, userModel.getUserEmail());
+		preparedStatement.setString(3, userModel.getUserPassword());
+		preparedStatement.setInt(4, userModel.isUserAdmin() ? 1 : 0);
+		preparedStatement.setString(5, userModel.getUserId());
 
 		// Execute the statement
 		preparedStatement.executeUpdate();
@@ -147,38 +143,6 @@ public class UserDatabaseManager {
 			while(iterator.hasNext()) {
 				iterator.next();
 				query.append(" userPseudo " + (isLike ? "LIKE" : "=") + " ?");
-				if(iterator.hasNext()) {
-					query.append(" OR");
-				}
-			}
-
-			query.append(" )");
-		}
-
-		// Add all the wanted name
-		if(filter.getUserNameSet().size() > 0) {
-			query.append(" AND (");
-
-			Iterator<String> iterator = filter.getUserNameSet().iterator();
-			while(iterator.hasNext()) {
-				iterator.next();
-				query.append(" userName " + (isLike ? "LIKE" : "=") + " ?");
-				if(iterator.hasNext()) {
-					query.append(" OR");
-				}
-			}
-
-			query.append(" )");
-		}
-
-		// Add all the wanted surname
-		if(filter.getUserSurnameSet().size() > 0) {
-			query.append(" AND (");
-
-			Iterator<String> iterator = filter.getUserSurnameSet().iterator();
-			while(iterator.hasNext()) {
-				iterator.next();
-				query.append(" userSurname " + (isLike ? "LIKE" : "=") + " ?");
 				if(iterator.hasNext()) {
 					query.append(" OR");
 				}
@@ -257,14 +221,6 @@ public class UserDatabaseManager {
 			preparedStatement.setString(nextArgPointer++, pseudo);
 		}
 		
-		for(String name : filter.getUserNameSet()) {
-			preparedStatement.setString(nextArgPointer++, name);
-		}
-		
-		for(String surname : filter.getUserSurnameSet()) {
-			preparedStatement.setString(nextArgPointer++, surname);
-		}
-		
 		for(String email : filter.getUserEmailSet()) {
 			preparedStatement.setString(nextArgPointer++, email);
 		}
@@ -292,8 +248,6 @@ public class UserDatabaseManager {
 		while(resultSet.next()) {
 			String id = resultSet.getString("userId");
 			String pseudo = resultSet.getString("userPseudo");
-			String name = resultSet.getString("userName");
-			String surname = resultSet.getString("userSurname");
 			String email = resultSet.getString("userEmail");
 			String password = resultSet.getString("userPassword");
 			Date date = resultSet.getDate("userDate");
@@ -302,8 +256,6 @@ public class UserDatabaseManager {
 			UserModel newUser = new UserModel();
 			newUser.setUserId(id);
 			newUser.setUserPseudo(pseudo);
-			newUser.setUserName(name);
-			newUser.setUserSurname(surname);
 			newUser.setUserEmail(email);
 			newUser.setUserPassword(password);
 			newUser.setUserDate(date);

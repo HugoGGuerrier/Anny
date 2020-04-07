@@ -21,12 +21,6 @@ public class UserFilter extends AbstractFilter {
 	/** Set of pseudo to look for */
 	private Set<String> userPseudoSet;
 	
-	/** Set of name to look for */
-	private Set<String> userNameSet;
-	
-	/** Set of surname possibility to look for */
-	private Set<String> userSurnameSet;
-	
 	/** Set of email to look for */
 	private Set<String> userEmailSet;
 	
@@ -49,8 +43,6 @@ public class UserFilter extends AbstractFilter {
 	public UserFilter() {
 		this.userIdSet = new HashSet<String>();
 		this.userPseudoSet = new HashSet<String>();
-		this.userNameSet = new HashSet<String>();
-		this.userSurnameSet = new HashSet<String>();
 		this.userEmailSet = new HashSet<String>();
 		this.userPasswordSet = new HashSet<String>();
 		this.userDateSet = new HashSet<Date>();
@@ -67,14 +59,6 @@ public class UserFilter extends AbstractFilter {
 	
 	public Set<String> getUserPseudoSet() {
 		return this.userPseudoSet;
-	}
-	
-	public Set<String> getUserNameSet() {
-		return this.userNameSet;
-	}
-	
-	public Set<String> getUserSurnameSet() {
-		return this.userSurnameSet;
 	}
 	
 	public Set<String> getUserEmailSet() {
@@ -115,26 +99,6 @@ public class UserFilter extends AbstractFilter {
 	
 	public void addUserPseudo(String userPseudo) {
 		this.userPseudoSet.add(userPseudo);
-	}
-	
-	// --- User Name
-	
-	public void setUserNameSet(Set<String> userNameSet) {
-		this.userNameSet = userNameSet;
-	}
-	
-	public void addUserName(String userName) {
-		this.userNameSet.add(userName);
-	}
-	
-	// --- User surname
-	
-	public void setUserSurnameSet(Set<String> userSurnameSet) {
-		this.userSurnameSet = userSurnameSet;
-	}
-	
-	public void addUserSurname(String userSurname) {
-		this.userSurnameSet.add(userSurname);
 	}
 	
 	// --- User email

@@ -1,18 +1,107 @@
-.App {
-  text-align: center;
+/* The welcome root style */
+
+#welcome-root {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
 }
 
-.App-logo {
-  height: 80px;
+/* Choice side */
+
+#side-container {
+    flex-grow: 0;
+    height: 100%;
+    display: flex;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    flex-direction: row;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.57);
+    z-index: 3;
+    align-items: center;
+    background: rgb(152,0,187);
+    background: linear-gradient(135deg, rgba(152,0,187,1) 0%, rgba(32,0,186,1) 100%);
 }
 
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+.side-button {
+    display: block;
+    text-align: right;
+    color: white;
+    padding: 1rem 2rem 1rem 7rem;
+    margin-right: 1rem;
+    border-top-right-radius: 3rem;
+    border-bottom-right-radius: 3rem;
+    transition: background-color 0.3s;
+    -webkit-transition: background-color 0.3s;
 }
 
-.App-intro {
-  font-size: large;
+.side-button:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.side-selected {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+#login-button {
+    margin-bottom: 0.7rem;
+}
+
+/* Welcome section side */
+
+#welcome-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    background-image: url("../img/memphis-colorful.png");
+}
+
+#welcome-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    position: relative;
+}
+
+#welcome-text {
+    text-align: center;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    transition: opacity 0.2s;
+    -webkit-transition: 0.2s;
+}
+
+#welcome-text img {
+    width: 150px;
+    height: 150px;
+}
+
+#welcome-text h1 {
+    font-weight: 300;
+    font-size: 5rem;
+    margin: 1rem 0 1rem 0;
+}
+
+#welcome-text p {
+    margin: 1rem 0 0 0;
+}
+
+/* Forms */
+
+#welcome-container form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    z-index: -1;
+    opacity: 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    transition: opacity 0.2s;
+    -webkit-transition: 0.2s;
 }

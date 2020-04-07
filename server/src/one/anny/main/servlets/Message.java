@@ -20,7 +20,6 @@ import one.anny.main.tools.Logger;
 import one.anny.main.tools.StdVar;
 import one.anny.main.tools.exceptions.MessageException;
 import one.anny.main.tools.exceptions.MongoException;
-import one.anny.main.tools.exceptions.SessionException;
 import one.anny.main.tools.exceptions.UserException;
 import one.anny.main.tools.models.MessageModel;
 import one.anny.main.tools.sessions.SessionModel;
@@ -197,7 +196,7 @@ public class Message extends HttpServlet {
 
 		} else {
 
-			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleNotConnected();
 
 		}
 
@@ -256,7 +255,7 @@ public class Message extends HttpServlet {
 
 		} else {
 
-			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleNotConnected();
 
 		}
 
@@ -322,7 +321,7 @@ public class Message extends HttpServlet {
 
 		} else {
 
-			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleNotConnected();
 
 		}
 

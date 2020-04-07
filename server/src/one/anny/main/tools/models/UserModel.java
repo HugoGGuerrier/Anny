@@ -21,12 +21,6 @@ public class UserModel {
 	/** Public pseudo of the user */
 	private String userPseudo;
 
-	/** User's name */
-	private String userName;
-
-	/** User's surname */
-	private String userSurname;
-
 	/** User's email address */
 	private String userEmail;
 
@@ -49,8 +43,6 @@ public class UserModel {
 	public UserModel() {
 		this.userId = null;
 		this.userPseudo = null;
-		this.userName = null;
-		this.userSurname = null;
 		this.userEmail = null;
 		this.userPassword = null;
 		this.userDate = null;
@@ -69,17 +61,6 @@ public class UserModel {
 	public String getUserPseudo() {
 		return this.userPseudo;
 	}
-
-
-	public String getUserName() {
-		return this.userName;
-	}
-
-
-	public String getUserSurname() {
-		return this.userSurname;
-	}
-
 
 	public String getUserEmail() {
 		return this.userEmail;
@@ -128,14 +109,6 @@ public class UserModel {
 
 	public void setUserPseudo(String pseudo) {
 		this.userPseudo = pseudo;
-	}
-
-	public void setUserName(String name) {
-		this.userName = name;
-	}
-
-	public void setUserSurname(String surname) {
-		this.userSurname = surname;
 	}
 
 	public void setUserEmail(String email) {

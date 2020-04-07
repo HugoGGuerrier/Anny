@@ -18,7 +18,6 @@ import one.anny.main.tools.Handler;
 import one.anny.main.tools.Logger;
 import one.anny.main.tools.StdVar;
 import one.anny.main.tools.exceptions.BoardException;
-import one.anny.main.tools.exceptions.SessionException;
 import one.anny.main.tools.exceptions.UserException;
 import one.anny.main.tools.models.BoardModel;
 import one.anny.main.tools.sessions.SessionModel;
@@ -171,7 +170,7 @@ public class Board extends HttpServlet {
 
 		} else {
 
-			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleNotConnected();
 
 		}
 
@@ -231,7 +230,7 @@ public class Board extends HttpServlet {
 
 		} else {
 
-			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleNotConnected();
 
 		}
 
@@ -294,7 +293,7 @@ public class Board extends HttpServlet {
 
 		} else {
 
-			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleNotConnected();
 
 		}
 

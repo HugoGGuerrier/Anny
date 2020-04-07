@@ -79,7 +79,7 @@ public class ToolsTest {
 
 		assertFalse(Config.isMysqlPooling());
 		assertEquals("localhost", Config.getMysqlHost());
-		assertEquals("DB_ANNY_TEST", Config.getMysqlDatabase());
+		assertEquals("DB_ANNY_TEST?serverTimezone=UTC", Config.getMysqlDatabase());
 
 		assertEquals("DB_ANNY_TEST", Config.getMongoDatabase());
 		assertEquals("messages", Config.getMongoMessageCollection());

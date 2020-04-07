@@ -9,7 +9,7 @@
 "mysqlConfig": {
 	"mysqlPooling": false,
 	"mysqlHost": "localhost",
-	"mysqlDatabase": "DB_ANNY",
+	"mysqlDatabase": "DB_ANNY?serverTimezone=UTC",
 	"mysqlLogin": "anny_user",
 	"mysqlPassword": "A04n08n11y12;"
 },

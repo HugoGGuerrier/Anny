@@ -36,6 +36,7 @@ class Error extends React.Component {
      */
     componentDidMount() {
         document.body.style.backgroundColor = "black";
+        document.body.style.fontFamily = "sans-serif";
     }
 
     /**
@@ -43,6 +44,7 @@ class Error extends React.Component {
      */
     componentWillUnmount() {
         document.body.style.backgroundColor = "white";
+        document.body.style.fontFamily = "Montserrat";
     }
 
 

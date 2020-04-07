@@ -1,17 +1,26 @@
-// --- Code import
-import React from 'react';
-import Ajax from "../tools/Ajax";
-import Home from "./Home";
-import Error from "./Error";
-
 // --- Resources import
 import logo from '../../img/logo.png';
 import '../../css/Welcome.css';
+
+// --- Code import
+import React from 'react';
+import Ajax from "../tools/Ajax";
+import Error from "./Error";
+import {Redirect} from "react-router-dom";
+import AppRouter from "./AppRouter";
+import Config from "../tools/Config";
+
 
 /**
  * This class is the component where the user choose between login and register
  */
 class Welcome extends React.Component {
+
+    // ----- Attributes -----
+
+
+    showArray = {welcomeText: true, loginForm: false, registerForm: false};
+
 
     // ----- Constructor -----
 
@@ -45,10 +54,10 @@ class Welcome extends React.Component {
     handleLoginTest(response) {
         if(response.hasOwnProperty("result")) {
             switch (response.result) {
-                case "SUCCESS":
+                case Config.successResponse:
                     this.setState({loggedIn: true});
                     break;
-                case "NOT_LOGGED":
+                case Config.notLoggedResponse:
                     this.setState({loggedIn: false});
                     break;
                 default:
@@ -58,10 +67,75 @@ class Welcome extends React.Component {
         }
     }
 
+    /**
+     * Hide the welcome text
+     */
+    hideWelcomeText() {
+        if(this.showArray.welcomeText) {
+            this.hideElement(document.getElementById("welcome-text"));
+            this.showArray.welcomeText = false;
+        }
+    }
+
+    /**
+     * Show the login form
+     */
+    showLoginForm() {
+        if(!this.showArray.loginForm) {
+            this.showElement(document.getElementById("login-form"));
+            this.hideElement(document.getElementById("register-form"));
+            this.showArray.loginForm = true;
+            this.showArray.registerForm = false;
+        }
+    }
+
+    /**
+     * Show the register form
+     */
+    showRegisterForm() {
+        if(!this.showArray.registerForm) {
+            this.showElement(document.getElementById("register-form"));
+            this.hideElement(document.getElementById("login-form"));
+            this.showArray.registerForm = true;
+            this.showArray.loginForm = false;
+        }
+    }
+
+    /**
+     * Show an html element
+     *
+     * @param htmlElement
+     */
+    showElement(htmlElement) {
+        htmlElement.style.zIndex = "1";
+
+        window.setTimeout(function () {
+            htmlElement.style.opacity = "1";
+        }, 10);
+    }
+
+    /**
+     * Hide an html element
+     *
+     * @param htmlElement
+     */
+    hideElement(htmlElement) {
+        htmlElement.style.opacity = "0";
+
+        window.setTimeout(function () {
+            htmlElement.style.zIndex = "-1";
+        }, 210);
+    }
+
 
     // ----- Render method -----
 
 
+    /**
+     * The render function
+     *
+     * @returns {null|*}
+     */
     render() {
         if(this.state.loggedIn !== null) {
 
@@ -69,13 +143,51 @@ class Welcome extends React.Component {
 
                 // Send the user to the home
                 return (
-                    <Home />
+                    <Redirect to={AppRouter.homeRoute} />
                 );
 
             } else {
 
+                // Return the welcome page
                 return (
-                    <p>Welcome page</p>
+                    <div id={"welcome-root"}>
+
+                        <div id={"side-container"}>
+                            <div id={"link-container"}>
+                                <a id={"login-button"} className={"side-button"} onClick={() => {this.hideWelcomeText(); this.showLoginForm();}}>LOGIN</a>
+                                <a id={"register-button"} className={"side-button"} onClick={() => {this.hideWelcomeText(); this.showRegisterForm();}}>REGISTER</a>
+                            </div>
+                        </div>
+
+                        <section id={"welcome-section"}>
+                            <div id={"welcome-container"}>
+                                <div id={"welcome-text"}>
+                                    <img src={logo} alt={"Anny's logo"} />
+                                    <h1>Welcome to Anny !</h1>
+                                    <p>Anny is a simple and open source social network based on the anonymity.</p>
+                                    <p>Everyone can create an account, post messages and be a part of the community.</p>
+                                    <p>We hope you'll have a great time.</p>
+                                </div>
+
+                                <form id={"login-form"}>
+                                    <h1>Login</h1>
+                                    <input id={"login-id-input"} className={"form-input"} type={"text"} placeholder={"@user_id"} />
+                                    <input id={"login-password-input"} className={"form-input"} type={"password"} placeholder={"Password"} />
+                                    <input id={"login-submit"} className={"form-submit-button"} type={"button"} value={"Login"} />
+                                </form>
+
+                                <form id={"register-form"}>
+                                    <h1>Register</h1>
+                                    <input id={"register-mail-input"} className={"form-input"} type={"text"} placeholder={"Email address"} />
+                                    <input id={"register-pseudo-input"} className={"form-input"} type={"text"} placeholder={"User pseudo"} />
+                                    <input id={"register-id-input"} className={"form-input"} type={"text"} placeholder={"User ID"} />
+                                    <input id={"register-password-input"} className={"form-input"} type={"password"} placeholder={"Password"} />
+                                    <input id={"register-submit"} className={"form-submit-button"} type={"button"} value={"Register"} />
+                                </form>
+                            </div>
+                        </section>
+
+                    </div>
                 );
 
             }
@@ -84,7 +196,7 @@ class Welcome extends React.Component {
 
             // Render the error template
             return (
-                <Error error={this.state.error}/>
+                <Error error={this.state.error} />
             );
 
         } else {

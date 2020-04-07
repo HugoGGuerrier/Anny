@@ -59,7 +59,6 @@ public class Login extends HttpServlet {
 	 * Get if the user is currently login
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Prepare the JSON result
 		JSONObject res = Handler.getDefaultResponse();
@@ -69,7 +68,7 @@ public class Login extends HttpServlet {
 		
 		// Test if the session exists and is not anonymous
 		if(currentSession == null || currentSession.isAnonymous()) {
-			res.put("result", "NOT_LOGGED");
+			res = Handler.handleNotConnected();
 		}
 
 		// Send the result

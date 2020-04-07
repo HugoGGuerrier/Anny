@@ -1,3 +1,6 @@
+/**
+ * This class contain the application configuration
+ */
 class Config {
 
     // ----- Attributes -----
@@ -5,6 +8,11 @@ class Config {
 
     static env = 0;
     static apiUrl;
+
+    /** Api response possibility */
+    static successResponse = "SUCCESS";
+    static notLoggedResponse = "NOT_LOGGED";
+    static failResponse = "FAIL";
 
 
     // ----- Class method -----

@@ -32,8 +32,6 @@ public class Migrator {
 			"CREATE OR REPLACE TABLE USER ("
 			+ "userId VARCHAR(32) PRIMARY KEY NOT NULL, "
 			+ "userPseudo VARCHAR(64) NOT NULL, "
-			+ "userName VARCHAR(64) NOT NULL, "
-			+ "userSurname VARCHAR(32) NOT NULL, "
 			+ "userEmail VARCHAR(64) NOT NULL UNIQUE, "
 			+ "userPassword VARCHAR(128) NOT NULL, "
 			+ "userDate DATE NOT NULL, "
@@ -64,7 +62,8 @@ public class Migrator {
 	};
 
 	/** Downgrade version 1 */
-	private final String[] version1Downgrade = {"DROP TABLE IF EXISTS FOLLOW; ",
+	private final String[] version1Downgrade = {
+			"DROP TABLE IF EXISTS FOLLOW; ",
 			"DROP TABLE IF EXISTS BELONGS_TO_BOARD; ",
 			"DROP TABLE IF EXISTS BOARD; ",
 			"DROP TABLE IF EXISTS USER; "

@@ -43,14 +43,6 @@ public class UserServices {
 			valid = false;
 			message.append(" - Invalid user pseudo : " + user.getUserPseudo());
 		}
-		if(user.getUserName() == null || !Security.isStringNotEmpty(user.getUserName())) {
-			valid = false;
-			message.append(" - Invalid user name : " + user.getUserName());
-		}
-		if(user.getUserSurname() == null || !Security.isStringNotEmpty(user.getUserSurname())) {
-			valid = false;
-			message.append(" - Invalid user surname : " + user.getUserSurname());
-		}
 		if(user.getUserEmail() == null || !Security.isValidEmail(user.getUserEmail())) {
 			valid = false;
 			message.append(" - Invalid user email : " + user.getUserEmail());
@@ -73,8 +65,6 @@ public class UserServices {
 			
 			// Escape the HTML special characters
 			user.setUserPseudo(Security.htmlEncode(user.getUserPseudo()));
-			user.setUserName(Security.htmlEncode(user.getUserName()));
-			user.setUserSurname(Security.htmlEncode(user.getUserSurname()));
 			
 			// Call the user database manager to insert a new user
 			UserDatabaseManager.insertUser(user);
@@ -132,14 +122,6 @@ public class UserServices {
 			valid = false;
 			message.append(" - Invalid user pseudo : " + user.getUserPseudo());
 		}
-		if(user.getUserName() == null || !Security.isStringNotEmpty(user.getUserName())) {
-			valid = false;
-			message.append(" - Invalid user name : " + user.getUserName());
-		}
-		if(user.getUserSurname() == null || !Security.isStringNotEmpty(user.getUserSurname())) {
-			valid = false;
-			message.append(" - Invalid user surname : " + user.getUserSurname());
-		}
 		if(user.getUserEmail() == null || !Security.isValidEmail(user.getUserEmail())) {
 			valid = false;
 			message.append(" - Invalid user email : " + user.getUserEmail());
@@ -162,8 +144,6 @@ public class UserServices {
 
 			// Escape the HTML special characters
 			user.setUserPseudo(Security.htmlEncode(user.getUserPseudo()));
-			user.setUserName(Security.htmlEncode(user.getUserName()));
-			user.setUserSurname(Security.htmlEncode(user.getUserSurname()));
 
 			// Call the user database manager to insert a new user
 			UserDatabaseManager.updateUser(user);
@@ -188,22 +168,6 @@ public class UserServices {
 				escapedPseudoSet.add(Security.htmlEncode(pseudo));
 			}
 			filter.setUserPseudoSet(escapedPseudoSet);
-		}
-		
-		if(filter.getUserNameSet().size() > 0) {
-			Set<String> escapedNameSet = new HashSet<String>();
-			for(String name : filter.getUserNameSet()) {
-				escapedNameSet.add(Security.htmlEncode(name));
-			}
-			filter.setUserNameSet(escapedNameSet);
-		}
-		
-		if(filter.getUserSurnameSet().size() > 1) {
-			Set<String> escapedSurnameSet = new HashSet<String>();
-			for(String surname : filter.getUserSurnameSet()) {
-				escapedSurnameSet.add(Security.htmlEncode(surname));
-			}
-			filter.setUserSurnameSet(escapedSurnameSet);
 		}
 		
 		// Call the user database manager to search users

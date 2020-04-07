@@ -102,8 +102,6 @@ public class DatabaseTests {
 		UserModel exampleUser = new UserModel();
 		exampleUser.setUserId("@tester_1");
 		exampleUser.setUserPseudo("Test_pseudo");
-		exampleUser.setUserName("TestName");
-		exampleUser.setUserSurname("TestSurname");
 		exampleUser.setUserEmail("test1@test.mail");
 		exampleUser.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
 		exampleUser.setUserDate(new Date(new java.util.Date().getTime()));
@@ -116,7 +114,7 @@ public class DatabaseTests {
 		}
 
 		// Test updater
-		exampleUser.setUserName("TestName2");
+		exampleUser.setUserPseudo("Test_pseudo2");
 		try {
 			UserDatabaseManager.updateUser(exampleUser);
 		} catch (SQLException e) {
@@ -130,8 +128,7 @@ public class DatabaseTests {
 		try {
 			List<UserModel> users = UserDatabaseManager.getUsers(userFilter, false);
 			assertEquals(1, users.size());
-			assertEquals("Test_pseudo", users.get(0).getUserPseudo());
-			assertEquals("TestName2", users.get(0).getUserName());
+			assertEquals("Test_pseudo2", users.get(0).getUserPseudo());
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Cannot get users !");
@@ -154,8 +151,6 @@ public class DatabaseTests {
 		UserModel exampleUser1 = new UserModel();
 		exampleUser1.setUserId("@tester_2");
 		exampleUser1.setUserPseudo("Test_pseudo");
-		exampleUser1.setUserName("TestName");
-		exampleUser1.setUserSurname("TestSurname");
 		exampleUser1.setUserEmail("test2@test.mail");
 		exampleUser1.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
 		exampleUser1.setUserDate(new Date(new java.util.Date().getTime()));
@@ -164,8 +159,6 @@ public class DatabaseTests {
 		UserModel exampleUser2 = new UserModel();
 		exampleUser2.setUserId("@tester_3");
 		exampleUser2.setUserPseudo("Test_pseudo");
-		exampleUser2.setUserName("TestName");
-		exampleUser2.setUserSurname("TestSurname");
 		exampleUser2.setUserEmail("test3@test.mail");
 		exampleUser2.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
 		exampleUser2.setUserDate(new Date(new java.util.Date().getTime()));
@@ -174,8 +167,6 @@ public class DatabaseTests {
 		UserModel exampleUser3 = new UserModel();
 		exampleUser3.setUserId("@tester_4");
 		exampleUser3.setUserPseudo("Test_pseudo");
-		exampleUser3.setUserName("TestName");
-		exampleUser3.setUserSurname("TestSurname");
 		exampleUser3.setUserEmail("test4@test.mail");
 		exampleUser3.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
 		exampleUser3.setUserDate(new Date(new java.util.Date().getTime()));
@@ -243,8 +234,6 @@ public class DatabaseTests {
 		UserModel exampleUser = new UserModel();
 		exampleUser.setUserId("@tester_5");
 		exampleUser.setUserPseudo("Test_pseudo");
-		exampleUser.setUserName("TestName");
-		exampleUser.setUserSurname("TestSurname");
 		exampleUser.setUserEmail("test5@test.mail");
 		exampleUser.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
 		exampleUser.setUserDate(new Date(new java.util.Date().getTime()));
@@ -310,8 +299,6 @@ public class DatabaseTests {
 		UserModel exampleUser = new UserModel();
 		exampleUser.setUserId("@tester_6");
 		exampleUser.setUserPseudo("Test_pseudo");
-		exampleUser.setUserName("TestName");
-		exampleUser.setUserSurname("TestSurname");
 		exampleUser.setUserEmail("test6@test.mail");
 		exampleUser.setUserPassword("0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
 		exampleUser.setUserDate(new Date(new java.util.Date().getTime()));

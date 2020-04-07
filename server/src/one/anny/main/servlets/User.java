@@ -90,8 +90,6 @@ public class User extends HttpServlet {
 				// Get the user parameters
 				String[] ids = req.getParameterValues("userId") != null ? req.getParameterValues("userId") :  new String[0];
 				String[] pseudos = req.getParameterValues("userPseudo") != null ? req.getParameterValues("userPseudo") :  new String[0];
-				String[] names = req.getParameterValues("userName") != null ? req.getParameterValues("userName") :  new String[0];
-				String[] surnames = req.getParameterValues("userSurname") != null ? req.getParameterValues("userSurname") :  new String[0];
 				String[] emails = req.getParameterValues("userEmail") != null ? req.getParameterValues("userEmail") :  new String[0];
 				String[] dates = req.getParameterValues("userDate") != null ? req.getParameterValues("userDate") :  new String[0];
 				
@@ -106,12 +104,6 @@ public class User extends HttpServlet {
 				}
 				for(String pseudo : pseudos) {
 					filter.addUserPseudo(pseudo);
-				}
-				for(String name : names) {
-					filter.addUserName(name);
-				}
-				for(String surname : surnames) {
-					filter.addUserSurname(surname);
 				}
 				for(String email : emails) {
 					filter.addUserEmail(email);
@@ -165,8 +157,6 @@ public class User extends HttpServlet {
 				// Get the user parameters
 				String id = req.getParameter("userId");
 				String pseudo = req.getParameter("userPseudo");
-				String name = req.getParameter("userName");
-				String surname = req.getParameter("userSurname");
 				String email = req.getParameter("userEmail");
 				String password = req.getParameter("userPassword");
 				Date date = new Date(new java.util.Date().getTime());
@@ -179,8 +169,6 @@ public class User extends HttpServlet {
 				UserModel newUser = new UserModel();
 				newUser.setUserId(id);
 				newUser.setUserPseudo(pseudo);
-				newUser.setUserName(name);
-				newUser.setUserSurname(surname);
 				newUser.setUserEmail(email);
 				newUser.setUserPassword(password);
 				newUser.setUserDate(date);
@@ -211,7 +199,7 @@ public class User extends HttpServlet {
 
 		} else {
 
-			res = Handler.handleException(new SessionException("Authorization denied"), Handler.WEB_ERROR);
+			res = Handler.handleNotConnected();
 
 		}
 
@@ -238,8 +226,6 @@ public class User extends HttpServlet {
 				// Get the user parameters
 				String id = req.getParameter("userId");
 				String pseudo = req.getParameter("userPseudo");
-				String name = req.getParameter("userName");
-				String surname = req.getParameter("userSurname");
 				String email = req.getParameter("userEmail");
 				String password = req.getParameter("userPassword");
 				Boolean admin = Boolean.parseBoolean(req.getParameter("userAdmin"));
@@ -251,8 +237,6 @@ public class User extends HttpServlet {
 				UserModel modifiedUser = new UserModel();
 				modifiedUser.setUserId(id);
 				modifiedUser.setUserPseudo(pseudo);
-				modifiedUser.setUserName(name);
-				modifiedUser.setUserSurname(surname);
 				modifiedUser.setUserEmail(email);
 				modifiedUser.setUserPassword(password);
 				modifiedUser.setUserAdmin(admin);
@@ -290,7 +274,7 @@ public class User extends HttpServlet {
 
 		} else {
 
-			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleNotConnected();
 
 		}
 
@@ -374,7 +358,7 @@ public class User extends HttpServlet {
 
 		} else {
 
-			res = Handler.handleException(new SessionException("User not identified"), Handler.WEB_ERROR);
+			res = Handler.handleNotConnected();
 
 		}
 

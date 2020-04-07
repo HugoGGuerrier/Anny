@@ -130,8 +130,6 @@ public class Register extends HttpServlet {
 					// Get the user parameters
 					String id = req.getParameter("userId");
 					String pseudo = req.getParameter("userPseudo");
-					String name = req.getParameter("userName");
-					String surname = req.getParameter("userSurname");
 					String email = req.getParameter("userEmail");
 					String password = req.getParameter("userPassword");
 					Date date = new Date(new java.util.Date().getTime());
@@ -144,8 +142,6 @@ public class Register extends HttpServlet {
 					UserModel newUser = new UserModel();
 					newUser.setUserId(id);
 					newUser.setUserPseudo(pseudo);
-					newUser.setUserName(name);
-					newUser.setUserSurname(surname);
 					newUser.setUserEmail(email);
 					newUser.setUserPassword(password);
 					newUser.setUserDate(date);

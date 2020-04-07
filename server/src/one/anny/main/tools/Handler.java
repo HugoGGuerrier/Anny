@@ -48,6 +48,20 @@ public class Handler {
 	}
 	
 	/**
+	 * Get the response when an user is not connected
+	 * 
+	 * @return The JSON for a not connected user
+	 */
+	@SuppressWarnings("unchecked")
+	public static JSONObject handleNotConnected() {
+		JSONObject res = new JSONObject();
+		
+		res.put("result", "NOT_LOGGED");
+		
+		return res;
+	}
+	
+	/**
 	 * Get the JSON of the refused service with a message
 	 * 
 	 * @param msg The wanted message
