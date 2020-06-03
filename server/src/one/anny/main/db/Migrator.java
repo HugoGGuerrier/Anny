@@ -89,7 +89,7 @@ public class Migrator {
 			ResultSet resultSet = stmt.executeQuery("SELECT * FROM DB_INFO");
 			resultSet.next();
 
-			this.currentDatabaseVersion = resultSet.getInt("version");
+			this.currentDatabaseVersion = resultSet.getInt("db_version");
 
 		} catch (SQLException e) {
 
@@ -97,8 +97,8 @@ public class Migrator {
 			this.currentDatabaseVersion = 0;
 
 			stmt.executeUpdate("DROP TABLE IF EXISTS DB_INFO");
-			stmt.executeUpdate("CREATE TABLE DB_INFO(name VARCHAR(16) NOT NULL PRIMARY KEY, version INT NOT NULL)");
-			stmt.executeUpdate("INSERT INTO DB_INFO (name, version) VALUES('" + Config.getMysqlDatabase() + "', 0)");
+			stmt.executeUpdate("CREATE TABLE DB_INFO(db_name VARCHAR(128) NOT NULL PRIMARY KEY, db_version INT NOT NULL)");
+			stmt.executeUpdate("INSERT INTO DB_INFO (db_name, db_version) VALUES('" + Config.getMysqlDatabase() + "', 0)");
 			
 			Logger.log("Database info intialized", Logger.INFO);
 
@@ -133,7 +133,7 @@ public class Migrator {
 	private void setCurrentDatabaseVersion(int version) throws SQLException {
 		Connection connection = Database.getMySQLConnection();
 		Statement stmt = connection.createStatement();
-		stmt.executeUpdate("UPDATE DB_INFO SET version = " + version + " WHERE name = '" + Config.getMysqlDatabase() + "'");
+		stmt.executeUpdate("UPDATE DB_INFO SET db_version = " + version + " WHERE db_name = '" + Config.getMysqlDatabase() + "'");
 		this.currentDatabaseVersion = version;
 	}
 

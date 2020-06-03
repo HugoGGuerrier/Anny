@@ -1,7 +1,7 @@
 /**
  * This class contain the application configuration
  */
-class Config {
+class StdVar {
 
     // ----- Attributes -----
 
@@ -19,17 +19,17 @@ class Config {
 
 
     static initConfig() {
-        if(Config.env === 0) {
+        if(StdVar.env === 0) {
 
-            Config.apiUrl = "http://localhost:8080/anny/";
+            StdVar.apiUrl = "http://localhost:8080/anny/";
 
         } else {
 
-            Config.apiUrl = window.location.protocol + "//" + window.location.host + "/" + process.env.PUBLIC_URL + "/";
+            StdVar.apiUrl = window.location.protocol + "//" + window.location.host + "/" + process.env.PUBLIC_URL + "/";
 
         }
     }
 
 }
 
-export default Config;
+export default StdVar;

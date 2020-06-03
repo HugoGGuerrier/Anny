@@ -1,4 +1,4 @@
-import Config from "./Config";
+import StdVar from "./StdVar";
 
 class Ajax {
 
@@ -18,7 +18,7 @@ class Ajax {
         let connection = new XMLHttpRequest();
 
         // Create all the HTTP request params
-        let url = Config.apiUrl + point;
+        let url = StdVar.apiUrl + point;
         let body = null;
 
         // Format the data to the correct format

@@ -1,11 +1,26 @@
+# settings
+client/.idea
 .classpath
 .project
+.settings/
+*.iml
+
+# dependencies
+node_modules/
+
+# testing
+coverage/
+
+# production
+anny_build/
 out/
 build/
-.settings/
 bin/
+
+# misc
 .directory
-node_modules/
-client/.idea
-npm-debug.log
-anny_build/
+.DS_Store
+.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

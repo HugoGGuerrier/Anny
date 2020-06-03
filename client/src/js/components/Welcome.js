@@ -8,8 +8,22 @@ import Ajax from "../tools/Ajax";
 import Error from "./Error";
 import {Redirect} from "react-router-dom";
 import AppRouter from "./AppRouter";
-import Config from "../tools/Config";
+import StdVar from "../tools/StdVar";
 
+
+/**
+ * This class represent the login form
+ */
+class Login extends React.Component {
+
+}
+
+/**
+ * This class represent the register form
+ */
+class Register extends React.Component {
+
+}
 
 /**
  * This class is the component where the user choose between login and register
@@ -54,10 +68,10 @@ class Welcome extends React.Component {
     handleLoginTest(response) {
         if(response.hasOwnProperty("result")) {
             switch (response.result) {
-                case Config.successResponse:
+                case StdVar.successResponse:
                     this.setState({loggedIn: true});
                     break;
-                case Config.notLoggedResponse:
+                case StdVar.notLoggedResponse:
                     this.setState({loggedIn: false});
                     break;
                 default:

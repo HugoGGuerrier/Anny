@@ -62,7 +62,7 @@ public class BoardServices {
 
 			// Call the board database manager to insert a new board
 			BoardDatabaseManager.insertBoard(board);
-
+			
 		}
 	}
 	

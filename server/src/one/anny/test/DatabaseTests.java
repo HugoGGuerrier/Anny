@@ -31,6 +31,7 @@ import one.anny.main.db.managers.FollowDatabaseManager;
 import one.anny.main.db.managers.MessageDatabaseManager;
 import one.anny.main.db.managers.UserDatabaseManager;
 import one.anny.main.tools.Config;
+import one.anny.main.tools.Logger;
 import one.anny.main.tools.StdVar;
 import one.anny.main.tools.exceptions.MongoException;
 import one.anny.main.tools.models.BoardModel;
@@ -58,6 +59,7 @@ public class DatabaseTests {
 			Reader reader = new FileReader(configTestPath.toAbsolutePath().toFile());
 			Config.setBasePath(Paths.get("").toAbsolutePath().toString() + "/WebContent/");
 			Config.init(reader);
+			Logger.init();
 
 			// Upgrade the database to the wanted version
 			Migrator migrator = Migrator.getInstance();

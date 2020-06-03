@@ -257,6 +257,7 @@ public class CacheManager implements Runnable {
 				// Get the read lock to avoid get request during the writing period
 				this.cacheFileLock.lock();
 
+
 				// Wait for the buffer to be filled
 				while(this.sessionsAddBuffer.size() == 0 && this.sessionsRemoveBuffer.size() == 0) {
 					this.bufferEmptyCondition.await();
@@ -264,6 +265,7 @@ public class CacheManager implements Runnable {
 				
 				// Verify the added sessions
 				if(this.addedSessions >= Config.getCacheCleaningInterval()) {
+					Logger.log("Cleaning session cache", Logger.INFO);
 					this.cleanSessions();
 				}
 
@@ -272,18 +274,18 @@ public class CacheManager implements Runnable {
 				JSONParser parser = new JSONParser();
 				JSONObject sessionsJSON = (JSONObject) parser.parse(sessionReader);
 				sessionReader.close();
+				
+				// Remove a session in the JSON
+				if(this.sessionsRemoveBuffer.size() > 0) {
+					String sessionIdToRemove = this.sessionsRemoveBuffer.poll();
+					sessionsJSON.remove(sessionIdToRemove);
+				}
 
 				// Add a session in the JSON
 				if(this.sessionsAddBuffer.size() > 0) {
 					SessionModel sessionToAdd = this.sessionsAddBuffer.poll();
 					sessionsJSON.put(sessionToAdd.getSessionId(), sessionToAdd.getJSON());
 					this.addedSessions++;
-				}
-
-				// Remove a session in the JSON
-				if(this.sessionsRemoveBuffer.size() > 0) {
-					String sessionIdToRemove = this.sessionsRemoveBuffer.poll();
-					sessionsJSON.remove(sessionIdToRemove);
 				}
 
 				// Write the new session file

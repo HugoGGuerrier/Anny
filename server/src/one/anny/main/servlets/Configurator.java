@@ -79,17 +79,17 @@ public class Configurator extends HttpServlet {
 
 		} catch (IOException e) {
 
-			System.err.println("IO exception during the application initialization");
+			System.err.println("[ERROR] IO exception during the application initialization");
 			e.printStackTrace();
 
 		} catch (SQLException e) {
 
-			System.err.println("SQL exception during the application initialization");
+			Logger.log("SQL Exception during the application initialization", Logger.ERROR);
 			e.printStackTrace();
 
 		}
 
-		// DEBUG SECTION		
+		// DEVELOPEMENT SECTION		
 		if(Config.getEnv() == StdVar.DEVELOPMENT_ENV) {
 			
 			Logger.log("Base path : " + basePath, Logger.INFO);
